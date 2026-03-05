@@ -8,7 +8,7 @@ namespace EchoTerminal
 {
 public class CommandRegistry
 {
-	private readonly Dictionary<string, CommandEntry> _commands = new(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, List<CommandEntry>> _commands = new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<Type, Component[]> _instanceCache = new();
 	private bool _scanned;
 
@@ -17,9 +17,9 @@ public class CommandRegistry
 		return _commands.Keys;
 	}
 
-	public bool TryGet(string name, out CommandEntry entry)
+	public bool TryGet(string name, out List<CommandEntry> entries)
 	{
-		return _commands.TryGetValue(name, out entry);
+		return _commands.TryGetValue(name, out entries);
 	}
 
 	public Component[] GetInstances(Type monoType)
@@ -99,7 +99,13 @@ public class CommandRegistry
 				? method.Name.ToLowerInvariant()
 				: attr.Name.ToLowerInvariant();
 
-			_commands[name] = new(method, monoType);
+			if (!_commands.TryGetValue(name, out var list))
+			{
+				list = new List<CommandEntry>();
+				_commands[name] = list;
+			}
+
+			list.Add(new(method, monoType));
 		}
 	}
 }

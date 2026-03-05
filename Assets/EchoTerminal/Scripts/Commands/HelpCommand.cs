@@ -31,12 +31,15 @@ public static class HelpCommand
 
 		foreach (var name in sorted)
 		{
-			if (!terminal.Registry.TryGet(name, out var entry))
+			if (!terminal.Registry.TryGet(name, out var entries))
 			{
 				continue;
 			}
 
-			output.AppendLine(BuildLine(name, entry.Method));
+			foreach (var entry in entries)
+			{
+				output.AppendLine(BuildLine(name, entry.Method));
+			}
 		}
 
 		terminal.Log(output.ToString().TrimEnd());

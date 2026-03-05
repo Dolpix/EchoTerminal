@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 namespace EchoTerminal.Scripts.Test
 {
 public class GameObjectParser : IParser
 {
+	public Type TargetType => typeof(GameObject);
+
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{
 		result = null;

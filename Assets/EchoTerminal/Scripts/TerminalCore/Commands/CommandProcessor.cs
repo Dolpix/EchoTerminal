@@ -1,27 +1,79 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using EchoTerminal.Scripts.Test;
+using UnityEngine;
 
 namespace EchoTerminal
 {
 public class CommandProcessor
 {
-	private static readonly Dictionary<Type, IParser> Parsers = new()
-	{
-		{ typeof(int), new IntParser() },
-		{ typeof(bool), new BoolParser() },
-		{ typeof(string), new StringParser() },
-		{ typeof(UnityEngine.GameObject), new GameObjectParser() }
-	};
+	private static Dictionary<Type, IParser> _parsers;
 
 	private readonly CommandRegistry _registry;
-
 	private readonly Terminal _terminal;
 
 	public CommandProcessor(Terminal terminal, CommandRegistry registry)
 	{
 		_terminal = terminal;
 		_registry = registry;
+	}
+
+	private static Dictionary<Type, IParser> GetParsers()
+	{
+		if (_parsers != null)
+		{
+			return _parsers;
+		}
+
+		_parsers = new();
+
+		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+		{
+			if (assembly.IsDynamic)
+			{
+				continue;
+			}
+
+			Type[] types;
+			try
+			{
+				types = assembly.GetTypes();
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				types = e.Types;
+			}
+
+			if (types == null)
+			{
+				continue;
+			}
+
+			foreach (var type in types)
+			{
+				if (type == null || type.IsAbstract || type.IsInterface)
+				{
+					continue;
+				}
+
+				if (!typeof(IParser).IsAssignableFrom(type))
+				{
+					continue;
+				}
+
+				if (type.GetConstructor(Type.EmptyTypes) == null)
+				{
+					continue;
+				}
+
+				var parser = (IParser)Activator.CreateInstance(type);
+				_parsers[parser.TargetType] = parser;
+			}
+		}
+
+		return _parsers;
 	}
 
 	public void Execute(string input)
@@ -36,26 +88,33 @@ public class CommandProcessor
 		var commandName = space == -1 ? remaining : remaining[..space];
 		remaining = space == -1 ? string.Empty : remaining[space..].TrimStart();
 
-		if (!_registry.TryGet(commandName, out var entry))
+		if (!_registry.TryGet(commandName, out var entries))
 		{
 			_terminal.Log($"Unknown command: '{commandName}'");
 			return;
 		}
 
-		if (!TryInvoke(entry, remaining))
+		foreach (var entry in entries)
 		{
-			_terminal.Log($"Invalid arguments for '{commandName}'");
+			if (TryInvoke(entry, remaining))
+			{
+				return;
+			}
 		}
+
+		_terminal.Log($"Invalid arguments for '{commandName}'");
 	}
 
 	private bool TryInvoke(CommandEntry entry, string commandString)
 	{
-		UnityEngine.GameObject singleTarget = null;
-		if (!entry.IsStatic && Parsers[typeof(UnityEngine.GameObject)].TryParse(commandString, out var goObj, out var goConsumed))
+		var parsers = GetParsers();
+
+		GameObject singleTarget = null;
+		if (!entry.IsStatic && parsers[typeof(GameObject)].TryParse(commandString, out var goObj, out var goConsumed))
 		{
 			var targetName = commandString[1..goConsumed];
 			commandString = commandString[goConsumed..].TrimStart();
-			singleTarget = goObj as UnityEngine.GameObject;
+			singleTarget = goObj as GameObject;
 			if (singleTarget == null)
 			{
 				_terminal.Log($"No GameObject named '{targetName}' found in scene.");
@@ -76,17 +135,70 @@ public class CommandProcessor
 				continue;
 			}
 
-			if (!Parsers.TryGetValue(paramType, out var parser))
+			if (parsers.TryGetValue(paramType, out var parser))
 			{
-				return false;
+				if (!parser.TryParse(commandString, out args[i], out var consumed))
+				{
+					return false;
+				}
+
+				commandString = commandString[consumed..].TrimStart();
+				continue;
 			}
 
-			if (!parser.TryParse(commandString, out args[i], out var consumed))
+			if (paramType.IsEnum)
 			{
-				return false;
+				var end = commandString.IndexOf(' ');
+				var token = end == -1 ? commandString : commandString[..end];
+				if (!Enum.TryParse(paramType, token, true, out var enumVal))
+				{
+					return false;
+				}
+
+				args[i] = enumVal;
+				commandString = commandString[token.Length..].TrimStart();
+				continue;
 			}
 
-			commandString = commandString.Substring(consumed).TrimStart();
+			if (paramType.IsGenericType && paramType.GetGenericTypeDefinition() == typeof(List<>))
+			{
+				var elementType = paramType.GetGenericArguments()[0];
+				var list = (IList)Activator.CreateInstance(paramType);
+				var tokens = commandString.Split(',');
+
+				foreach (var raw in tokens)
+				{
+					var t = raw.Trim();
+					if (parsers.TryGetValue(elementType, out var ep))
+					{
+						if (!ep.TryParse(t, out var el, out _))
+						{
+							return false;
+						}
+
+						list.Add(el);
+					}
+					else if (elementType.IsEnum)
+					{
+						if (!Enum.TryParse(elementType, t, true, out var enumEl))
+						{
+							return false;
+						}
+
+						list.Add(enumEl);
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				args[i] = list;
+				commandString = string.Empty;
+				continue;
+			}
+
+			return false;
 		}
 
 		if (entry.IsStatic)

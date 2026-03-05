@@ -1,22 +1,26 @@
+using System;
+
 namespace EchoTerminal.Scripts.Test
 {
-    public class BoolParser : IParser
-    {
-        public bool TryParse(string input, out object result, out int charsConsumed)
-        {
-            int end = input.IndexOf(' ');
-            string token = end == -1 ? input : input.Substring(0, end);
+public class BoolParser : IParser
+{
+	public Type TargetType => typeof(bool);
 
-            if (bool.TryParse(token, out bool value))
-            {
-                result = value;
-                charsConsumed = token.Length;
-                return true;
-            }
+	public bool TryParse(string input, out object result, out int charsConsumed)
+	{
+		var end = input.IndexOf(' ');
+		var token = end == -1 ? input : input.Substring(0, end);
 
-            result = null;
-            charsConsumed = 0;
-            return false;
-        }
-    }
+		if (bool.TryParse(token, out var value))
+		{
+			result = value;
+			charsConsumed = token.Length;
+			return true;
+		}
+
+		result = null;
+		charsConsumed = 0;
+		return false;
+	}
+}
 }
