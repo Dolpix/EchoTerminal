@@ -9,9 +9,9 @@ namespace EchoTerminal
 {
 public class CommandHighlight
 {
-	private const string ColorUnknown = "#FF4444";
-	private const string ColorCommand = "#AADDFF";
-	private const string ColorParam = "#FFDD88";
+	private const string _colorUnknown = "#FF4444";
+	private const string _colorCommand = "#AADDFF";
+	private const string _colorParam = "#FFDD88";
 
 	private readonly CommandRegistry _registry;
 
@@ -33,7 +33,7 @@ public class CommandHighlight
 		var space = trimmed.IndexOf(' ');
 		var commandName = space == -1 ? trimmed : trimmed[..space];
 		var isKnown = _registry.TryGet(commandName, out _);
-		var cmdColor = isKnown ? ColorCommand : ColorUnknown;
+		var cmdColor = isKnown ? _colorCommand : _colorUnknown;
 
 		var sb = new StringBuilder();
 		sb.Append(' ', leadingSpaces);
@@ -74,29 +74,29 @@ public class CommandHighlight
 
 		if (token.StartsWith("@"))
 		{
-			color = parsers.TryGetValue(typeof(GameObject), out var p) ? p.HighlightColor : ColorParam;
+			color = parsers.TryGetValue(typeof(GameObject), out var p) ? p.HighlightColor : _colorParam;
 			return $"<color={color}>{token}</color>";
 		}
 
 		if (bool.TryParse(token, out _))
 		{
-			color = parsers.TryGetValue(typeof(bool), out var p) ? p.HighlightColor : ColorParam;
+			color = parsers.TryGetValue(typeof(bool), out var p) ? p.HighlightColor : _colorParam;
 			return $"<color={color}>{token}</color>";
 		}
 
 		if (token.Contains(','))
 		{
-			color = parsers.TryGetValue(typeof(Vector3), out var p) ? p.HighlightColor : ColorParam;
+			color = parsers.TryGetValue(typeof(Vector3), out var p) ? p.HighlightColor : _colorParam;
 			return $"<color={color}>{token}</color>";
 		}
 
 		if (float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
 		{
-			color = parsers.TryGetValue(typeof(float), out var p) ? p.HighlightColor : ColorParam;
+			color = parsers.TryGetValue(typeof(float), out var p) ? p.HighlightColor : _colorParam;
 			return $"<color={color}>{token}</color>";
 		}
 
-		color = parsers.TryGetValue(typeof(string), out var sp) ? sp.HighlightColor : ColorParam;
+		color = parsers.TryGetValue(typeof(string), out var sp) ? sp.HighlightColor : _colorParam;
 		return $"<color={color}>{token}</color>";
 	}
 }
