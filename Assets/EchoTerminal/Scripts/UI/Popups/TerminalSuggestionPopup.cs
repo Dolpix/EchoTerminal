@@ -15,7 +15,7 @@ public class TerminalSuggestionPopup
 
 	private List<string> _suggestions;
 
-	public TerminalSuggestionPopup(VisualElement parent, TerminalUIConfig config)
+	public TerminalSuggestionPopup(VisualElement parent, TerminalConfig config)
 	{
 		var clone = config.SuggestionPopupTemplate.CloneTree();
 		_container = clone.Q<VisualElement>("suggestion-popup");

@@ -9,7 +9,7 @@ public class TerminalView
 
 	private readonly List<IEchoComponent> _components = new();
 
-	public TerminalView(VisualElement root, TerminalUIConfig config)
+	public TerminalView(VisualElement root, TerminalConfig config)
 	{
 		Terminal = new(config.HighlightColors);
 

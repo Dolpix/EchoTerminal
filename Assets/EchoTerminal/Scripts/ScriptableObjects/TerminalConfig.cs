@@ -3,8 +3,8 @@ using UnityEngine.UIElements;
 
 namespace EchoTerminal
 {
-[CreateAssetMenu(fileName = "TerminalUIConfig", menuName = "Echo Terminal/UI Config")]
-public class TerminalUIConfig : ScriptableObject
+[CreateAssetMenu(fileName = "TerminalConfig", menuName = "Echo Terminal/UI Config")]
+public class TerminalConfig : ScriptableObject
 {
 	[Header("Templates")]
 	[SerializeField] private VisualTreeAsset _logEntryTemplate;

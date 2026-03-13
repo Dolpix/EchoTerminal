@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c77862c6a45ee1b449e647057a921324, type: 3}
-  m_Name: TerminalUIConfig
+  m_Name: TerminalConfig
   m_EditorClassIdentifier: EchoTerminal.Runtime::EchoTerminal.TerminalUIConfig
   _logEntryTemplate: {fileID: 9197481963319205126, guid: cb6eed5ee8f70d44da36eec0378513b6, type: 3}
   _suggestionPopupTemplate: {fileID: 9197481963319205126, guid: 84d078cc617082548b34e7e24aa781a0, type: 3}
   _suggestionItemTemplate: {fileID: 9197481963319205126, guid: 3faa17132c14bc247bf9381504b91f24, type: 3}
   _hintItemTemplate: {fileID: 9197481963319205126, guid: 9327c7095b34e8744afd013cda60aca6, type: 3}
   _cursorSet: {fileID: 11400000, guid: 0e7244db6e7fbab42b1e9de943002a91, type: 2}
+  _highlightColors: {fileID: 11400000, guid: 29c09727fa6ff2548bd6b252139d0bbe, type: 2}
   _dragConstraints:
     Top:
-      SnapDistance: 0
+      SnapDistance: 20
       Overhang: 0
     Left:
-      SnapDistance: 0
-      Overhang: 0
+      SnapDistance: 20
+      Overhang: 0.8
     Right:
-      SnapDistance: 0
-      Overhang: 0
+      SnapDistance: 20
+      Overhang: 0.8
     Bottom:
-      SnapDistance: 0
-      Overhang: 0
-  _highlightColors: {fileID: 11400000, guid: 29c09727fa6ff2548bd6b252139d0bbe, type: 2}
+      SnapDistance: 20
+      Overhang: 0.8

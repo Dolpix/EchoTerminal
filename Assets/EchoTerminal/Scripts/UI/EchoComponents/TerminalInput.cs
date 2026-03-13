@@ -10,7 +10,7 @@ public class TerminalInput : IEchoComponent
 	private readonly TerminalSuggestionPopup _popup;
 	private readonly Terminal _terminal;
 
-	public TerminalInput(Terminal terminal, VisualElement root, TerminalUIConfig config)
+	public TerminalInput(Terminal terminal, VisualElement root, TerminalConfig config)
 	{
 		_terminal = terminal;
 		_inputField = root?.Q<TextField>("input-field");

@@ -10,7 +10,7 @@ public class TerminalLogDisplay : IEchoComponent
 	private readonly Terminal _terminal;
 	private int _entryCount;
 
-	public TerminalLogDisplay(Terminal terminal, VisualElement root, TerminalUIConfig config)
+	public TerminalLogDisplay(Terminal terminal, VisualElement root, TerminalConfig config)
 	{
 		_terminal = terminal;
 		_container = root?.Q<VisualElement>("log-container");

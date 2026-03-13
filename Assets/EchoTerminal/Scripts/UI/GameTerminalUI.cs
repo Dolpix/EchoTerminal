@@ -8,7 +8,7 @@ namespace EchoTerminal
 [RequireComponent(typeof(UIDocument))]
 public class GameTerminalUI : MonoBehaviour
 {
-	[SerializeField] private TerminalUIConfig _config;
+	[SerializeField] private TerminalConfig _config;
 	[SerializeField] private InputActionAsset _inputActions;
 	private TextField _inputField;
 
@@ -33,7 +33,7 @@ public class GameTerminalUI : MonoBehaviour
 		if (_config == null)
 		{
 			Debug.LogError(
-				"[EchoTerminal] TerminalUIConfig is not assigned. " +
+				"[EchoTerminal] TerminalConfig is not assigned. " +
 				"Create one via Create > Echo Terminal > UI Config and assign it.");
 			return;
 		}

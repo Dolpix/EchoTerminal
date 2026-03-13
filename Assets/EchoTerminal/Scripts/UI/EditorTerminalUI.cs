@@ -17,11 +17,11 @@ public class EditorTerminalUI : EditorWindow
 
 	private void CreateGUI()
 	{
-		var assets = EchoTerminalAssets.Instance;
+		var assets = TerminalSingleton.Instance;
 		if (assets == null || assets.Uxml == null || assets.Config == null)
 		{
-			Debug.LogError("[EchoTerminal] Create EchoTerminalAssets via Create > Echo Terminal > Assets");
-			rootVisualElement.Add(new Label("Error: EchoTerminalAssets not found. See console."));
+			Debug.LogError("[EchoTerminal] Create TerminalSingleton via Create > Echo Terminal > Assets");
+			rootVisualElement.Add(new Label("Error: TerminalSingleton not found. See console."));
 			return;
 		}
 
