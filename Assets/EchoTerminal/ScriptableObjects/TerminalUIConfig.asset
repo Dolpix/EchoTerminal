@@ -18,5 +18,16 @@ MonoBehaviour:
   _hintItemTemplate: {fileID: 9197481963319205126, guid: 9327c7095b34e8744afd013cda60aca6, type: 3}
   _cursorSet: {fileID: 11400000, guid: 0e7244db6e7fbab42b1e9de943002a91, type: 2}
   _dragConstraints:
-    SnapDistance: 20
-    SideOverhang: 300
+    Top:
+      SnapDistance: 0
+      Overhang: 0
+    Left:
+      SnapDistance: 0
+      Overhang: 0
+    Right:
+      SnapDistance: 0
+      Overhang: 0
+    Bottom:
+      SnapDistance: 0
+      Overhang: 0
+  _highlightColors: {fileID: 11400000, guid: 29c09727fa6ff2548bd6b252139d0bbe, type: 2}

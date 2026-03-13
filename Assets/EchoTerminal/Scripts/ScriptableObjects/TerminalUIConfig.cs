@@ -14,6 +14,11 @@ public class TerminalUIConfig : ScriptableObject
 
 	[Header("Cursors")]
 	[SerializeField] private TerminalCursorSet _cursorSet;
+
+	[Header("Colors")]
+	[SerializeField] private TerminalHighlightColors _highlightColors;
+	
+	[Header("Window Settings")]
 	[SerializeField] private TerminalDragConstraints _dragConstraints;
 
 	public VisualTreeAsset LogEntryTemplate => _logEntryTemplate;
@@ -22,5 +27,6 @@ public class TerminalUIConfig : ScriptableObject
 	public VisualTreeAsset HintItemTemplate => _hintItemTemplate;
 	public TerminalCursorSet CursorSet => _cursorSet;
 	public TerminalDragConstraints DragConstraints => _dragConstraints;
+	public TerminalHighlightColors HighlightColors => _highlightColors;
 }
 }

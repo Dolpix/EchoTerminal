@@ -1,23 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using EchoTerminal.Scripts.Test;
 using UnityEngine;
 
 namespace EchoTerminal
 {
 public class CommandHighlight
 {
-	private const string _colorUnknown = "#FF4444";
-	private const string _colorCommand = "#AADDFF";
-	private const string _colorParam = "#FFDD88";
-
+	private readonly TerminalHighlightColors _colors;
 	private readonly CommandRegistry _registry;
 
-	public CommandHighlight(CommandRegistry registry)
+	public CommandHighlight(CommandRegistry registry, TerminalHighlightColors colors)
 	{
 		_registry = registry;
+		_colors = colors;
 	}
 
 	public string Highlight(string input)
@@ -27,17 +23,24 @@ public class CommandHighlight
 			return input;
 		}
 
-		var parsers = CommandProcessor.Parsers;
 		var trimmed = input.TrimStart();
 		var leadingSpaces = input.Length - trimmed.Length;
 		var space = trimmed.IndexOf(' ');
 		var commandName = space == -1 ? trimmed : trimmed[..space];
-		var isKnown = _registry.TryGet(commandName, out _);
-		var cmdColor = isKnown ? _colorCommand : _colorUnknown;
 
 		var sb = new StringBuilder();
 		sb.Append(' ', leadingSpaces);
-		sb.Append($"<color={cmdColor}>{commandName}</color>");
+
+		if (_colors != null)
+		{
+			var isKnown = _registry.TryGet(commandName, out _);
+			var cmdColor = ToHex(isKnown ? _colors.CommandColor : _colors.UnknownCommandColor);
+			sb.Append($"<color={cmdColor}>{commandName}</color>");
+		}
+		else
+		{
+			sb.Append(commandName);
+		}
 
 		if (space == -1)
 		{
@@ -61,43 +64,50 @@ public class CommandHighlight
 			}
 
 			var token = input[pos..end];
-			sb.Append(ColorizeToken(token, parsers));
+			sb.Append(ColorizeToken(token));
 			pos = end;
 		}
 
 		return sb.ToString();
 	}
 
-	private static string ColorizeToken(string token, IReadOnlyDictionary<Type, IParser> parsers)
+	private string ColorizeToken(string token)
 	{
-		string color;
+		if (_colors == null)
+		{
+			return token;
+		}
+
+		Type type;
 
 		if (token.StartsWith("@"))
 		{
-			color = parsers.TryGetValue(typeof(GameObject), out var p) ? p.HighlightColor : _colorParam;
-			return $"<color={color}>{token}</color>";
+			type = typeof(GameObject);
 		}
-
-		if (bool.TryParse(token, out _))
+		else if (bool.TryParse(token, out _))
 		{
-			color = parsers.TryGetValue(typeof(bool), out var p) ? p.HighlightColor : _colorParam;
-			return $"<color={color}>{token}</color>";
+			type = typeof(bool);
 		}
-
-		if (token.Contains(','))
+		else if (token.Contains(','))
 		{
-			color = parsers.TryGetValue(typeof(Vector3), out var p) ? p.HighlightColor : _colorParam;
-			return $"<color={color}>{token}</color>";
+			type = typeof(Vector3);
 		}
-
-		if (float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+		else if (float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
 		{
-			color = parsers.TryGetValue(typeof(float), out var p) ? p.HighlightColor : _colorParam;
-			return $"<color={color}>{token}</color>";
+			type = typeof(float);
+		}
+		else
+		{
+			type = typeof(string);
 		}
 
-		color = parsers.TryGetValue(typeof(string), out var sp) ? sp.HighlightColor : _colorParam;
-		return $"<color={color}>{token}</color>";
+		var color = _colors.TypeColors.TryGetValue(type, out var c) ? c : _colors.FallbackParamColor;
+		return $"<color={ToHex(color)}>{token}</color>";
+	}
+
+	private static string ToHex(Color c)
+	{
+		return "#" + ColorUtility.ToHtmlStringRGB(c);
 	}
 }
 }

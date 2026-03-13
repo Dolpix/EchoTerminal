@@ -13,13 +13,13 @@ public class Terminal
 	private readonly int _maxEntries;
 	private readonly CommandProcessor _processor;
 
-	public Terminal(int maxEntries = 1000)
+	public Terminal(TerminalHighlightColors highlightColors, int maxEntries = 1000)
 	{
 		_maxEntries = maxEntries;
 		Registry = new();
 		Registry.Scan();
 		_processor = new(this, Registry);
-		Highlighter = new(Registry);
+		Highlighter = new(Registry, highlightColors);
 		Suggester = new(Registry);
 	}
 
