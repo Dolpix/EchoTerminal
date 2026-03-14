@@ -49,7 +49,7 @@ public class TerminalInput : IEchoComponent
 		_highlight.text = _terminal.Highlighter.Highlight(evt.newValue);
 		_popup.Update(
 			_terminal.Suggester.GetSuggestions(evt.newValue),
-			_terminal.Suggester.GetHints(evt.newValue)
+			_terminal.Hints.GetHints(evt.newValue)
 		);
 	}
 
@@ -95,7 +95,7 @@ public class TerminalInput : IEchoComponent
 		{
 			_popup.Update(
 				_terminal.Suggester.GetSuggestions(_inputField.value),
-				_terminal.Suggester.GetHints(_inputField.value)
+				_terminal.Hints.GetHints(_inputField.value)
 			);
 			evt.StopImmediatePropagation();
 			evt.StopPropagation();

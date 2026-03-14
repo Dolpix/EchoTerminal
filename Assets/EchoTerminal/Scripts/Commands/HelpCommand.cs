@@ -6,10 +6,10 @@ using EchoTerminal;
 public static class HelpCommand
 {
 	private const string _colCommand = "#79C0FF";
-	private const string _colParams  = "#6E8FA8";
-	private const string _colArrow   = "#4A6274";
-	private const string _colDesc    = "#9EAAB5";
-	private const string _colHeader  = "#C9D1D9";
+	private const string _colParams = "#6E8FA8";
+	private const string _colArrow = "#4A6274";
+	private const string _colDesc = "#9EAAB5";
+	private const string _colHeader = "#C9D1D9";
 
 	[TerminalCommand(description: "Show all registered commands")]
 	private static void Help(Terminal terminal)

@@ -75,51 +75,6 @@ public class CommandSuggest
 		return SuggestionContext.Empty;
 	}
 
-	public List<string> GetHints(string input)
-	{
-		if (!CommandProcessor.TryParseInput(input, out var commandName, out var args, out _))
-		{
-			return null;
-		}
 
-		if (args == null)
-		{
-			return null;
-		}
-
-		if (!_registry.TryGet(commandName, out var entries))
-		{
-			return null;
-		}
-
-		var hints = new List<string>();
-		foreach (var entry in entries)
-		{
-			var parameters = entry.Method.GetParameters();
-			var parts = new List<string>();
-
-			if (!entry.IsStatic)
-			{
-				parts.Add("<@gameObject>");
-			}
-
-			foreach (var p in parameters)
-			{
-				if (p.ParameterType == typeof(Terminal))
-				{
-					continue;
-				}
-
-				parts.Add($"<{p.Name}:{p.ParameterType.Name}>");
-			}
-
-			if (parts.Count > 0)
-			{
-				hints.Add(string.Join(" ", parts));
-			}
-		}
-
-		return hints.Count > 0 ? hints : null;
-	}
 }
 }

@@ -9,6 +9,7 @@ public class Terminal
 	public CommandRegistry Registry { get; }
 	public CommandHighlight Highlighter { get; }
 	public CommandSuggest Suggester { get; }
+	public CommandHints Hints { get; }
 
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
@@ -25,6 +26,7 @@ public class Terminal
 		_executor = new(this, Registry);
 		Highlighter = new(Registry, highlightColors);
 		Suggester = new(Registry);
+		Hints = new(Registry);
 	}
 
 	public IReadOnlyList<TerminalEntry> Entries => _entries;
