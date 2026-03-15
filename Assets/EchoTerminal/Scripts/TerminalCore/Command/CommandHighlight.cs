@@ -58,7 +58,7 @@ public class CommandHighlight
 		{
 			if (param.Token == null)
 			{
-				break;
+				continue;
 			}
 
 			var tokenIdx = args.IndexOf(param.Token, pos, StringComparison.Ordinal);

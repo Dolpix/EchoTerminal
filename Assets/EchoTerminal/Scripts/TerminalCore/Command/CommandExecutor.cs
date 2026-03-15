@@ -54,6 +54,37 @@ public class CommandExecutor
 			}
 		}
 
+		foreach (var overload in result.Overloads)
+		{
+			if (overload.Params.Count == 0 || !overload.Params[0].Expected.IsTarget)
+			{
+				continue;
+			}
+
+			if (overload.Params[0].Token != null)
+			{
+				continue;
+			}
+
+			var allNonTargetValid = true;
+			for (var i = 1; i < overload.Params.Count; i++)
+			{
+				if (!overload.Params[i].IsValid)
+				{
+					allNonTargetValid = false;
+					break;
+				}
+			}
+
+			if (!allNonTargetValid)
+			{
+				continue;
+			}
+
+			Invoke(overload);
+			return;
+		}
+
 		_terminal.Log($"Invalid arguments for '{result.CommandName}'");
 	}
 
