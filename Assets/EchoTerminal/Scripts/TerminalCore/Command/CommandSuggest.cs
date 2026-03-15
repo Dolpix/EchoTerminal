@@ -7,26 +7,28 @@ namespace EchoTerminal
 {
 public class CommandSuggest
 {
-	private readonly CommandRegistry _registry;
+	private readonly CommandParser _parser;
 
-	public CommandSuggest(CommandRegistry registry)
+	public CommandSuggest(CommandParser parser)
 	{
-		_registry = registry;
+		_parser = parser;
 	}
 
 	public SuggestionContext GetSuggestions(string input)
 	{
-		if (!CommandProcessor.TryParseInput(input, out var commandName, out var args, out var leadingSpaces))
+		var result = _parser.Parse(input);
+
+		if (string.IsNullOrEmpty(result.CommandName))
 		{
 			return SuggestionContext.Empty;
 		}
 
-		if (args == null)
+		if (result.Args == null)
 		{
 			var matches = new List<string>();
-			foreach (var name in _registry.GetCommandNames())
+			foreach (var name in _parser.Registry.GetCommandNames())
 			{
-				if (name.StartsWith(commandName, StringComparison.OrdinalIgnoreCase))
+				if (name.StartsWith(result.CommandName, StringComparison.OrdinalIgnoreCase))
 				{
 					matches.Add(name);
 				}
@@ -40,14 +42,29 @@ public class CommandSuggest
 			return new()
 			{
 				Suggestions = matches,
-				ReplaceStart = leadingSpaces,
+				ReplaceStart = result.LeadingSpaces,
 				ReplaceEnd = input.Length
 			};
 		}
 
-		if (args.StartsWith("@") && !args[1..].Contains(' '))
+		if (result.Args.StartsWith("@") && !result.Args[1..].Contains(' '))
 		{
-			var partial = args[1..];
+			var hasTarget = false;
+			foreach (var overload in result.Overloads)
+			{
+				if (overload.Params.Count > 0 && overload.Params[0].Expected.IsTarget)
+				{
+					hasTarget = true;
+					break;
+				}
+			}
+
+			if (!hasTarget)
+			{
+				return SuggestionContext.Empty;
+			}
+
+			var partial = result.Args[1..];
 			var allGOs = Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
 			var goMatches = new List<string>();
 			foreach (var go in allGOs)
@@ -63,7 +80,7 @@ public class CommandSuggest
 				return SuggestionContext.Empty;
 			}
 
-			var atPos = input.IndexOf('@', leadingSpaces + commandName.Length);
+			var atPos = input.IndexOf('@', result.LeadingSpaces + result.CommandName.Length);
 			return new()
 			{
 				Suggestions = goMatches,
@@ -74,7 +91,5 @@ public class CommandSuggest
 
 		return SuggestionContext.Empty;
 	}
-
-
 }
 }

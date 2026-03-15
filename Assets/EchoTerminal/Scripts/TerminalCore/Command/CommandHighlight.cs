@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -8,11 +9,11 @@ namespace EchoTerminal
 public class CommandHighlight
 {
 	private readonly TerminalHighlightColors _colors;
-	private readonly CommandRegistry _registry;
+	private readonly CommandParser _parser;
 
-	public CommandHighlight(CommandRegistry registry, TerminalHighlightColors colors)
+	public CommandHighlight(CommandParser parser, TerminalHighlightColors colors)
 	{
-		_registry = registry;
+		_parser = parser;
 		_colors = colors;
 	}
 
@@ -23,42 +24,35 @@ public class CommandHighlight
 			return input;
 		}
 
-		if (!CommandProcessor.TryParseInput(input, out var commandName, out var args, out var leadingSpaces))
+		var result = _parser.Parse(input);
+
+		if (string.IsNullOrEmpty(result.CommandName))
 		{
 			return input;
 		}
 
-		var isKnown = _registry.TryGet(commandName, out var entries);
-
 		var sb = new StringBuilder();
-		sb.Append(' ', leadingSpaces);
+		sb.Append(' ', result.LeadingSpaces);
 
 		if (_colors != null)
 		{
-			var cmdColor = ToHex(isKnown ? _colors.CommandColor : _colors.UnknownColor);
-			sb.Append($"<color={cmdColor}>{commandName}</color>");
+			var cmdColor = ToHex(result.IsKnownCommand ? _colors.CommandColor : _colors.UnknownColor);
+			sb.Append($"<color={cmdColor}>{result.CommandName}</color>");
 		}
 		else
 		{
-			sb.Append(commandName);
+			sb.Append(result.CommandName);
 		}
 
-		if (args == null)
+		if (result.Args == null)
 		{
 			return sb.ToString();
 		}
 
-		List<Type[]> overloads = null;
-		var hasNonStatic = false;
-
-		if (isKnown)
-		{
-			overloads = CommandProcessor.GetOverloadParamTypes(entries, out hasNonStatic);
-		}
-
-		var pos = leadingSpaces + commandName.Length;
+		var hasTarget = result.Overloads.Any(o => o.Params.Count > 0 && o.Params[0].Expected.IsTarget);
+		var pos = result.LeadingSpaces + result.CommandName.Length;
 		var paramIndex = 0;
-		var instanceTargetConsumed = false;
+		var targetConsumed = false;
 
 		while (pos < input.Length)
 		{
@@ -77,14 +71,14 @@ public class CommandHighlight
 
 			var token = input[pos..end];
 
-			if (hasNonStatic && !instanceTargetConsumed && token.StartsWith("@"))
+			if (hasTarget && !targetConsumed && token.StartsWith("@"))
 			{
-				instanceTargetConsumed = true;
+				targetConsumed = true;
 				sb.Append(ColorizeTyped(token, typeof(GameObject)));
 			}
 			else
 			{
-				sb.Append(ColorizeAtPosition(token, overloads, paramIndex));
+				sb.Append(ColorizeAtPosition(result.Overloads, paramIndex, token, targetConsumed));
 				paramIndex++;
 			}
 
@@ -94,30 +88,35 @@ public class CommandHighlight
 		return sb.ToString();
 	}
 
-	private string ColorizeAtPosition(string token, List<Type[]> overloads, int paramIndex)
+	private string ColorizeAtPosition(
+		IReadOnlyList<OverloadResult> overloads,
+		int paramIndex,
+		string token,
+		bool targetConsumed)
 	{
 		if (_colors == null)
 		{
 			return token;
 		}
 
-		if (overloads == null)
+		if (overloads.Count == 0)
 		{
 			return $"<color={ToHex(_colors.FallbackParamColor)}>{token}</color>";
 		}
 
 		foreach (var overload in overloads)
 		{
-			if (paramIndex >= overload.Length)
+			var offset = targetConsumed && overload.Params.Count > 0 && overload.Params[0].Expected.IsTarget ? 1 : 0;
+			var idx = paramIndex + offset;
+
+			if (idx >= overload.Params.Count)
 			{
 				continue;
 			}
 
-			var expectedType = overload[paramIndex];
-
-			if (CommandProcessor.TryValidateToken(token, expectedType, out var colorType))
+			if (overload.Params[idx].IsValid)
 			{
-				return ColorizeTyped(token, colorType);
+				return ColorizeTyped(token, overload.Params[idx].Expected.Type);
 			}
 		}
 

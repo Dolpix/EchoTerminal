@@ -7,6 +7,7 @@ namespace EchoTerminal
 public class Terminal
 {
 	public CommandRegistry Registry { get; }
+	public CommandParser Parser { get; }
 	public CommandHighlight Highlighter { get; }
 	public CommandSuggest Suggester { get; }
 	public CommandHints Hints { get; }
@@ -23,10 +24,11 @@ public class Terminal
 		_maxEntries = maxEntries;
 		Registry = new();
 		Registry.Scan();
-		_executor = new(this, Registry);
-		Highlighter = new(Registry, highlightColors);
-		Suggester = new(Registry);
-		Hints = new(Registry);
+		Parser = new(Registry);
+		_executor = new(this, Parser);
+		Highlighter = new(Parser, highlightColors);
+		Suggester = new(Parser);
+		Hints = new(Parser);
 	}
 
 	public IReadOnlyList<TerminalEntry> Entries => _entries;

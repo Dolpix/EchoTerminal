@@ -1,47 +1,30 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace EchoTerminal
 {
 public class CommandHints
 {
-	private readonly CommandRegistry _registry;
+	private readonly CommandParser _parser;
 
-	public CommandHints(CommandRegistry registry)
+	public CommandHints(CommandParser parser)
 	{
-		_registry = registry;
+		_parser = parser;
 	}
 
 	public List<string> GetHints(string input)
 	{
-		if (!CommandProcessor.TryParseInput(input, out var commandName, out var args, out _))
-		{
-			return null;
-		}
+		var result = _parser.Parse(input);
 
-		if (args == null)
-		{
-			return null;
-		}
-
-		if (!_registry.TryGet(commandName, out var entries))
+		if (!result.IsKnownCommand || result.Args == null)
 		{
 			return null;
 		}
 
 		var hints = new List<string>();
-
-		foreach (var entry in entries)
+		foreach (var overload in result.Overloads)
 		{
-			var parameters = entry.Method.GetParameters();
-			var parts = parameters.Select(p => $"<{p.Name}:{p.ParameterType.Name}>").ToList();
-			
-			if (!entry.IsStatic)
-			{
-				parts.Add("<@gameObject>");
-			}
-
+			var parts = overload.Params.Select(p => p.Expected.ToString()).ToList();
 			if (parts.Count > 0)
 			{
 				hints.Add(string.Join(" ", parts));

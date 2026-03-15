@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using EchoTerminal.Scripts.Test;
+using UnityEngine;
 
 namespace EchoTerminal
 {
@@ -10,6 +11,28 @@ public static class CommandProcessor
 	private static Dictionary<Type, IParser> _parsers;
 
 	public static IReadOnlyDictionary<Type, IParser> Parsers => GetParsers();
+
+	public static List<CommandParam> GetParams(CommandEntry entry)
+	{
+		var result = new List<CommandParam>();
+
+		if (!entry.IsStatic)
+		{
+			result.Add(new("gameObject", typeof(GameObject), true));
+		}
+
+		foreach (var p in entry.Method.GetParameters())
+		{
+			if (p.ParameterType == typeof(Terminal))
+			{
+				continue;
+			}
+
+			result.Add(new(p.Name, p.ParameterType));
+		}
+
+		return result;
+	}
 
 	public static bool TryParseInput(string input, out string commandName, out string args, out int leadingSpaces)
 	{
@@ -27,34 +50,6 @@ public static class CommandProcessor
 		commandName = space == -1 ? trimmed : trimmed[..space];
 		args = space == -1 ? null : trimmed[(space + 1)..];
 		return true;
-	}
-
-	public static List<Type[]> GetOverloadParamTypes(List<CommandEntry> entries, out bool hasNonStatic)
-	{
-		hasNonStatic = false;
-		var result = new List<Type[]>();
-
-		foreach (var entry in entries)
-		{
-			if (!entry.IsStatic)
-			{
-				hasNonStatic = true;
-			}
-
-			var paramInfos = entry.Method.GetParameters();
-			var types = new List<Type>();
-			foreach (var p in paramInfos)
-			{
-				if (p.ParameterType != typeof(Terminal))
-				{
-					types.Add(p.ParameterType);
-				}
-			}
-
-			result.Add(types.ToArray());
-		}
-
-		return result;
 	}
 
 	public static bool TryValidateToken(string token, Type expectedType, out Type colorType)
