@@ -47,7 +47,7 @@ public class CommandExecutor
 			}
 
 			var targetParam = overload.Params[0];
-			if (targetParam.Token != null && !targetParam.IsValid)
+			if (targetParam is { Token: not null, IsValid: false })
 			{
 				_terminal.Log($"No GameObject named '{targetParam.Token[1..]}' found in scene.");
 				return;

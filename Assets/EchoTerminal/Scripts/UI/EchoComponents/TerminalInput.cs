@@ -25,11 +25,8 @@ public class TerminalInput : IEchoComponent
 		_highlight = root.Q<Label>("highlight-label");
 		_highlight.enableRichText = true;
 
-		var textElement = _inputField.Q<TextElement>();
-		textElement.style.color = Color.clear;
-
+		_inputField.Q<TextElement>().style.color = Color.clear;
 		_popup = new(_inputField.parent, config);
-
 		_inputField.RegisterValueChangedCallback(OnValueChanged);
 	}
 

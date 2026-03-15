@@ -7,17 +7,19 @@ namespace EchoTerminal
 public class Terminal
 {
 	public CommandRegistry Registry { get; }
-	public CommandParser Parser { get; }
 	public CommandHighlight Highlighter { get; }
 	public CommandSuggest Suggester { get; }
 	public CommandHints Hints { get; }
+	public CommandParser Parser { get; }
+	public CommandExecutor Executor { get; }
+
+	public IReadOnlyList<TerminalEntry> Entries => _entries;
 
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
 
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly int _maxEntries;
-	private readonly CommandExecutor _executor;
 
 	public Terminal(TerminalHighlightColors highlightColors, int maxEntries = 1000)
 	{
@@ -25,18 +27,16 @@ public class Terminal
 		Registry = new();
 		Registry.Scan();
 		Parser = new(Registry);
-		_executor = new(this, Parser);
+		Executor = new(this, Parser);
 		Highlighter = new(Parser, highlightColors);
 		Suggester = new(Parser);
 		Hints = new(Parser);
 	}
 
-	public IReadOnlyList<TerminalEntry> Entries => _entries;
-
 	public void Submit(string input)
 	{
 		Log(input, new Color(0.6f, 0.8f, 1f));
-		_executor.Execute(input);
+		Executor.Execute(input);
 	}
 
 	public void Log(string text, Color? color = null)

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -44,83 +43,92 @@ public class CommandHighlight
 			sb.Append(result.CommandName);
 		}
 
-		if (result.Args == null)
+		if (result.Args == null || result.Overloads.Count == 0)
 		{
 			return sb.ToString();
 		}
 
-		var hasTarget = result.Overloads.Any(o => o.Params.Count > 0 && o.Params[0].Expected.IsTarget);
-		var pos = result.LeadingSpaces + result.CommandName.Length;
-		var paramIndex = 0;
-		var targetConsumed = false;
+		sb.Append(' ');
 
-		while (pos < input.Length)
+		var overload = PickBestOverload(result.Overloads);
+		var args = result.Args;
+		var pos = 0;
+
+		foreach (var param in overload.Params)
 		{
-			if (input[pos] == ' ')
+			if (param.Token == null)
 			{
-				sb.Append(' ');
-				pos++;
-				continue;
+				break;
 			}
 
-			var end = input.IndexOf(' ', pos);
-			if (end == -1)
+			var tokenIdx = args.IndexOf(param.Token, pos, StringComparison.Ordinal);
+			if (tokenIdx < 0)
 			{
-				end = input.Length;
+				break;
 			}
 
-			var token = input[pos..end];
+			sb.Append(args, pos, tokenIdx - pos);
 
-			if (hasTarget && !targetConsumed && token.StartsWith("@"))
-			{
-				targetConsumed = true;
-				sb.Append(ColorizeTyped(token, typeof(GameObject)));
-			}
-			else
-			{
-				sb.Append(ColorizeAtPosition(result.Overloads, paramIndex, token, targetConsumed));
-				paramIndex++;
-			}
+			sb.Append(_colors != null
+				? param.IsValid
+					? ColorizeTyped(param.Token, param.Expected.Type)
+					: $"<color={ToHex(_colors.UnknownColor)}>{param.Token}</color>"
+				: param.Token);
 
-			pos = end;
+			pos = tokenIdx + param.Token.Length;
+		}
+
+		if (pos < args.Length)
+		{
+			var trailing = args[pos..];
+			var content = trailing.TrimStart();
+			var wsLen = trailing.Length - content.Length;
+
+			sb.Append(trailing, 0, wsLen);
+
+			if (content.Length > 0)
+			{
+				sb.Append(_colors != null
+					? $"<color={ToHex(_colors.UnknownColor)}>{content}</color>"
+					: content);
+			}
 		}
 
 		return sb.ToString();
 	}
 
-	private string ColorizeAtPosition(
-		IReadOnlyList<OverloadResult> overloads,
-		int paramIndex,
-		string token,
-		bool targetConsumed)
+	private static OverloadResult PickBestOverload(IReadOnlyList<OverloadResult> overloads)
 	{
-		if (_colors == null)
+		foreach (var o in overloads)
 		{
-			return token;
-		}
-
-		if (overloads.Count == 0)
-		{
-			return $"<color={ToHex(_colors.FallbackParamColor)}>{token}</color>";
-		}
-
-		foreach (var overload in overloads)
-		{
-			var offset = targetConsumed && overload.Params.Count > 0 && overload.Params[0].Expected.IsTarget ? 1 : 0;
-			var idx = paramIndex + offset;
-
-			if (idx >= overload.Params.Count)
+			if (o.IsComplete)
 			{
-				continue;
-			}
-
-			if (overload.Params[idx].IsValid)
-			{
-				return ColorizeTyped(token, overload.Params[idx].Expected.Type);
+				return o;
 			}
 		}
 
-		return $"<color={ToHex(_colors.UnknownColor)}>{token}</color>";
+		var best = overloads[0];
+		var bestValid = 0;
+
+		foreach (var o in overloads)
+		{
+			var count = 0;
+			foreach (var p in o.Params)
+			{
+				if (p.IsValid)
+				{
+					count++;
+				}
+			}
+
+			if (count > bestValid)
+			{
+				best = o;
+				bestValid = count;
+			}
+		}
+
+		return best;
 	}
 
 	private string ColorizeTyped(string token, Type colorType)

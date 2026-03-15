@@ -143,6 +143,7 @@
     color: #CCCCCC;
     padding: 10px 6px;
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
+    white-space: pre;
 }
 
 .terminal-input:focus > .unity-text-field__input {
@@ -159,7 +160,7 @@
     padding: 10px 6px;
     margin: 0;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: pre;
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
 }
 

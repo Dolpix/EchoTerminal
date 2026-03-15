@@ -52,38 +52,6 @@ public static class CommandProcessor
 		return true;
 	}
 
-	public static bool TryValidateToken(string token, Type expectedType, out Type colorType)
-	{
-		colorType = null;
-
-		if (expectedType == typeof(Terminal))
-		{
-			return true;
-		}
-
-		if (expectedType.IsGenericType && expectedType.GetGenericTypeDefinition() == typeof(List<>))
-		{
-			colorType = expectedType.GetGenericArguments()[0];
-			foreach (var part in token.Split(','))
-			{
-				if (!TryParseToken(part.Trim(), colorType, out _))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
-		if (TryParseToken(token, expectedType, out _))
-		{
-			colorType = expectedType;
-			return true;
-		}
-
-		return false;
-	}
-
 	internal static bool TryParseToken(string token, Type type, out object result)
 	{
 		result = null;
@@ -110,6 +78,7 @@ public static class CommandProcessor
 		}
 
 		_parsers = new();
+		Debug.Log("[Command Processor] Loading parsers...]");
 
 		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 		{
