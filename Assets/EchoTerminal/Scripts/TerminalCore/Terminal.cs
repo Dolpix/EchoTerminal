@@ -35,7 +35,7 @@ public class Terminal
 
 	public void Submit(string input)
 	{
-		Log(input, new Color(0.6f, 0.8f, 1f));
+		Log(Highlighter.Highlight(input));
 		Executor.Execute(input);
 	}
 

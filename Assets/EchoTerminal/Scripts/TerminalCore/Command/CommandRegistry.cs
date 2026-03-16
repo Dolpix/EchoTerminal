@@ -96,8 +96,8 @@ public class CommandRegistry
 			}
 
 			var name = string.IsNullOrEmpty(attr.Name)
-				? method.Name.ToLowerInvariant()
-				: attr.Name.ToLowerInvariant();
+				? method.Name
+				: attr.Name;
 
 			if (!_commands.TryGetValue(name, out var list))
 			{

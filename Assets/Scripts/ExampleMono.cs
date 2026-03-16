@@ -20,7 +20,7 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log("New position: " + transform.position);
 	}
 
-	[TerminalCommand("hp")]
+	[TerminalCommand]
 	private string SetHealth(int value)
 	{
 		return $"Health set to {value}";
