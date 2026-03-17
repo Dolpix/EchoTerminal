@@ -29,9 +29,16 @@ public class CommandHints
 		{
 			var parts = new List<string>();
 			var activeFound = false;
+			var irrelevant = false;
 
 			foreach (var param in overload.Params)
 			{
+				if (param.Token != null && !param.IsValid)
+				{
+					irrelevant = true;
+					break;
+				}
+
 				var str = param.Expected.ToString();
 				if (!activeFound && !param.IsValid)
 				{
@@ -41,7 +48,7 @@ public class CommandHints
 				parts.Add(str);
 			}
 
-			if (parts.Count > 0)
+			if (!irrelevant && parts.Count > 0)
 			{
 				hints.Add(string.Join(" ", parts));
 			}
