@@ -97,5 +97,75 @@ public class ExampleMono : MonoBehaviour
 
 		return sb.ToString();
 	}
+
+	[TerminalCommand]
+	private string Path(List<Vector2> points)
+	{
+		var sb = new System.Text.StringBuilder();
+		sb.Append($"Set {points.Count} path points:");
+
+		for (var i = 0; i < points.Count; i++)
+		{
+			sb.Append($" [{i}]{points[i]}");
+		}
+
+		return sb.ToString();
+	}
+
+	[TerminalCommand]
+	private string Scales(List<float> values)
+	{
+		var sb = new System.Text.StringBuilder();
+		sb.Append($"{values.Count} scale values:");
+
+		foreach (var v in values)
+		{
+			sb.Append($" {v:F2}");
+		}
+
+		return sb.ToString();
+	}
+
+	[TerminalCommand]
+	private string Flags(List<bool> flags)
+	{
+		var sb = new System.Text.StringBuilder();
+		sb.Append($"{flags.Count} flags:");
+
+		foreach (var f in flags)
+		{
+			sb.Append($" {f}");
+		}
+
+		return sb.ToString();
+	}
+
+	[TerminalCommand]
+	private string Palette(List<Color> colors)
+	{
+		var sb = new System.Text.StringBuilder();
+		sb.Append($"{colors.Count} colors:");
+
+		foreach (var c in colors)
+		{
+			sb.Append($" {c}");
+		}
+
+		return sb.ToString();
+	}
+
+	[TerminalCommand]
+	private string Tags(List<string> tags)
+	{
+		var sb = new System.Text.StringBuilder();
+		sb.Append($"{tags.Count} tags:");
+
+		foreach (var t in tags)
+		{
+			sb.Append($" \"{t}\"");
+		}
+
+		return sb.ToString();
+	}
 }
 }

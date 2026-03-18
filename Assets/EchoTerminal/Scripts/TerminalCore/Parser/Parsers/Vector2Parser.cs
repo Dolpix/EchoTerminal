@@ -13,10 +13,24 @@ public class Vector2Parser : IParser
 		result = null;
 		charsConsumed = 0;
 
-		var end = input.IndexOf(' ');
-		var token = end == -1 ? input : input.Substring(0, end);
+		string token;
+		if (input.Length > 0 && input[0] == '(')
+		{
+			var close = input.IndexOf(')');
+			if (close == -1) return false;
+			token = input.Substring(0, close + 1);
+		}
+		else
+		{
+			var end = input.IndexOf(' ');
+			token = end == -1 ? input : input.Substring(0, end);
+		}
 
-		var parts = token.Split(',');
+		var inner = token.Length >= 2 && token[0] == '(' && token[token.Length - 1] == ')'
+			? token.Substring(1, token.Length - 2)
+			: token;
+
+		var parts = inner.Split(',');
 		if (parts.Length != 2)
 		{
 			return false;

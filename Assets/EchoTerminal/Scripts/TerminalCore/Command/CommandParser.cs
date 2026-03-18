@@ -87,16 +87,45 @@ public class CommandParser
 				var elementType = param.Type.GetGenericArguments()[0];
 				var list = (IList)Activator.CreateInstance(param.Type);
 				var valid = true;
+				var pos = 0;
 
-				foreach (var raw in remaining.Split(','))
+				while (pos < remaining.Length)
 				{
-					if (!CommandProcessor.TryParseToken(raw.Trim(), elementType, out var el))
+					string elementSlice;
+					if (remaining[pos] == '(')
+					{
+						var close = remaining.IndexOf(')', pos);
+						if (close == -1)
+						{
+							valid = false;
+							break;
+						}
+
+						elementSlice = remaining[pos..(close + 1)];
+					}
+					else
+					{
+						var comma = remaining.IndexOf(',', pos);
+						elementSlice = comma == -1 ? remaining[pos..] : remaining[pos..comma];
+					}
+
+					if (!CommandProcessor.TryParseToken(elementSlice.Trim(), elementType, out var el))
 					{
 						valid = false;
 						break;
 					}
 
 					list.Add(el);
+					pos += elementSlice.Length;
+
+					if (pos < remaining.Length && remaining[pos] == ',')
+					{
+						pos++;
+					}
+					else
+					{
+						break;
+					}
 				}
 
 				results.Add(new(param, remaining, valid ? list : null, valid));
