@@ -17,6 +17,7 @@ public class Terminal
 
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
+	public event Action OnSubmitted;
 
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly int _maxEntries;
@@ -35,6 +36,7 @@ public class Terminal
 
 	public void Submit(string input)
 	{
+		OnSubmitted?.Invoke();
 		Log(Highlighter.Highlight(input));
 		Executor.Execute(input);
 	}

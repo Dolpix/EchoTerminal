@@ -116,7 +116,7 @@
 .terminal-entry {
     font-size: 12px;
     color: var(--text-primary);
-    padding: 4px 8px;
+    padding: 2px 8px;
     margin: 0;
     white-space: normal;
     -unity-text-align: upper-left;
@@ -179,7 +179,7 @@
     background-color: transparent;
     border-width: 0;
     color: var(--text-primary);
-    padding: 10px 6px;
+    padding: 5px 6px;
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
     white-space: pre;
     --unity-cursor-color: var(--text-bright);
@@ -197,7 +197,7 @@
     right: 0;
     bottom: 0;
     font-size: 14px;
-    padding: 10px 6px;
+    padding: 5px 6px;
     margin: 0;
     overflow: hidden;
     white-space: pre;

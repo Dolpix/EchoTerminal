@@ -73,7 +73,7 @@ public class TerminalLogDisplay : IEchoComponent
 		var hex = ColorUtility.ToHtmlStringRGB(entry.Color);
 		message.text = $"<color=#{hex}>{entry.Text}</color>";
 
-		_container.Add(clone);
+		_container.Add(row);
 		_entryCount++;
 	}
 }
