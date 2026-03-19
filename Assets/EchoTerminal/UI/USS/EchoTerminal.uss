@@ -144,6 +144,8 @@
     padding: 10px 6px;
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
     white-space: pre;
+    --unity-cursor-color: #FFFFFF;
+    --unity-selection-color: #3aff27;
 }
 
 .terminal-input:focus > .unity-text-field__input {

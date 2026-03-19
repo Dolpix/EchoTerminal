@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/EchoTerminal/UI/USS/EchoTerminal.uss?fileID=7433441132597879392&amp;guid=3bdff5cc8a8450745a939a9d4ae4112b&amp;type=3#EchoTerminal"/>
     <Style src="project://database/Assets/EchoTerminal/UI/USS/EchoTerminalGame.uss?fileID=7433441132597879392&amp;guid=a7f59c663bb04ae48810d7e9b0b90def&amp;type=3#EchoTerminalGame"/>
-    <ui:VisualElement name="game-window" class="game-window">
+<ui:VisualElement name="game-window" class="game-window">
         <ui:VisualElement name="title-bar" class="game-title-bar">
             <ui:Label text="Echo Terminal" class="game-title-text"/>
             <ui:Button name="close-button" text="" class="game-close-button"/>
