@@ -87,8 +87,8 @@
 }
 
 .terminal-toolbar-toggle--active {
-    background-color: var(--interactive-hover);
-    color: var(--text-bright);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
 }
 
 .terminal-toolbar-toggle--active:hover {
@@ -96,7 +96,7 @@
 }
 
 .terminal-filter-button {
-    margin-left: 6px;
+    margin-left: 2px;
 }
 
 .terminal-toolbar-separator {
