@@ -2,10 +2,12 @@ using System;
 
 namespace EchoTerminal
 {
-public class CommandNameParser : IRestConsumingParser, ITokenParser
+public class CommandNameParser : ITokenParser
 {
 	public Type TargetType => typeof(CommandName);
 	public string TypeName => "CommandName";
+
+	public string Name { get; }
 
 	public TokenState Parse(string raw, bool isFinalized)
 	{

@@ -1,12 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class Token
-{
-	public bool IsFinalized;
-	public string Raw;
-}
-
 public static class Tokenizer
 {
 	public static List<Token> Tokenize(string input, IList<ITokenParser> parsers)
