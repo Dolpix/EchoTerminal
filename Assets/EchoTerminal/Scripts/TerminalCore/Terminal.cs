@@ -8,7 +8,6 @@ public class Terminal
 {
 	public CommandRegistry Registry { get; }
 	public CommandParser Parser { get; }
-	public CommandExecutor Executor { get; }
 
 	public IReadOnlyList<TerminalEntry> Entries => _entries;
 
@@ -25,14 +24,12 @@ public class Terminal
 		Registry = new();
 		Registry.Scan();
 		Parser = new(Registry);
-		Executor = new(this, Parser);
 	}
 
 	public void Submit(string input)
 	{
 		OnSubmitted?.Invoke();
 		Log(input, kind: LogKind.Command);
-		Executor.Execute(input);
 	}
 
 	public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
