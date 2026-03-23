@@ -1,17 +1,10 @@
 using System;
-using EchoTerminal;
 
 namespace EchoTerminal.Scripts.Test
 {
 public class BoolParser : IParser, ITokenParser
 {
 	public Type TargetType => typeof(bool);
-	public string TypeName => "Bool";
-
-	public TokenState Parse(string raw, bool isFinalized)
-	{
-		return bool.TryParse(raw, out _) ? TokenState.Resolved : TokenState.Unresolved;
-	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{
@@ -28,6 +21,13 @@ public class BoolParser : IParser, ITokenParser
 		result = null;
 		charsConsumed = 0;
 		return false;
+	}
+
+	public string TypeName => "Bool";
+
+	public TokenState Parse(string raw, bool isFinalized)
+	{
+		return bool.TryParse(raw, out _) ? TokenState.Resolved : TokenState.Unresolved;
 	}
 }
 }

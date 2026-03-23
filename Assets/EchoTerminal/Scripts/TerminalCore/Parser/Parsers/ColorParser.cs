@@ -1,5 +1,4 @@
 using System;
-using EchoTerminal;
 using UnityEngine;
 
 namespace EchoTerminal.Scripts.Test
@@ -7,22 +6,6 @@ namespace EchoTerminal.Scripts.Test
 public class ColorParser : IParser, ITokenParser
 {
 	public Type TargetType => typeof(Color);
-	public string TypeName => "Color";
-
-	public TokenState Parse(string raw, bool isFinalized)
-	{
-		if (string.IsNullOrEmpty(raw))
-		{
-			return TokenState.Unresolved;
-		}
-
-		if (TryParseNamed(raw, out _) || TryParseHex(raw, out _))
-		{
-			return TokenState.Resolved;
-		}
-
-		return raw.StartsWith("#") ? TokenState.Invalid : TokenState.Unresolved;
-	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{
@@ -40,6 +23,23 @@ public class ColorParser : IParser, ITokenParser
 		result = color;
 		charsConsumed = token.Length;
 		return true;
+	}
+
+	public string TypeName => "Color";
+
+	public TokenState Parse(string raw, bool isFinalized)
+	{
+		if (string.IsNullOrEmpty(raw))
+		{
+			return TokenState.Unresolved;
+		}
+
+		if (TryParseNamed(raw, out _) || TryParseHex(raw, out _))
+		{
+			return TokenState.Resolved;
+		}
+
+		return raw.StartsWith("#") ? TokenState.Invalid : TokenState.Unresolved;
 	}
 
 	private static bool TryParseNamed(string token, out Color color)
