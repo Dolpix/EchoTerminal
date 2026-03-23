@@ -17,10 +17,7 @@ public class CommandExecutor
 	{
 		var result = _parser.Parse(input);
 
-		if (string.IsNullOrEmpty(result.CommandName))
-		{
-			return;
-		}
+		if (string.IsNullOrEmpty(result.CommandName)) return;
 
 		if (!result.IsKnownCommand)
 		{
@@ -28,83 +25,32 @@ public class CommandExecutor
 			return;
 		}
 
+		// Complete overload — invoke immediately.
 		foreach (var overload in result.Overloads)
 		{
-			if (!overload.IsComplete)
-			{
-				continue;
-			}
-
-			Invoke(overload);
-			return;
+			if (overload.IsComplete) { Invoke(overload); return; }
 		}
 
+		// Bad @target name typed — report it before a generic error.
 		foreach (var overload in result.Overloads)
 		{
-			if (overload.Params.Count == 0 || !overload.Params[0].Expected.IsTarget)
+			var p = overload.Params;
+			if (p.Count > 0 && p[0].Expected.IsTarget && p[0].Token != null && !p[0].IsValid)
 			{
-				continue;
-			}
-
-			var targetParam = overload.Params[0];
-			if (targetParam is { Token: not null, IsValid: false })
-			{
-				_terminal.Log($"No GameObject named '{targetParam.Token[1..]}' found in scene.");
+				_terminal.Log($"No GameObject named '{p[0].Token[1..]}' found in scene.");
 				return;
 			}
 		}
 
+		// No @target given — broadcast to all matching instances if remaining args are valid.
 		foreach (var overload in result.Overloads)
 		{
-			if (overload.Params.Count == 0 || !overload.Params[0].Expected.IsTarget)
-			{
-				continue;
-			}
+			var p = overload.Params;
+			if (p.Count == 0 || !p[0].Expected.IsTarget || p[0].Token != null) continue;
 
-			if (overload.Params[0].Token != null)
-			{
-				continue;
-			}
-
-			var allNonTargetValid = true;
-			for (var i = 1; i < overload.Params.Count; i++)
-			{
-				if (!overload.Params[i].IsValid)
-				{
-					allNonTargetValid = false;
-					break;
-				}
-			}
-
-			if (!allNonTargetValid)
-			{
-				continue;
-			}
-
-			Invoke(overload);
-			return;
-		}
-
-		foreach (var overload in result.Overloads)
-		{
-			foreach (var param in overload.Params)
-			{
-				if (param.Expected.IsTarget)
-				{
-					continue;
-				}
-
-				var type = param.Expected.Type;
-				var checkType = type.IsGenericType &&
-								type.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>)
-					? type.GetGenericArguments()[0]
-					: type;
-				if (!CommandProcessor.Parsers.ContainsKey(checkType) && !checkType.IsEnum)
-				{
-					Debug.LogWarning(
-						$"[EchoTerminal] No parser registered for type '{checkType.Name}' (parameter '{param.Expected.Name}' on command '{result.CommandName}'). Register an IParser<{checkType.Name}> to support it.");
-				}
-			}
+			var restValid = true;
+			for (var i = 1; i < p.Count; i++) if (!p[i].IsValid) { restValid = false; break; }
+			if (restValid) { Invoke(overload); return; }
 		}
 
 		_terminal.Log($"Invalid arguments for '{result.CommandName}'");
@@ -116,50 +62,30 @@ public class CommandExecutor
 		var methodParams = entry.Method.GetParameters();
 		var args = new object[methodParams.Length];
 		var hasTarget = overload.Params.Count > 0 && overload.Params[0].Expected.IsTarget;
-		var paramOffset = hasTarget ? 1 : 0;
-		var userParamIdx = 0;
+		var offset = hasTarget ? 1 : 0;
+		var userIdx = 0;
 
 		for (var i = 0; i < methodParams.Length; i++)
 		{
-			if (methodParams[i].ParameterType == typeof(Terminal))
-			{
-				args[i] = _terminal;
-			}
-			else
-			{
-				args[i] = overload.Params[paramOffset + userParamIdx].Value;
-				userParamIdx++;
-			}
+			args[i] = methodParams[i].ParameterType == typeof(Terminal)
+				? _terminal
+				: overload.Params[offset + userIdx++].Value;
 		}
 
 		if (entry.IsStatic)
 		{
-			var invokeResult = entry.Method.Invoke(null, args);
-			if (invokeResult is string message)
-			{
-				_terminal.Log(message);
-			}
-
+			if (entry.Method.Invoke(null, args) is string msg) _terminal.Log(msg);
 			return;
 		}
 
 		var singleTarget = hasTarget ? overload.Params[0].Value as GameObject : null;
-		var targets = _parser.Registry.GetInstances(entry.MonoType);
 		var invoked = false;
 
-		foreach (var target in targets)
+		foreach (var target in _parser.Registry.GetInstances(entry.MonoType))
 		{
-			if (singleTarget != null && target.gameObject != singleTarget)
-			{
-				continue;
-			}
-
+			if (singleTarget != null && target.gameObject != singleTarget) continue;
 			invoked = true;
-			var invokeResult = entry.Method.Invoke(target, args);
-			if (invokeResult is string message)
-			{
-				_terminal.Log(message);
-			}
+			if (entry.Method.Invoke(target, args) is string msg) _terminal.Log(msg);
 		}
 
 		if (!invoked)

@@ -1,10 +1,32 @@
 using System;
+using EchoTerminal;
 
 namespace EchoTerminal.Scripts.Test
 {
-public class StringParser : IParser
+public class StringParser : IParser, ITokenParser
 {
 	public Type TargetType => typeof(string);
+	public string TypeName => "String";
+
+	public TokenState Parse(string raw, bool isFinalized)
+	{
+		if (string.IsNullOrEmpty(raw))
+		{
+			return TokenState.Unresolved;
+		}
+
+		if (raw[0] == '"')
+		{
+			if (raw.Length >= 2 && raw[^1] == '"')
+			{
+				return TokenState.Resolved;
+			}
+
+			return isFinalized ? TokenState.Invalid : TokenState.Pending;
+		}
+
+		return TokenState.Resolved;
+	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{

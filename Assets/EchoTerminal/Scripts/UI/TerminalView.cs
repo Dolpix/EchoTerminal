@@ -11,7 +11,7 @@ public class TerminalView
 
 	public TerminalView(VisualElement root, TerminalConfig config)
 	{
-		Terminal = new(config.HighlightColors);
+		Terminal = new();
 
 		_components.Add(new TerminalLogDisplay(Terminal, root, config));
 		_components.Add(new TerminalAutoScroll(Terminal, root));

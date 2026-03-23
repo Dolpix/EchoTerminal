@@ -1,11 +1,36 @@
 using System;
+using EchoTerminal;
 using UnityEngine;
 
 namespace EchoTerminal.Scripts.Test
 {
-public class GameObjectParser : IParser
+public class GameObjectParser : IParser, ITokenParser
 {
 	public Type TargetType => typeof(GameObject);
+	public string TypeName => "GameObject";
+
+	public TokenState Parse(string raw, bool isFinalized)
+	{
+		if (string.IsNullOrEmpty(raw) || raw[0] != '@')
+		{
+			return TokenState.Unresolved;
+		}
+
+		var name = raw.Length > 1 ? raw[1..] : "";
+		if (name.Length == 0)
+		{
+			return isFinalized ? TokenState.Invalid : TokenState.Unresolved;
+		}
+
+		var found = GameObject.Find(name);
+		if (found != null)
+		{
+			return TokenState.Resolved;
+		}
+
+		// Right format (@name), target not found — still typing or genuinely missing
+		return isFinalized ? TokenState.Invalid : TokenState.Unresolved;
+	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{

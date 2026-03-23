@@ -2,9 +2,26 @@ using System;
 
 namespace EchoTerminal
 {
-public class CommandNameParser : IRestConsumingParser
+public class CommandNameParser : IRestConsumingParser, ITokenParser
 {
 	public Type TargetType => typeof(CommandName);
+	public string TypeName => "CommandName";
+
+	public TokenState Parse(string raw, bool isFinalized)
+	{
+		if (raw.Length == 0 || raw[0] != '>')
+		{
+			return TokenState.Unresolved;
+		}
+
+		var close = raw.IndexOf('<', 1);
+		if (close > 0)
+		{
+			return TokenState.Resolved;
+		}
+
+		return isFinalized ? TokenState.Invalid : TokenState.Pending;
+	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)
 	{

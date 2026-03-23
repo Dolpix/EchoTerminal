@@ -5,9 +5,7 @@ namespace EchoTerminal.Components
 {
 public class TerminalInput : IEchoComponent
 {
-	private readonly Label _highlight;
 	private readonly TextField _inputField;
-	private readonly TerminalSuggestionPopup _popup;
 	private readonly Terminal _terminal;
 
 	public TerminalInput(Terminal terminal, VisualElement root, TerminalConfig config)
@@ -21,90 +19,15 @@ public class TerminalInput : IEchoComponent
 		}
 
 		_inputField.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
-
-		_highlight = root.Q<Label>("highlight-label");
-		_highlight.enableRichText = true;
-
-		_inputField.Q<TextElement>().style.color = Color.clear;
-		_popup = new(_inputField.parent, config);
-		_popup.OnAccepted = ApplySuggestion;
-		_inputField.RegisterValueChangedCallback(OnValueChanged);
 	}
 
 	~TerminalInput()
 	{
 		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
-		_inputField?.UnregisterValueChangedCallback(OnValueChanged);
-	}
-
-	private void ApplySuggestion(string result)
-	{
-		_inputField.value = result;
-		_inputField.schedule.Execute(() =>
-		{
-			_inputField.Focus();
-			_inputField.SelectRange(result.Length, result.Length);
-		});
-	}
-
-	private void OnValueChanged(ChangeEvent<string> evt)
-	{
-		if (_highlight == null || evt.target != _inputField)
-		{
-			return;
-		}
-
-		_highlight.text = _terminal.Highlighter.Highlight(evt.newValue);
-		_popup.Update(
-			_terminal.Suggester.GetSuggestions(evt.newValue),
-			_terminal.Hints.GetHints(evt.newValue),
-			evt.newValue
-		);
 	}
 
 	private void OnKeyDown(KeyDownEvent evt)
 	{
-		if (_popup is { HasSuggestions: true })
-		{
-			switch (evt.keyCode)
-			{
-				case KeyCode.Tab or KeyCode.Return or KeyCode.KeypadEnter:
-				{
-					ApplySuggestion(_popup.AcceptSuggestion(_inputField.value));
-					evt.StopImmediatePropagation();
-					evt.StopPropagation();
-					return;
-				}
-				case KeyCode.UpArrow:
-					_popup.MoveSelection(-1);
-					evt.StopImmediatePropagation();
-					evt.StopPropagation();
-					return;
-				case KeyCode.DownArrow:
-					_popup.MoveSelection(1);
-					evt.StopImmediatePropagation();
-					evt.StopPropagation();
-					return;
-				case KeyCode.Escape:
-					_popup.Hide();
-					evt.StopImmediatePropagation();
-					evt.StopPropagation();
-					return;
-			}
-		}
-
-		if (evt.keyCode == KeyCode.Tab)
-		{
-			_popup.Update(
-				_terminal.Suggester.GetSuggestions(_inputField.value),
-				_terminal.Hints.GetHints(_inputField.value),
-				_inputField.value
-			);
-			evt.StopImmediatePropagation();
-			evt.StopPropagation();
-			return;
-		}
-
 		if (evt.keyCode != KeyCode.Return && evt.keyCode != KeyCode.KeypadEnter)
 		{
 			return;
