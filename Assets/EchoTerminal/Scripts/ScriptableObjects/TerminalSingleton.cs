@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using EchoTerminal;
 using UnityEditor;
 using UnityEngine;
@@ -36,3 +37,4 @@ public class TerminalSingleton : ScriptableObject
 		}
 	}
 }
+#endif
