@@ -33,19 +33,7 @@ public static class Example
 
 			foreach (var token in tokens)
 			{
-				Console.Write($"  \"{token.Raw}\"");
-				Console.Write(token.IsFinalized ? " [finalized]" : " [active]");
-
-				foreach (var parser in parsers)
-				{
-					var state = parser.Parse(token.Raw, token.IsFinalized);
-					if (state != TokenState.Unresolved)
-					{
-						Console.Write($"  {parser.Name}={state}");
-					}
-				}
-
-				Console.WriteLine();
+				Console.WriteLine($"  \"{token.Raw}\"  type={token.Type?.Name ?? "unknown"}  state={token.State}");
 			}
 
 			Console.WriteLine();

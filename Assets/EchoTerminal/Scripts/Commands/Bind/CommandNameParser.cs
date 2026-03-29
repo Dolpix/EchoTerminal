@@ -7,9 +7,9 @@ public class CommandNameParser : ITokenParser
 	public Type TargetType => typeof(CommandName);
 	public string TypeName => "CommandName";
 
-	public string Name { get; }
+	public System.Type Type => TargetType;
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (raw.Length == 0 || raw[0] != '>')
 		{
@@ -22,7 +22,7 @@ public class CommandNameParser : ITokenParser
 			return TokenState.Resolved;
 		}
 
-		return isFinalized ? TokenState.Invalid : TokenState.Pending;
+		return TokenState.Pending;
 	}
 
 	public bool TryParse(string input, out object result, out int charsConsumed)

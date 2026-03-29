@@ -8,25 +8,19 @@ public static class Tokenizer
 		var tokens = new List<Token>();
 		var buf = "";
 
-		for (var i = 0; i < input.Length; i++)
+		foreach (var ch in input)
 		{
-			var ch = input[i];
-
 			if (ch == ' ' && buf.Length > 0)
 			{
-				// Ask every parser: are you still reading this?
-				var anyPending = parsers.Any(p =>
-					p.Parse(buf, false) == TokenState.Pending);
+				var anyPending = parsers.Any(p => p.Parse(buf) == TokenState.Pending);
 
 				if (anyPending)
 				{
-					// Someone says "I'm not done" — space is part of the token
 					buf += ch;
 				}
 				else
 				{
-					// Nobody needs more — finalize and split
-					tokens.Add(new() { Raw = buf, IsFinalized = true });
+					tokens.Add(Resolve(buf, parsers, finalized: true));
 					buf = "";
 				}
 			}
@@ -38,9 +32,41 @@ public static class Tokenizer
 
 		if (buf.Length > 0)
 		{
-			tokens.Add(new() { Raw = buf, IsFinalized = false });
+			tokens.Add(Resolve(buf, parsers, finalized: false));
 		}
 
 		return tokens;
+	}
+
+	private static Token Resolve(string raw, IList<ITokenParser> parsers, bool finalized)
+	{
+		foreach (var parser in parsers)
+		{
+			if (parser.Parse(raw) == TokenState.Resolved)
+			{
+				return new() { Raw = raw, State = TokenState.Resolved, Type = parser.Type };
+			}
+		}
+
+		foreach (var parser in parsers)
+		{
+			if (parser.Parse(raw) != TokenState.Pending)
+			{
+				continue;
+			}
+
+			var state = finalized ? TokenState.Invalid : TokenState.Pending;
+			return new() { Raw = raw, State = state, Type = parser.Type };
+		}
+
+		foreach (var parser in parsers)
+		{
+			if (parser.Parse(raw) == TokenState.Invalid)
+			{
+				return new() { Raw = raw, State = TokenState.Invalid, Type = parser.Type };
+			}
+		}
+
+		return new() { Raw = raw, State = TokenState.Unresolved, Type = null };
 	}
 }

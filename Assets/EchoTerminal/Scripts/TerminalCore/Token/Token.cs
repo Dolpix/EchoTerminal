@@ -1,5 +1,8 @@
+using System;
+
 public struct Token
 {
-	public bool IsFinalized;
 	public string Raw;
+	public TokenState State;
+	public Type Type;
 }

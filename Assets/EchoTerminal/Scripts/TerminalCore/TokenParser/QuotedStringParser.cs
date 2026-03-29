@@ -1,8 +1,8 @@
 public class QuotedStringParser : ITokenParser
 {
-	public string Name => "QuotedString";
+	public System.Type Type => typeof(string);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (raw.Length == 0 || raw[0] != '"')
 		{
@@ -14,6 +14,6 @@ public class QuotedStringParser : ITokenParser
 			return TokenState.Resolved;
 		}
 
-		return isFinalized ? TokenState.Invalid : TokenState.Pending;
+		return TokenState.Pending;
 	}
 }

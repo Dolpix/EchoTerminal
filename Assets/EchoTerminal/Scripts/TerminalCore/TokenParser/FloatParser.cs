@@ -1,8 +1,8 @@
 public class FloatParser : ITokenParser
 {
-	public string Name => "Float";
+	public System.Type Type => typeof(float);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (float.TryParse(raw, out _))
 		{

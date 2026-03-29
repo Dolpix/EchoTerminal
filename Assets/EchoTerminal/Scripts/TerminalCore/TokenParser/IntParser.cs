@@ -1,8 +1,8 @@
 public class IntParser : ITokenParser
 {
-	public string Name => "Int";
+	public System.Type Type => typeof(int);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (int.TryParse(raw, out _))
 		{

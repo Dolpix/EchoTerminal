@@ -10,9 +10,9 @@ public class TargetParser : ITokenParser
 		_known = new(knownTargets);
 	}
 
-	public string Name => "Target";
+	public System.Type Type => typeof(string);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (!raw.StartsWith("@"))
 		{
@@ -24,7 +24,7 @@ public class TargetParser : ITokenParser
 			return TokenState.Resolved;
 		}
 
-		if (!isFinalized && _known.Any(t => t.StartsWith(raw)))
+		if (_known.Any(t => t.StartsWith(raw)))
 		{
 			return TokenState.Unresolved;
 		}

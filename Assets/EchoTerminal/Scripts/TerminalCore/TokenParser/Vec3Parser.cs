@@ -1,8 +1,8 @@
 public class Vec3Parser : ITokenParser
 {
-	public string Name => "Vec3";
+	public System.Type Type => typeof(UnityEngine.Vector3);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (raw.Length == 0 || raw[0] != '(')
 		{
@@ -11,7 +11,7 @@ public class Vec3Parser : ITokenParser
 
 		if (!raw.EndsWith(")"))
 		{
-			return isFinalized ? TokenState.Invalid : TokenState.Pending;
+			return TokenState.Pending;
 		}
 
 		var parts = raw[1..^1].Split(',');

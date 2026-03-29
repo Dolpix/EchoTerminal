@@ -10,9 +10,9 @@ public class StringParser : ITokenParser
 		_validValues = validValues != null ? new HashSet<string>(validValues) : null;
 	}
 
-	public string Name => "String";
+	public System.Type Type => typeof(string);
 
-	public TokenState Parse(string raw, bool isFinalized)
+	public TokenState Parse(string raw)
 	{
 		if (string.IsNullOrEmpty(raw) || !char.IsLetter(raw[0]))
 		{
@@ -24,7 +24,7 @@ public class StringParser : ITokenParser
 			return TokenState.Resolved;
 		}
 
-		if (!isFinalized && _validValues.Any(v => v.StartsWith(raw)))
+		if (_validValues.Any(v => v.StartsWith(raw)))
 		{
 			return TokenState.Unresolved;
 		}

@@ -1,5 +1,7 @@
+using System;
+
 public interface ITokenParser
 {
-	string Name { get; }
-	TokenState Parse(string raw, bool isFinalized);
+	Type Type { get; }
+	TokenState Parse(string raw);
 }
