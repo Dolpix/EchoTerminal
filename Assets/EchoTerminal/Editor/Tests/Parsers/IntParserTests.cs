@@ -1,5 +1,7 @@
 using NUnit.Framework;
 
+namespace EchoTerminal.Editor.Tests.Parsers
+{
 [TestFixture]
 public class IntParserTests
 {
@@ -8,7 +10,7 @@ public class IntParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new IntParser();
+		_parser = new();
 	}
 
 	[Test]
@@ -21,18 +23,14 @@ public class IntParserTests
 	[TestCase("0", TokenState.Resolved)]
 	[TestCase("-10", TokenState.Resolved)]
 	[TestCase("999999", TokenState.Resolved)]
-	public void ValidIntegers_ReturnResolved(string raw, TokenState expected)
-	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
-	}
-
 	[TestCase("3.14", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
 	[TestCase("1.0", TokenState.Unresolved)]
+	[TestCase("abc", TokenState.Unresolved)]
 	[TestCase("@Player", TokenState.Unresolved)]
-	public void InvalidIntegers_ReturnUnresolved(string raw, TokenState expected)
+	[TestCase("", TokenState.Unresolved)]
+	public void IntParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.Parse(raw));
 	}
+}
 }

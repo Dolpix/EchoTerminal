@@ -1,5 +1,8 @@
 using NUnit.Framework;
+using EchoTerminal.TerminalCore;
 
+namespace EchoTerminal.Editor.Tests.Parsers
+{
 [TestFixture]
 public class CommandNameParserTests
 {
@@ -12,32 +15,25 @@ public class CommandNameParserTests
 	}
 
 	[Test]
-	public void Type_IsCommandName()
-	{
-		Assert.AreEqual(typeof(CommandName), _parser.Type);
-	}
+	public void Type_IsCommandName() => Assert.AreEqual(typeof(CommandName), _parser.Type);
 
 	[TestCase("Teleport", TokenState.Resolved)]
 	[TestCase("Spawn", TokenState.Resolved)]
 	[TestCase("Kill", TokenState.Resolved)]
-	public void KnownCommands_ReturnResolved(string raw, TokenState expected)
-	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
-	}
-
 	[TestCase("Tele", TokenState.Unresolved)]
+	[TestCase("teleport", TokenState.Unresolved)]
 	[TestCase("Unknown", TokenState.Unresolved)]
 	[TestCase("", TokenState.Unresolved)]
-	[TestCase("teleport", TokenState.Unresolved)]
-	public void UnknownOrPartialCommands_ReturnUnresolved(string raw, TokenState expected)
+	public void CommandNameParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.Parse(raw));
 	}
 
 	[Test]
-	public void EmptyRegistry_AnyInput_ReturnsUnresolved()
+	public void CommandNameParse_EmptyRegistry_ReturnsUnresolved()
 	{
-		var emptyParser = new CommandNameParser(System.Array.Empty<string>());
-		Assert.AreEqual(TokenState.Unresolved, emptyParser.Parse("Teleport"));
+		var empty = new CommandNameParser(System.Array.Empty<string>());
+		Assert.AreEqual(TokenState.Unresolved, empty.Parse("Teleport"));
 	}
+}
 }

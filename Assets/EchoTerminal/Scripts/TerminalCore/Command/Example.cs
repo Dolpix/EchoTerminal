@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EchoTerminal.TerminalCore;
 
 public static class Example
 {
@@ -11,7 +12,6 @@ public static class Example
 			new FloatParser(),
 			new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }),
 			new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }),
-			new QuotedStringParser(),
 			new Vec3Parser(),
 			new StringParser()
 		};

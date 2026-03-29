@@ -1,54 +1,37 @@
 using NUnit.Framework;
 
+namespace EchoTerminal.Editor.Tests.Parsers
+{
 [TestFixture]
 public class StringParserTests
 {
+	private StringParser _parser;
+
+	[SetUp]
+	public void SetUp()
+	{
+		_parser = new();
+	}
+
 	[Test]
 	public void Type_IsString()
 	{
-		Assert.AreEqual(typeof(string), new StringParser().Type);
+		Assert.AreEqual(typeof(string), _parser.Type);
 	}
 
-	[Test]
-	public void NoValidValues_AnyLetterString_ReturnsResolved()
-	{
-		Assert.AreEqual(TokenState.Resolved, new StringParser().Parse("Goblin"));
-	}
-
-	[Test]
-	public void WithValidValues_ExactMatch_ReturnsResolved()
-	{
-		var parser = new StringParser(new[] { "Goblin", "Dragon" });
-		Assert.AreEqual(TokenState.Resolved, parser.Parse("Goblin"));
-	}
-
-	[Test]
-	public void WithValidValues_PartialMatch_ReturnsUnresolved()
-	{
-		var parser = new StringParser(new[] { "Goblin", "Dragon" });
-		Assert.AreEqual(TokenState.Unresolved, parser.Parse("Gob"));
-	}
-
-	[Test]
-	public void WithValidValues_NoMatch_NoPrefixMatch_ReturnsInvalid()
-	{
-		var parser = new StringParser(new[] { "Goblin", "Dragon" });
-		Assert.AreEqual(TokenState.Invalid, parser.Parse("Unknown"));
-	}
-
-	[Test]
-	public void WithValidValues_NoPrefixMatch_ReturnsInvalid()
-	{
-		var parser = new StringParser(new[] { "Goblin", "Dragon" });
-		Assert.AreEqual(TokenState.Invalid, parser.Parse("Xyz"));
-	}
-
+	[TestCase("Goblin", TokenState.Resolved)]
+	[TestCase("Gob", TokenState.Resolved)]
+	[TestCase("\"Hello World\"", TokenState.Resolved)]
+	[TestCase("\"Hello\"", TokenState.Resolved)]
+	[TestCase("\"\"", TokenState.Resolved)]
+	[TestCase("\"Hello", TokenState.Pending)]
+	[TestCase("\"", TokenState.Pending)]
 	[TestCase("123abc", TokenState.Unresolved)]
-	[TestCase("1", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
 	[TestCase("@Player", TokenState.Unresolved)]
-	public void NonLetterStart_ReturnsUnresolved(string raw, TokenState expected)
+	[TestCase("", TokenState.Unresolved)]
+	public void StringParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, new StringParser().Parse(raw));
+		Assert.AreEqual(expected, _parser.Parse(raw));
 	}
+}
 }

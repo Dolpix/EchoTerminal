@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+namespace EchoTerminal.TerminalCore
+{
 public readonly struct CommandName
 {
 	public readonly string Value;
@@ -30,4 +32,5 @@ public class CommandNameParser : ITokenParser
 	{
 		return _registry.Contains(raw) ? TokenState.Resolved : TokenState.Unresolved;
 	}
+}
 }

@@ -14,7 +14,22 @@ public class StringParser : ITokenParser
 
 	public TokenState Parse(string raw)
 	{
-		if (string.IsNullOrEmpty(raw) || !char.IsLetter(raw[0]))
+		if (raw.Length == 0)
+		{
+			return TokenState.Unresolved;
+		}
+
+		if (raw[0] == '"')
+		{
+			if (raw.Length >= 2 && raw[^1] == '"')
+			{
+				return TokenState.Resolved;
+			}
+
+			return TokenState.Pending;
+		}
+
+		if (!char.IsLetter(raw[0]))
 		{
 			return TokenState.Unresolved;
 		}

@@ -1,5 +1,7 @@
 using NUnit.Framework;
 
+namespace EchoTerminal.Editor.Tests.Parsers
+{
 [TestFixture]
 public class FloatParserTests
 {
@@ -8,7 +10,7 @@ public class FloatParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new FloatParser();
+		_parser = new();
 	}
 
 	[Test]
@@ -22,17 +24,13 @@ public class FloatParserTests
 	[TestCase("-1.5", TokenState.Resolved)]
 	[TestCase("0.0", TokenState.Resolved)]
 	[TestCase("0", TokenState.Resolved)]
-	public void ValidFloats_ReturnResolved(string raw, TokenState expected)
-	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
-	}
-
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
 	[TestCase("1.2.3", TokenState.Unresolved)]
+	[TestCase("abc", TokenState.Unresolved)]
 	[TestCase("@Player", TokenState.Unresolved)]
-	public void InvalidFloats_ReturnUnresolved(string raw, TokenState expected)
+	[TestCase("", TokenState.Unresolved)]
+	public void FloatParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.Parse(raw));
 	}
+}
 }
