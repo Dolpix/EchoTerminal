@@ -25,22 +25,23 @@ public class ExampleMono : MonoBehaviour
 	private Coroutine _spamCoroutine;
 
 	[TerminalCommand("SpamLogs", "Toggle random log spam on or off")]
-	private string SpamLogs(bool enabled)
+	private void SpamLogs(bool enabled)
 	{
 		if (enabled && _spamCoroutine == null)
 		{
 			_spamCoroutine = StartCoroutine(SpamRoutine());
-			return "Log spam started.";
+			Debug.Log("Log spam started.");
 		}
-
-		if (!enabled && _spamCoroutine != null)
+		else if (!enabled && _spamCoroutine != null)
 		{
 			StopCoroutine(_spamCoroutine);
 			_spamCoroutine = null;
-			return "Log spam stopped.";
+			Debug.Log("Log spam stopped.");
 		}
-
-		return enabled ? "Already running." : "Already stopped.";
+		else
+		{
+			Debug.Log(enabled ? "Already running." : "Already stopped.");
+		}
 	}
 
 	private IEnumerator SpamRoutine()
@@ -81,151 +82,143 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
-	private string SetHealth(int value)
+	private void SetHealth(int value)
 	{
-		return $"Health set to {value}";
+		Debug.Log($"Health set to {value}");
 	}
 
 	[TerminalCommand]
-	private string Say(string message)
+	private void Say(string message)
 	{
-		return $"[{gameObject.name}]: {message}";
+		Debug.Log($"[{gameObject.name}]: {message}");
 	}
 
 	[TerminalCommand]
-	private string Toggle(bool enabled)
+	private void Toggle(bool enabled)
 	{
 		gameObject.SetActive(enabled);
-		return $"{gameObject.name} active: {enabled}";
+		Debug.Log($"{gameObject.name} active: {enabled}");
 	}
 
 	[TerminalCommand]
-	private string Move(Vector3 offset)
+	private void Move(Vector3 offset)
 	{
 		transform.position += offset;
-		return $"Moved to {transform.position}";
+		Debug.Log($"Moved to {transform.position}");
 	}
 
 	[TerminalCommand]
-	private string Look(Vector2 direction)
+	private void Look(Vector2 direction)
 	{
-		return $"Looking at ({direction.x}, {direction.y})";
+		Debug.Log($"Looking at ({direction.x}, {direction.y})");
 	}
 
 	[TerminalCommand]
-	private string Paint(Color color)
+	private void Paint(Color color)
 	{
 		var meshRenderer = GetComponentInChildren<MeshRenderer>();
-
 		if (meshRenderer != null)
 		{
 			meshRenderer.sharedMaterial.color = color;
 		}
 
-		return $"Color set to {color}";
+		Debug.Log($"Color set to {color}");
 	}
 
 	[TerminalCommand]
-	private string Speed(double value)
+	private void Speed(double value)
 	{
-		return $"Speed set to {value:F4}";
+		Debug.Log($"Speed set to {value:F4}");
 	}
 
 	[TerminalCommand]
-	private string Damage(List<int> amounts)
+	private void Damage(List<int> amounts)
 	{
 		var total = 0;
-
 		foreach (var amount in amounts)
 		{
 			total += amount;
 		}
 
-		return $"Dealt {amounts.Count} hits for {total} total damage";
+		Debug.Log($"Dealt {amounts.Count} hits for {total} total damage");
 	}
 
 	[TerminalCommand]
-	private string Waypoints(List<Vector3> points)
+	private void Waypoints(List<Vector3> points)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"Set {points.Count} waypoints:");
-
 		for (var i = 0; i < points.Count; i++)
 		{
 			sb.Append($" [{i}]{points[i]}");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 
 	[TerminalCommand]
-	private string Path(List<Vector2> points)
+	private void Path(List<Vector2> points)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"Set {points.Count} path points:");
-
 		for (var i = 0; i < points.Count; i++)
 		{
 			sb.Append($" [{i}]{points[i]}");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 
 	[TerminalCommand]
-	private string Scales(List<float> values)
+	private void Scales(List<float> values)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"{values.Count} scale values:");
-
 		foreach (var v in values)
 		{
 			sb.Append($" {v:F2}");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 
 	[TerminalCommand]
-	private string Flags(List<bool> flags)
+	private void Flags(List<bool> flags)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"{flags.Count} flags:");
-
 		foreach (var f in flags)
 		{
 			sb.Append($" {f}");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 
 	[TerminalCommand]
-	private string Palette(List<Color> colors)
+	private void Palette(List<Color> colors)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"{colors.Count} colors:");
-
 		foreach (var c in colors)
 		{
 			sb.Append($" {c}");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 
 	[TerminalCommand]
-	private string Tags(List<string> tags)
+	private void Tags(List<string> tags)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"{tags.Count} tags:");
-
 		foreach (var t in tags)
 		{
 			sb.Append($" \"{t}\"");
 		}
 
-		return sb.ToString();
+		Debug.Log(sb.ToString());
 	}
 }
 }

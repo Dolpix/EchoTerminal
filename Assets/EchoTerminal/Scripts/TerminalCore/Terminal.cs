@@ -14,6 +14,7 @@ public class Terminal
 	public event Action OnSubmitted;
 
 	private readonly List<TerminalEntry> _entries = new();
+	private readonly List<ITokenParser> _parsers;
 	private readonly int _maxEntries;
 
 	public Terminal(int maxEntries = 1000)
@@ -21,12 +22,15 @@ public class Terminal
 		_maxEntries = maxEntries;
 		Registry = new();
 		Registry.Scan();
+		ParserRegistry.Register<TerminalCore.CommandNameParser>(() => new TerminalCore.CommandNameParser(Registry.GetCommandNames()));
+		_parsers = ParserRegistry.CreateAll();
 	}
 
 	public void Submit(string input)
 	{
 		OnSubmitted?.Invoke();
 		Log(input, kind: LogKind.Command);
+		CommandExecutor.Execute(input, Registry, _parsers);
 	}
 
 	public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
