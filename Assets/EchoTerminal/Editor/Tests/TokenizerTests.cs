@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using EchoTerminal.Editor.Tests;
 using NUnit.Framework;
 using UnityEngine;
 using EchoTerminal.TerminalCore;
@@ -12,7 +11,9 @@ public class TokenizerTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parsers = TestParsers.CreateAll();
+		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }));
+		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }));
+		_parsers = ParserRegistry.CreateAll();
 	}
 
 	[TestCase("Teleport @Player (10, 0, 5)", 3)]
@@ -81,5 +82,13 @@ public class TokenizerTests
 		var tokens = Tokenizer.Tokenize("Teleport", _parsers);
 		Assert.AreEqual(1, tokens.Count);
 		Assert.AreEqual(TokenState.Resolved, tokens[0].State);
+	}
+
+	[TestCase("42",   typeof(int))]
+	[TestCase("3.14", typeof(float))]
+	public void Tokenize_AmbiguousNumber_ResolvesToMoreSpecificType(string input, System.Type expected)
+	{
+		var tokens = Tokenizer.Tokenize(input, _parsers);
+		Assert.AreEqual(expected, tokens[0].Type);
 	}
 }

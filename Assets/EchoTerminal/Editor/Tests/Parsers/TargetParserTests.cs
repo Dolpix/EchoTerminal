@@ -1,4 +1,3 @@
-using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -6,13 +5,13 @@ namespace EchoTerminal.Editor.Tests.Parsers
 [TestFixture]
 public class TargetParserTests
 {
-	private TargetParser _parser;
-
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = TestParsers.CreateAll().OfType<TargetParser>().First();
+		_parser = new(new[] { "@Player", "@Enemy1", "@Enemy2" });
 	}
+
+	private TargetParser _parser;
 
 	[Test]
 	public void Type_IsString()
@@ -23,7 +22,7 @@ public class TargetParserTests
 	[TestCase("@Player", TokenState.Resolved)]
 	[TestCase("@Enemy1", TokenState.Resolved)]
 	[TestCase("@Enemy2", TokenState.Resolved)]
-	[TestCase("@P", TokenState.Unresolved)]
+	[TestCase("@P", TokenState.Pending)]
 	[TestCase("@Unknown", TokenState.Invalid)]
 	[TestCase("@XYZ", TokenState.Invalid)]
 	[TestCase("@Z", TokenState.Invalid)]

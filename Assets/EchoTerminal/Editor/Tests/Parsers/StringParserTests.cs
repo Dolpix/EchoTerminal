@@ -1,4 +1,3 @@
-using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -6,13 +5,13 @@ namespace EchoTerminal.Editor.Tests.Parsers
 [TestFixture]
 public class StringParserTests
 {
-	private StringParser _parser;
-
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = TestParsers.CreateAll().OfType<StringParser>().First();
+		_parser = new();
 	}
+
+	private StringParser _parser;
 
 	[Test]
 	public void Type_IsString()

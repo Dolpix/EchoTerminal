@@ -1,4 +1,3 @@
-using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -6,13 +5,13 @@ namespace EchoTerminal.Editor.Tests.Parsers
 [TestFixture]
 public class FloatParserTests
 {
-	private FloatParser _parser;
-
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = TestParsers.CreateAll().OfType<FloatParser>().First();
+		_parser = new();
 	}
+
+	private FloatParser _parser;
 
 	[Test]
 	public void Type_IsFloat()

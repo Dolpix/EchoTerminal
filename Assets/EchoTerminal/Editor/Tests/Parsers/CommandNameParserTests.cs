@@ -1,24 +1,25 @@
-using System.Linq;
+using System;
 using NUnit.Framework;
-using EchoTerminal.TerminalCore;
+using Parser = EchoTerminal.TerminalCore.CommandNameParser;
+using CmdName = EchoTerminal.TerminalCore.CommandName;
 
 namespace EchoTerminal.Editor.Tests.Parsers
 {
 [TestFixture]
 public class CommandNameParserTests
 {
-	private CommandNameParser _parser;
-
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = TestParsers.CreateAll().OfType<CommandNameParser>().First();
+		_parser = new(new[] { "Teleport", "Spawn", "Kill" });
 	}
+
+	private Parser _parser;
 
 	[Test]
 	public void Type_IsCommandName()
 	{
-		Assert.AreEqual(typeof(CommandName), _parser.Type);
+		Assert.AreEqual(typeof(CmdName), _parser.Type);
 	}
 
 	[TestCase("Teleport", TokenState.Resolved)]
@@ -36,7 +37,7 @@ public class CommandNameParserTests
 	[Test]
 	public void CommandNameParse_EmptyRegistry_ReturnsUnresolved()
 	{
-		var empty = new CommandNameParser(System.Array.Empty<string>());
+		var empty = new Parser(Array.Empty<string>());
 		Assert.AreEqual(TokenState.Unresolved, empty.Parse("Teleport"));
 	}
 }

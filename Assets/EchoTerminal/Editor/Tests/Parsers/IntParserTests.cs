@@ -1,4 +1,3 @@
-using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -6,13 +5,13 @@ namespace EchoTerminal.Editor.Tests.Parsers
 [TestFixture]
 public class IntParserTests
 {
-	private IntParser _parser;
-
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = TestParsers.CreateAll().OfType<IntParser>().First();
+		_parser = new();
 	}
+
+	private IntParser _parser;
 
 	[Test]
 	public void Type_IsInt()

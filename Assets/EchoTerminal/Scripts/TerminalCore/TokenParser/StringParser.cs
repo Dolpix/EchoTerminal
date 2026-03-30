@@ -5,9 +5,11 @@ public class StringParser : ITokenParser
 {
 	private readonly HashSet<string> _validValues;
 
-	public StringParser(IEnumerable<string> validValues = null)
+	public StringParser() { }
+
+	public StringParser(IEnumerable<string> validValues)
 	{
-		_validValues = validValues != null ? new HashSet<string>(validValues) : null;
+		_validValues = new HashSet<string>(validValues);
 	}
 
 	public System.Type Type => typeof(string);

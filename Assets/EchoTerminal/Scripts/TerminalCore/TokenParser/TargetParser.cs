@@ -26,7 +26,7 @@ public class TargetParser : ITokenParser
 
 		if (_known.Any(t => t.StartsWith(raw)))
 		{
-			return TokenState.Unresolved;
+			return TokenState.Pending;
 		}
 
 		return TokenState.Invalid;
