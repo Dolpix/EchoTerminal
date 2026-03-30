@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ public class Vec3ParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new();
+		_parser = TestParsers.CreateAll().OfType<Vec3Parser>().First();
 	}
 
 	[Test]

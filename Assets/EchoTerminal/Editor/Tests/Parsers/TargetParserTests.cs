@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -10,7 +11,7 @@ public class TargetParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new(new[] { "@Player", "@Enemy1", "@Enemy2" });
+		_parser = TestParsers.CreateAll().OfType<TargetParser>().First();
 	}
 
 	[Test]

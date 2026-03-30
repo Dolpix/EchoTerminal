@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EchoTerminal.Editor.Tests;
 using NUnit.Framework;
 using UnityEngine;
 using EchoTerminal.TerminalCore;
@@ -11,15 +12,7 @@ public class TokenizerTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parsers = new()
-		{
-			new IntParser(),
-			new FloatParser(),
-			new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }),
-			new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }),
-			new Vec3Parser(),
-			new StringParser()
-		};
+		_parsers = TestParsers.CreateAll();
 	}
 
 	[TestCase("Teleport @Player (10, 0, 5)", 3)]

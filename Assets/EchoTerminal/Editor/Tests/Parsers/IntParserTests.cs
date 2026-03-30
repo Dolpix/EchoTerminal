@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers
@@ -10,7 +11,7 @@ public class IntParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new();
+		_parser = TestParsers.CreateAll().OfType<IntParser>().First();
 	}
 
 	[Test]

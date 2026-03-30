@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using EchoTerminal.TerminalCore;
 
@@ -11,11 +12,14 @@ public class CommandNameParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new(new[] { "Teleport", "Spawn", "Kill" });
+		_parser = TestParsers.CreateAll().OfType<CommandNameParser>().First();
 	}
 
 	[Test]
-	public void Type_IsCommandName() => Assert.AreEqual(typeof(CommandName), _parser.Type);
+	public void Type_IsCommandName()
+	{
+		Assert.AreEqual(typeof(CommandName), _parser.Type);
+	}
 
 	[TestCase("Teleport", TokenState.Resolved)]
 	[TestCase("Spawn", TokenState.Resolved)]
