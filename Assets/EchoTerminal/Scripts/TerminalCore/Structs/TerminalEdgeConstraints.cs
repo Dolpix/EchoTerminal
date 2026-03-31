@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EchoTerminal
 {
 [Serializable]
-public struct TerminalEdgeConstraint
+public struct TerminalEdgeConstraints
 {
 	[Min(0f)] 
 	[Tooltip("Pixels from this screen edge that triggers snapping. 0 = disabled.")]
