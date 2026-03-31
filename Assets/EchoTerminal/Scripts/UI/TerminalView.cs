@@ -19,6 +19,7 @@ public class TerminalView
 		_components.Add(new TerminalToolbar(Terminal, root));
 		_components.Add(new TerminalCopyButton(Terminal, root));
 		_components.Add(new TerminalLogFilter(Terminal, root));
+		_components.Add(new TerminalSearch(Terminal, root));
 		_components.Add(new TerminalUnityLog(Terminal));
 
 		if (root.Q<VisualElement>("game-window") != null)

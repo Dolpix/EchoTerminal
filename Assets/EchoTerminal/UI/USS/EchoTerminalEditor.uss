@@ -136,3 +136,16 @@
 .echo-editor--dark .terminal-log .unity-base-slider__dragger:active {
     background-color: rgba(128, 128, 128, 0.70);
 }
+
+.echo-editor--dark .terminal-search-bar {
+    background-color: #1C1C1C;
+    border-top-color: #111111;
+    border-left-color: #111111;
+    border-bottom-color: #3A3A3A;
+    border-right-color: #3A3A3A;
+}
+
+.echo-editor--dark .terminal-search-field > .unity-text-field__input {
+    color: #C4C4C4;
+    --unity-cursor-color: #EFEFEF;
+}

@@ -1,11 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/EchoTerminal/UI/USS/EchoTerminal.uss?fileID=7433441132597879392&amp;guid=3bdff5cc8a8450745a939a9d4ae4112b&amp;type=3#EchoTerminal"/>
     <Style src="project://database/Assets/EchoTerminal/UI/USS/EchoTerminalGame.uss?fileID=7433441132597879392&amp;guid=a7f59c663bb04ae48810d7e9b0b90def&amp;type=3#EchoTerminalGame"/>
-<ui:VisualElement name="game-window" class="game-window">
+    <ui:VisualElement name="game-window" class="game-window" style="height: 400px; width: 738px; top: 22px; left: 20px;">
         <ui:VisualElement name="title-bar" class="game-title-bar">
             <ui:Label text="Echo Terminal" class="game-title-text"/>
             <ui:Button name="close-button" text="" class="game-close-button">
-                <ui:VisualElement class="game-close-x" picking-mode="Ignore"/>
+                <ui:VisualElement picking-mode="Ignore" class="game-close-x"/>
             </ui:Button>
         </ui:VisualElement>
         <ui:VisualElement name="terminal-content" class="terminal-container" style="flex-grow: 1;">
@@ -17,13 +17,17 @@
                 <ui:Button name="filter-error" text="Err 0" class="terminal-toolbar-toggle terminal-toolbar-toggle--active terminal-filter-button" style="margin-right: 0; padding: 0 6px; height: 100%;"/>
                 <ui:Button name="filter-command" text="Cmd 0" class="terminal-toolbar-toggle terminal-toolbar-toggle--active terminal-filter-button" style="margin-right: 0; padding: 0 6px; height: 100%;"/>
                 <ui:VisualElement style="flex-grow: 1;"/>
+                <ui:VisualElement name="search-bar" class="terminal-search-bar">
+                    <ui:VisualElement class="terminal-search-icon"/>
+                    <ui:TextField name="search-field" class="terminal-search-field"/>
+                </ui:VisualElement>
                 <ui:Button name="copy-button" text="⎘" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding-bottom: 0; padding-top: 0; height: 100%;"/>
                 <ui:VisualElement class="terminal-toolbar-separator"/>
                 <ui:Button name="clear-button" text="Clear" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding-bottom: 0; padding-top: 0; height: 100%;"/>
                 <ui:VisualElement class="terminal-toolbar-separator"/>
                 <ui:Button name="scroll-bottom" text="↓" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding: 0 8px; height: 100%;"/>
             </ui:VisualElement>
-            <ui:ScrollView name="log-scroll" class="terminal-log" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible">
+            <ui:ScrollView name="log-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" class="terminal-log">
                 <ui:VisualElement name="log-container"/>
             </ui:ScrollView>
             <ui:VisualElement name="input-row" class="terminal-input-row">
