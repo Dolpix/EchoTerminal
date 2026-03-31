@@ -33,18 +33,50 @@
 }
 
 .game-close-button {
-    background-color: var(--close-default);
-    border-width: 0;
-    width: 12px;
-    height: 12px;
-    border-radius: 6px;
+    background-color: #CA5733;
+    border-width: 1px;
+    border-top-color: #E06B42;
+    border-left-color: #E06B42;
+    border-bottom-color: #7A3118;
+    border-right-color: #7A3118;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
     padding: 0;
     margin: 0 2px 0 0;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    translate: 0 0;
 }
 
 .game-close-button:hover {
-    background-color: var(--close-hover);
+    background-color: #D9633C;
+    border-top-color: #F07850;
+    border-left-color: #F07850;
+    border-bottom-color: #8A3A1E;
+    border-right-color: #8A3A1E;
+}
+
+.game-close-button:active {
+    background-color: #9E4226;
+    border-top-color: #7A3118;
+    border-left-color: #7A3118;
+    border-bottom-color: #E06B42;
+    border-right-color: #E06B42;
+    translate: 0 1px;
+}
+
+.game-close-x {
+    width: 8px;
+    height: 8px;
+    background-image: url('../Icons/close-x.svg');
+    -unity-background-scale-mode: scale-to-fit;
+    opacity: 0;
+}
+
+.game-close-button:active .game-close-x {
+    opacity: 1;
 }
 
 .game-resize-handle {

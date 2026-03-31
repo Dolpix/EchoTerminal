@@ -54,46 +54,70 @@
 }
 
 .terminal-toolbar-button {
-    background-color: transparent;
-    border-width: 0;
-    border-radius: 2px;
+    background-color: #2E3035;
+    border-width: 1px;
+    border-top-color: #3E4148;
+    border-left-color: #3E4148;
+    border-bottom-color: #111213;
+    border-right-color: #111213;
+    border-radius: 3px;
     padding: 2px 8px;
-    margin: 0 1px;
+    margin: 0 2px;
     color: var(--text-primary);
     font-size: 11px;
     -unity-text-align: middle-center;
+    translate: 0 0;
 }
 
 .terminal-toolbar-button:hover {
-    background-color: var(--interactive-hover);
+    background-color: #33353B;
+    color: var(--text-bright);
 }
 
 .terminal-toolbar-button:active {
-    background-color: var(--interactive-active);
+    background-color: #1C1D20;
+    border-top-color: #111213;
+    border-left-color: #111213;
+    border-bottom-color: #2E3035;
+    border-right-color: #2E3035;
+    color: var(--text-muted);
+    translate: 0 1px;
 }
 
 .terminal-toolbar-toggle {
-    background-color: transparent;
-    border-width: 0;
-    border-radius: 2px;
+    background-color: #1C1D20;
+    border-width: 1px;
+    border-top-color: #111213;
+    border-left-color: #111213;
+    border-bottom-color: #2E3035;
+    border-right-color: #2E3035;
+    border-radius: 3px;
     padding: 2px 8px;
-    margin: 0 1px;
-    color: var(--text-inactive);
+    margin: 0 2px;
+    color: var(--text-muted);
     font-size: 11px;
     -unity-text-align: middle-center;
+    translate: 0 1px;
 }
 
 .terminal-toolbar-toggle:hover {
-    background-color: var(--interactive-hover);
+    background-color: #222326;
+    color: var(--text-inactive);
 }
 
 .terminal-toolbar-toggle--active {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: #2E3035;
+    border-top-color: #3E4148;
+    border-left-color: #3E4148;
+    border-bottom-color: #111213;
+    border-right-color: #111213;
     color: var(--text-primary);
+    translate: 0 0;
 }
 
 .terminal-toolbar-toggle--active:hover {
-    background-color: var(--interactive-active);
+    background-color: #33353B;
+    color: var(--text-bright);
 }
 
 .terminal-filter-button {
