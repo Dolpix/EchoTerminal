@@ -1,0 +1,108 @@
+.echo-editor--dark .terminal-container {
+    background-color: #282828;
+}
+
+.echo-editor--dark .terminal-toolbar {
+    background-color: #3C3C3C;
+    border-bottom-color: #191919;
+}
+
+.echo-editor--dark .terminal-toolbar-separator {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.echo-editor--dark .terminal-toolbar-button {
+    color: #C4C4C4;
+}
+
+.echo-editor--dark .terminal-toolbar-button:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.echo-editor--dark .terminal-toolbar-button:active {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+
+.echo-editor--dark .terminal-toolbar-toggle {
+    color: #9A9A9A;
+}
+
+.echo-editor--dark .terminal-toolbar-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.echo-editor--dark .terminal-toolbar-toggle--active {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #C4C4C4;
+}
+
+.echo-editor--dark .terminal-toolbar-toggle--active:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+
+.echo-editor--dark .terminal-log {
+    background-color: #282828;
+}
+
+.echo-editor--dark .terminal-entry {
+    color: #C4C4C4;
+}
+
+.echo-editor--dark .terminal-entry--odd {
+    background-color: #282828;
+}
+
+.echo-editor--dark .terminal-entry--even {
+    background-color: #2E2E2E;
+}
+
+.echo-editor--dark .terminal-timestamp {
+    color: #7B7B7B;
+}
+
+.echo-editor--dark .terminal-input-row {
+    background-color: #2A2A2A;
+    border-top-color: #191919;
+}
+
+.echo-editor--dark .terminal-input > .unity-text-field__input {
+    color: #C4C4C4;
+    --unity-cursor-color: #EFEFEF;
+}
+
+.echo-editor--dark .terminal-suggestion-popup {
+    background-color: #3C3C3C;
+    border-color: #232323;
+}
+
+.echo-editor--dark .terminal-suggestion-item {
+    color: #C4C4C4;
+}
+
+.echo-editor--dark .terminal-suggestion-item--selected {
+    background-color: #2C5D87;
+    color: #EFEFEF;
+}
+
+.echo-editor--dark .terminal-copy-toast {
+    background-color: #3C3C3C;
+    border-color: #232323;
+    color: #EFEFEF;
+}
+
+.echo-editor--dark .terminal-hint-label {
+    color: #7B7B7B;
+    border-top-color: #232323;
+}
+
+.echo-editor--dark .terminal-log .unity-base-slider__dragger {
+    background-color: rgba(128, 128, 128, 0.30);
+}
+
+.echo-editor--dark .terminal-log .unity-base-slider__dragger:hover {
+    background-color: rgba(128, 128, 128, 0.50);
+}
+
+.echo-editor--dark .terminal-log .unity-base-slider__dragger:active {
+    background-color: rgba(128, 128, 128, 0.70);
+}
