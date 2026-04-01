@@ -75,6 +75,13 @@ namespace EchoTerminal.TerminalCore
             return tokens;
         }
 
+        public object ParseValue(Token token)
+        {
+            if (token.Type != null && _parsersByType.TryGetValue(token.Type, out var parser))
+                return parser.ParseValue(token.Raw);
+            return null;
+        }
+
         private ITokenParser FindPendingParser(string raw, Type expectedType)
         {
             if (expectedType != null && _parsersByType.TryGetValue(expectedType, out var expected))

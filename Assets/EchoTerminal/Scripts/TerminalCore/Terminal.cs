@@ -9,7 +9,7 @@ namespace EchoTerminal
     {
         private readonly List<TerminalEntry> _entries = new();
         private readonly int _maxEntries;
-        private readonly Dictionary<Type, ITokenParser> _parsers;
+        private readonly CommandExecutor _executor;
 
         public Terminal(int maxEntries = 1000)
         {
@@ -17,7 +17,8 @@ namespace EchoTerminal
             Registry = new CommandRegistry();
             Registry.Scan();
             ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-            _parsers = ParserRegistry.CreateAll();
+            var tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
+            _executor = new CommandExecutor(Registry, tokenizer);
         }
 
         public CommandRegistry Registry { get; }
@@ -31,6 +32,7 @@ namespace EchoTerminal
         {
             OnSubmitted?.Invoke();
             Log(input, kind: LogKind.Command);
+            _executor.Execute(input);
         }
 
         public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
