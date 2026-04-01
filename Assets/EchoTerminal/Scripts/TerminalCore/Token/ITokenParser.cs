@@ -3,5 +3,6 @@ using System;
 public interface ITokenParser
 {
 	Type Type { get; }
-	TokenState Parse(string raw);
+	TokenState ParseTokenState(string raw);
+	object ParseValue(string raw);
 }

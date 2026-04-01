@@ -28,9 +28,14 @@ public class CommandNameParser : ITokenParser
 
 	public System.Type Type => typeof(CommandName);
 
-	public TokenState Parse(string raw)
+	public TokenState ParseTokenState(string raw)
 	{
 		return _registry.Contains(raw) ? TokenState.Resolved : TokenState.Unresolved;
+	}
+
+	public object ParseValue(string raw)
+	{
+		return new CommandName(raw);
 	}
 }
 }

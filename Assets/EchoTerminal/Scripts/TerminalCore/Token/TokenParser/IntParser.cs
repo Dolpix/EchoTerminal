@@ -2,7 +2,7 @@ public class IntParser : ITokenParser
 {
 	public System.Type Type => typeof(int);
 
-	public TokenState Parse(string raw)
+	public TokenState ParseTokenState(string raw)
 	{
 		if (int.TryParse(raw, out _))
 		{
@@ -10,5 +10,10 @@ public class IntParser : ITokenParser
 		}
 
 		return TokenState.Unresolved;
+	}
+
+	public object ParseValue(string raw)
+	{
+		return int.Parse(raw);
 	}
 }

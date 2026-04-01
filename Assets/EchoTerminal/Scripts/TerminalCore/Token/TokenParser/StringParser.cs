@@ -14,7 +14,7 @@ public class StringParser : ITokenParser
 
 	public System.Type Type => typeof(string);
 
-	public TokenState Parse(string raw)
+	public TokenState ParseTokenState(string raw)
 	{
 		if (raw.Length == 0)
 		{
@@ -47,5 +47,15 @@ public class StringParser : ITokenParser
 		}
 
 		return TokenState.Invalid;
+	}
+
+	public object ParseValue(string raw)
+	{
+		if (raw.Length >= 2 && raw[0] == '"' && raw[^1] == '"')
+		{
+			return raw[1..^1];
+		}
+
+		return raw;
 	}
 }

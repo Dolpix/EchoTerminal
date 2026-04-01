@@ -12,7 +12,7 @@ public static class Tokenizer
 		{
 			if (ch == ' ' && buf.Length > 0)
 			{
-				var anyPending = parsers.Any(p => p.Parse(buf) == TokenState.Pending);
+				var anyPending = parsers.Any(p => p.ParseTokenState(buf) == TokenState.Pending);
 
 				if (anyPending)
 				{
@@ -42,7 +42,7 @@ public static class Tokenizer
 	{
 		foreach (var parser in parsers)
 		{
-			if (parser.Parse(raw) == TokenState.Resolved)
+			if (parser.ParseTokenState(raw) == TokenState.Resolved)
 			{
 				return new() { Raw = raw, State = TokenState.Resolved, Type = parser.Type };
 			}
@@ -50,7 +50,7 @@ public static class Tokenizer
 
 		foreach (var parser in parsers)
 		{
-			if (parser.Parse(raw) != TokenState.Pending)
+			if (parser.ParseTokenState(raw) != TokenState.Pending)
 			{
 				continue;
 			}
@@ -61,7 +61,7 @@ public static class Tokenizer
 
 		foreach (var parser in parsers)
 		{
-			if (parser.Parse(raw) == TokenState.Invalid)
+			if (parser.ParseTokenState(raw) == TokenState.Invalid)
 			{
 				return new() { Raw = raw, State = TokenState.Invalid, Type = parser.Type };
 			}

@@ -31,7 +31,17 @@ public class StringParserTests
 	[TestCase("", TokenState.Unresolved)]
 	public void StringParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("Goblin", "Goblin")]
+	[TestCase("Gob", "Gob")]
+	[TestCase("\"Hello World\"", "Hello World")]
+	[TestCase("\"Hello\"", "Hello")]
+	[TestCase("\"\"", "")]
+	public void StringParseValue_ReturnsExpectedString(string raw, string expected)
+	{
+		Assert.AreEqual(expected, _parser.ParseValue(raw));
 	}
 }
 }

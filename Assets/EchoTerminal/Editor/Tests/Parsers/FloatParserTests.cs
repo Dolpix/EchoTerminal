@@ -30,7 +30,17 @@ public class FloatParserTests
 	[TestCase("", TokenState.Unresolved)]
 	public void FloatParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("3.14", 3.14f)]
+	[TestCase("42", 42f)]
+	[TestCase("-1.5", -1.5f)]
+	[TestCase("0.0", 0.0f)]
+	[TestCase("0", 0f)]
+	public void FloatParseValue_ReturnsExpectedFloat(string raw, float expected)
+	{
+		Assert.AreEqual(expected, _parser.ParseValue(raw));
 	}
 }
 }

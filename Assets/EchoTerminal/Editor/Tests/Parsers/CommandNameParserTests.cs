@@ -31,14 +31,23 @@ public class CommandNameParserTests
 	[TestCase("", TokenState.Unresolved)]
 	public void CommandNameParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
 	[Test]
 	public void CommandNameParse_EmptyRegistry_ReturnsUnresolved()
 	{
 		var empty = new Parser(Array.Empty<string>());
-		Assert.AreEqual(TokenState.Unresolved, empty.Parse("Teleport"));
+		Assert.AreEqual(TokenState.Unresolved, empty.ParseTokenState("Teleport"));
+	}
+
+	[TestCase("Teleport")]
+	[TestCase("Spawn")]
+	[TestCase("Kill")]
+	public void CommandNameParseValue_ReturnsCommandNameWithMatchingValue(string raw)
+	{
+		var result = (CmdName)_parser.ParseValue(raw);
+		Assert.AreEqual(raw, result.Value);
 	}
 }
 }

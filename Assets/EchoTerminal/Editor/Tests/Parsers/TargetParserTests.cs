@@ -33,7 +33,15 @@ public class TargetParserTests
 	[TestCase("abc", TokenState.Unresolved)]
 	public void TargetParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("@Player")]
+	[TestCase("@Enemy1")]
+	[TestCase("@Enemy2")]
+	public void TargetParseValue_ReturnsRawString(string raw)
+	{
+		Assert.AreEqual(raw, _parser.ParseValue(raw));
 	}
 }
 }

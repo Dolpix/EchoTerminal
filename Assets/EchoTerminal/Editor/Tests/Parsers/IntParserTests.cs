@@ -30,7 +30,16 @@ public class IntParserTests
 	[TestCase("", TokenState.Unresolved)]
 	public void IntParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
-		Assert.AreEqual(expected, _parser.Parse(raw));
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("42", 42)]
+	[TestCase("0", 0)]
+	[TestCase("-10", -10)]
+	[TestCase("999999", 999999)]
+	public void IntParseValue_ReturnsExpectedInt(string raw, int expected)
+	{
+		Assert.AreEqual(expected, _parser.ParseValue(raw));
 	}
 }
 }

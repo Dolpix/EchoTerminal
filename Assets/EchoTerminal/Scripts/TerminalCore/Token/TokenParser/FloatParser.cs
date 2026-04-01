@@ -2,7 +2,7 @@ public class FloatParser : ITokenParser
 {
 	public System.Type Type => typeof(float);
 
-	public TokenState Parse(string raw)
+	public TokenState ParseTokenState(string raw)
 	{
 		if (float.TryParse(raw, out _))
 		{
@@ -10,5 +10,10 @@ public class FloatParser : ITokenParser
 		}
 
 		return TokenState.Unresolved;
+	}
+
+	public object ParseValue(string raw)
+	{
+		return float.Parse(raw);
 	}
 }
