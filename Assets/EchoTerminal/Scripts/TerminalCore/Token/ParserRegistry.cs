@@ -14,6 +14,17 @@ public static class ParserRegistry
     public static Dictionary<Type, ITokenParser> CreateAll()
     {
         var result = new Dictionary<Type, ITokenParser>();
+        foreach (var parser in CreateAllParsers())
+        {
+            result[parser.Type] = parser;
+        }
+
+        return result;
+    }
+
+    public static List<ITokenParser> CreateAllParsers()
+    {
+        var result = new List<ITokenParser>();
 
         var types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a =>
@@ -49,7 +60,7 @@ public static class ParserRegistry
 
             if (parser != null)
             {
-                result[parser.Type] = parser;
+                result.Add(parser);
             }
         }
 

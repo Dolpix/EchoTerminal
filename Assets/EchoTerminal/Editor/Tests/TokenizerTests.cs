@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using EchoTerminal.TerminalCore;
 using NUnit.Framework;
 using UnityEngine;
@@ -12,10 +11,10 @@ public class TokenizerTests
     {
         ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }));
         ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }));
-        _parsers = ParserRegistry.CreateAll();
+        _tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
     }
 
-    private Dictionary<Type, ITokenParser> _parsers;
+    private Tokenizer _tokenizer;
 
     [TestCase("Teleport @Player (10, 0, 5)", 3)]
     [TestCase("Kill @Enemy1", 2)]
@@ -25,12 +24,16 @@ public class TokenizerTests
     [TestCase("  Kill @Enemy1", 2)]
     public void Tokenize_ProducesCorrectTokenCount(string input, int expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens.Count);
     }
 
     [TestCase("  Kill @Enemy1", 0, "Kill")]
     [TestCase("        Spawn Goblin", 0, "Spawn")]
     public void LeadingSpaces_DoNotAffectFirstTokenRaw(string input, int index, string expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens[index].Raw);
     }
 
     [TestCase("Spawn Goblin (1, 2, 3)", 2, "(1, 2, 3)")]
@@ -38,6 +41,8 @@ public class TokenizerTests
     [TestCase("Kill @Enemy1 \"Open the door\"", 2, "\"Open the door\"")]
     public void PendingParser_SpansInternalSpaces_IntoSingleToken(string input, int index, string expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens[index].Raw);
     }
 
     [TestCase("Teleport @Player (10, 0, 5)", 0, "Teleport")]
@@ -47,6 +52,8 @@ public class TokenizerTests
     [TestCase("Spawn Goblin (1, 2, 3)", 1, "Goblin")]
     public void Tokenize_RawValues_AreCorrect(string input, int index, string expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens[index].Raw);
     }
 
     // CommandName
@@ -81,6 +88,8 @@ public class TokenizerTests
     [TestCase("Spawn 0.0", 1, typeof(float))]
     public void Tokenize_ResolvesCorrectTypes(string input, int index, Type expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens[index].Type);
     }
 
     [TestCase("Teleport @Player (10, 0, 5)", 0, TokenState.Resolved)]
@@ -89,6 +98,8 @@ public class TokenizerTests
     [TestCase("Teleport", 0, TokenState.Resolved)]
     public void Tokenize_SpaceTerminatedTokens_AreResolved(string input, int index, TokenState expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(expected, tokens[index].State);
     }
 
     [TestCase("Teleport @Player (10, 0, 5)", TokenState.Resolved)]
@@ -98,11 +109,17 @@ public class TokenizerTests
     [TestCase("Kill @Enemy1 \"Hello\"", TokenState.Resolved)]
     public void Tokenize_LastToken_HasExpectedState(string input, TokenState expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.Greater(tokens.Count, 0);
+        Assert.AreEqual(expected, tokens[^1].State);
     }
 
     [TestCase("42", typeof(int))]
     [TestCase("3.14", typeof(float))]
     public void Tokenize_AmbiguousNumber_ResolvesToMoreSpecificType(string input, Type expected)
     {
+        var tokens = _tokenizer.Tokenize(input);
+        Assert.AreEqual(1, tokens.Count);
+        Assert.AreEqual(expected, tokens[0].Type);
     }
 }
