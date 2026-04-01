@@ -31,7 +31,6 @@ public class Terminal
 	{
 		OnSubmitted?.Invoke();
 		Log(input, kind: LogKind.Command);
-		CommandExecutor.Execute(input, Registry, _parsers);
 	}
 
 	public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
