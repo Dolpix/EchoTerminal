@@ -46,25 +46,6 @@ public static class ParserRegistry
 			}
 		}
 
-		var intIdx = result.FindIndex(p => p is IntParser);
-		var floatIdx = result.FindIndex(p => p is FloatParser);
-		if (intIdx >= 0 && floatIdx >= 0 && intIdx > floatIdx)
-		{
-			var ip = result[intIdx];
-			result.RemoveAt(intIdx);
-			result.Insert(floatIdx, ip);
-		}
-
-		var catchAll = result.FindIndex(p => p is StringParser);
-		if (catchAll < 0)
-		{
-			return result;
-		}
-
-		var s = result[catchAll];
-		result.RemoveAt(catchAll);
-		result.Add(s);
-
 		return result;
 	}
 

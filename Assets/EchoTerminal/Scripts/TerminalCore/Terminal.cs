@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EchoTerminal.TerminalCore;
 using UnityEngine;
 
 namespace EchoTerminal
@@ -22,7 +23,7 @@ public class Terminal
 		_maxEntries = maxEntries;
 		Registry = new();
 		Registry.Scan();
-		ParserRegistry.Register<TerminalCore.CommandNameParser>(() => new TerminalCore.CommandNameParser(Registry.GetCommandNames()));
+		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
 		_parsers = ParserRegistry.CreateAll();
 	}
 
