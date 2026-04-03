@@ -14,6 +14,7 @@ public static class ParserRegistry
         typeof(Vector3),
         typeof(int),
         typeof(float),
+        typeof(bool),
         typeof(string)
     };
 
