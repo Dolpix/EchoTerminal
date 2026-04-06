@@ -5,52 +5,59 @@ using UnityEngine;
 
 namespace EchoTerminal
 {
-    public class Terminal
-    {
-        private readonly List<TerminalEntry> _entries = new();
-        private readonly int _maxEntries;
-        private readonly CommandExecutor _executor;
+public class Terminal
+{
+	private readonly List<TerminalEntry> _entries = new();
+	private readonly int _maxEntries;
+	private readonly CommandExecutor _executor;
 
-        public Terminal(int maxEntries = 1000)
-        {
-            _maxEntries = maxEntries;
-            Registry = new CommandRegistry();
-            Registry.Scan();
-            ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-            var tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
-            _executor = new CommandExecutor(Registry, tokenizer);
-        }
+	public Terminal(int maxEntries = 1000)
+	{
+		_maxEntries = maxEntries;
+		Registry = new();
+		Registry.Scan();
+		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
+		var tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
+		_executor = new(Registry, tokenizer);
+		BindCommand.Terminal = this;
+	}
 
-        public CommandRegistry Registry { get; }
-        public IReadOnlyList<TerminalEntry> Entries => _entries;
+	public CommandRegistry Registry { get; }
 
-        public event Action OnCleared;
-        public event Action<TerminalEntry> OnEntryAdded;
-        public event Action OnSubmitted;
+	public bool TryValidateCommand(string input, out string error)
+	{
+		return _executor.TryValidateCommand(input, out error);
+	}
 
-        public void Submit(string input)
-        {
-            OnSubmitted?.Invoke();
-            Log(input, kind: LogKind.Command);
-            _executor.Execute(input);
-        }
+	public IReadOnlyList<TerminalEntry> Entries => _entries;
 
-        public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
-        {
-            var entry = new TerminalEntry(text, color ?? Color.white, kind);
-            if (_entries.Count >= _maxEntries)
-            {
-                _entries.RemoveAt(0);
-            }
+	public event Action OnCleared;
+	public event Action<TerminalEntry> OnEntryAdded;
+	public event Action OnSubmitted;
 
-            _entries.Add(entry);
-            OnEntryAdded?.Invoke(entry);
-        }
+	public void Submit(string input)
+	{
+		OnSubmitted?.Invoke();
+		Log(input, kind: LogKind.Command);
+		_executor.Execute(input);
+	}
 
-        public void Clear()
-        {
-            _entries.Clear();
-            OnCleared?.Invoke();
-        }
-    }
+	public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
+	{
+		var entry = new TerminalEntry(text, color ?? Color.white, kind);
+		if (_entries.Count >= _maxEntries)
+		{
+			_entries.RemoveAt(0);
+		}
+
+		_entries.Add(entry);
+		OnEntryAdded?.Invoke(entry);
+	}
+
+	public void Clear()
+	{
+		_entries.Clear();
+		OnCleared?.Invoke();
+	}
+}
 }
