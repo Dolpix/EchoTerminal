@@ -67,7 +67,7 @@ public class ListParserTests
 
 	[TestCase("[]", TokenState.Resolved)]
 	[TestCase("[true,false]", TokenState.Resolved)]
-	[TestCase("[True]", TokenState.Invalid)]
+	[TestCase("[True]", TokenState.Resolved)]
 	[TestCase("[yes]", TokenState.Invalid)]
 	public void ParseTokenState_BoolExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{

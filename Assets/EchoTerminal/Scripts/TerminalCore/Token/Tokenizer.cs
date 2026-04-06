@@ -113,6 +113,14 @@ public class Tokenizer
 
 		foreach (var p in _parsers)
 		{
+			if (p.ParseTokenState(raw) == TokenState.Resolved)
+			{
+				return null;
+			}
+		}
+
+		foreach (var p in _parsers)
+		{
 			if (p.ParseTokenState(raw) == TokenState.Pending)
 			{
 				return p;
