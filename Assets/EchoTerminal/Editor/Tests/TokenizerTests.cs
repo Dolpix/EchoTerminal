@@ -56,40 +56,46 @@ public class TokenizerTests
         Assert.AreEqual(expected, tokens[index].Raw);
     }
 
-    // CommandName
     [TestCase("Teleport", 0, typeof(CommandName))]
     [TestCase("Spawn", 0, typeof(CommandName))]
     [TestCase("Kill", 0, typeof(CommandName))]
     [TestCase("Spawn Goblin (1, 2, 3)", 0, typeof(CommandName))]
-    // string — plain word
     [TestCase("Spawn Goblin (1, 2, 3)", 1, typeof(string))]
     [TestCase("Spawn Goblin", 1, typeof(string))]
     [TestCase("Kill Dragon", 1, typeof(string))]
-    // string — target (@)
     [TestCase("Teleport @Player (10, 0, 5)", 1, typeof(string))]
     [TestCase("Teleport @Enemy1", 1, typeof(string))]
     [TestCase("Kill @Enemy2", 1, typeof(string))]
-    // string — quoted
     [TestCase("Spawn \"Hello World\"", 1, typeof(string))]
     [TestCase("Kill \"test\"", 1, typeof(string))]
-    // Vector3
     [TestCase("Spawn Goblin (1, 2, 3)", 2, typeof(Vector3))]
     [TestCase("Teleport @Player (10, 0, 5)", 2, typeof(Vector3))]
     [TestCase("Kill @Enemy1 (0, 0, 0)", 2, typeof(Vector3))]
     [TestCase("Kill @Enemy1 (-1, -2, -3)", 2, typeof(Vector3))]
     [TestCase("Kill @Enemy1 (1.5, 2.5, 3.5)", 2, typeof(Vector3))]
-    // int
     [TestCase("Spawn 42", 1, typeof(int))]
     [TestCase("Spawn 0", 1, typeof(int))]
     [TestCase("Spawn -10", 1, typeof(int))]
-    // float
     [TestCase("Spawn 3.14", 1, typeof(float))]
     [TestCase("Spawn -1.5", 1, typeof(float))]
     [TestCase("Spawn 0.0", 1, typeof(float))]
+    [TestCase("Spawn red 3", 1, typeof(Color))]
+    [TestCase("Spawn white 3", 1, typeof(Color))]
+    [TestCase("Spawn #FF0000 3", 1, typeof(Color))]
+    [TestCase("Spawn #00FF00FF 3", 1, typeof(Color))]
     public void Tokenize_ResolvesCorrectTypes(string input, int index, Type expected)
     {
         var tokens = _tokenizer.Tokenize(input);
         Assert.AreEqual(expected, tokens[index].Type);
+    }
+
+    [TestCase("Spawn (1,0,0)", 1, typeof(Color))]
+    [TestCase("Spawn (0,1,0,0.5)", 1, typeof(Color))]
+    public void Tokenize_ColorTuple_WithExpectedType_ResolvesAsColor(string input, int index, Type expected)
+    {
+        var tokens = _tokenizer.Tokenize(input, new System.Collections.Generic.List<Type> { null, typeof(Color) });
+        Assert.AreEqual(expected, tokens[index].Type);
+        Assert.AreEqual(TokenState.Resolved, tokens[index].State);
     }
 
     [TestCase("Teleport @Player (10, 0, 5)", 0, TokenState.Resolved)]
