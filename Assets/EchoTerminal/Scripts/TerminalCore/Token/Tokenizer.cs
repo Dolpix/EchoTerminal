@@ -86,15 +86,22 @@ public class Tokenizer
 			return parser.ParseValue(token.Raw);
 		}
 
-		if (token.ExpectedType != null)
+		if (token.ExpectedType == null)
 		{
-			foreach (var p in _parsers)
+			return null;
+		}
+
+		foreach (var p in _parsers)
+		{
+			if (!p.Type.IsAssignableFrom(token.ExpectedType))
 			{
-				var value = p.ParseValue(token.Raw, token.ExpectedType);
-				if (value != null)
-				{
-					return value;
-				}
+				continue;
+			}
+
+			var value = p.ParseValue(token.Raw, token.ExpectedType);
+			if (value != null)
+			{
+				return value;
 			}
 		}
 
@@ -153,6 +160,11 @@ public class Tokenizer
 
 			foreach (var p in _parsers)
 			{
+				if (!p.Type.IsAssignableFrom(expectedType))
+				{
+					continue;
+				}
+
 				var state = p.ParseTokenState(raw, expectedType);
 				if (state == TokenState.Unresolved)
 				{

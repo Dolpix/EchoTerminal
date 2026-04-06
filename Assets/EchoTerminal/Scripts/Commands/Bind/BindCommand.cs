@@ -8,10 +8,16 @@ namespace EchoTerminal
 public static class BindCommand
 {
 	[TerminalCommand("BindsAdd", "Bind a key to a command")]
-	private static void BindsAdd(Key key, CommandName command)
+	private static void BindsAdd(Key key, BoundCommand command)
 	{
-		BindStore.Set(key, command.Value);
-		Debug.Log($"Bound {key} to: {command.Value}");
+		if (command.Tokens.Count == 0 || command.Tokens[0].Type != typeof(CommandName))
+		{
+			Debug.LogError($"'{command.Raw}' is not a recognised command.");
+			return;
+		}
+
+		BindStore.Set(key, command.Raw);
+		Debug.Log($"Bound {key} to: {command.Raw}");
 	}
 
 	[TerminalCommand("BindsRemove", "Remove a key binding")]

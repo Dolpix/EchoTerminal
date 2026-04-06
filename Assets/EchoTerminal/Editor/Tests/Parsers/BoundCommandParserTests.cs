@@ -1,0 +1,114 @@
+using System.Linq;
+using EchoTerminal.TerminalCore;
+using NUnit.Framework;
+
+namespace EchoTerminal.Editor.Tests.Parsers
+{
+[TestFixture]
+public class BoundCommandParserTests
+{
+	[SetUp]
+	public void SetUp()
+	{
+		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }));
+		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1" }));
+		_parser = ParserRegistry.CreateAllParsers().OfType<BoundCommandParser>().First();
+	}
+
+	private BoundCommandParser _parser;
+
+	[Test]
+	public void Type_IsBoundCommand()
+	{
+		Assert.AreEqual(typeof(BoundCommand), _parser.Type);
+	}
+
+	[TestCase(">Teleport (0, 0, 0)<", TokenState.Resolved)]
+	[TestCase(">Kill @Enemy1<", TokenState.Resolved)]
+	[TestCase(">Spawn 42<", TokenState.Resolved)]
+	[TestCase(">Spawn 3.14<", TokenState.Resolved)]
+	[TestCase(">Spawn hello<", TokenState.Resolved)]
+	[TestCase(">Kill<", TokenState.Resolved)]
+	[TestCase(">Teleport (0, 0, 0) @Player<", TokenState.Resolved)]
+	public void ParseTokenState_ValidCommand_ReturnsResolved(string raw, TokenState expected)
+	{
+		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase(">")]
+	[TestCase(">Teleport")]
+	[TestCase(">Teleport (0, 0,")]
+	[TestCase(">Spawn 4")]
+	public void ParseTokenState_UnclosedDelimiter_ReturnsPending(string raw)
+	{
+		Assert.AreEqual(TokenState.Pending, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("")]
+	[TestCase("Teleport")]
+	[TestCase("42")]
+	[TestCase("(0, 0, 0)")]
+	public void ParseTokenState_NoOpener_ReturnsUnresolved(string raw)
+	{
+		Assert.AreEqual(TokenState.Unresolved, _parser.ParseTokenState(raw));
+	}
+
+	[TestCase("><")]
+	[TestCase(">   <")]
+	[TestCase(">Teleport (0, 0, )<")]
+	public void ParseTokenState_InvalidContent_ReturnsInvalid(string raw)
+	{
+		Assert.AreEqual(TokenState.Invalid, _parser.ParseTokenState(raw));
+	}
+
+	[Test]
+	public void ParseValue_Raw_StripsDelimiters()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Teleport (0, 0, 0)<");
+		Assert.AreEqual("Teleport (0, 0, 0)", result.Raw);
+	}
+
+	[Test]
+	public void ParseValue_ToString_MatchesRaw()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Spawn 42<");
+		Assert.AreEqual("Spawn 42", result.ToString());
+	}
+
+	[Test]
+	public void ParseValue_Tokens_ArePopulated()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Teleport (0, 0, 0)<");
+		Assert.AreEqual(2, result.Tokens.Count);
+	}
+
+	[Test]
+	public void ParseValue_AllTokens_AreResolved()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Kill @Enemy1<");
+		Assert.IsTrue(result.Tokens.All(t => t.State == TokenState.Resolved));
+	}
+
+	[Test]
+	public void ParseValue_FirstToken_IsCommandName()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Teleport (0, 0, 0)<");
+		Assert.AreEqual(typeof(CommandName), result.Tokens[0].Type);
+	}
+
+	[Test]
+	public void ParseValue_SingleWordCommand_HasOneToken()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Kill<");
+		Assert.AreEqual(1, result.Tokens.Count);
+		Assert.AreEqual("Kill", result.Tokens[0].Raw);
+	}
+
+	[Test]
+	public void ParseValue_WithTarget_TokenCountCorrect()
+	{
+		var result = (BoundCommand)_parser.ParseValue(">Teleport @Player<");
+		Assert.AreEqual(2, result.Tokens.Count);
+	}
+}
+}

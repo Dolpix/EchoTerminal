@@ -93,6 +93,10 @@ public static class ParserRegistry
             result.Add(p);
         }
 
+        var boundCommandParser = new BoundCommandParser(result);
+        result.Add(boundCommandParser);
+        elementParsers.Add(boundCommandParser);
+
         return result;
     }
 
