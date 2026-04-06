@@ -6,7 +6,12 @@ public class BoolParser : ITokenParser
 
 	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
-		return raw is "true" or "false" ? TokenState.Resolved : TokenState.Unresolved;
+		if (bool.TryParse(raw, out _))
+		{
+			return TokenState.Resolved;
+		}
+
+		return TokenState.Unresolved;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)
