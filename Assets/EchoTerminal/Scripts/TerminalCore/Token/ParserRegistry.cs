@@ -6,9 +6,9 @@ using UnityEngine;
 
 public static class ParserRegistry
 {
-    private static readonly Dictionary<Type, Func<ITokenParser>> _withArgs = new();
+    private static readonly Dictionary<Type, Func<ITokenParser>> WithArgs = new();
 
-    private static readonly Type[] _parseOrder =
+    private static readonly Type[] ParseOrder =
     {
         typeof(CommandName),
         typeof(Vector3),
@@ -19,7 +19,7 @@ public static class ParserRegistry
 
     public static void Register<T>(Func<ITokenParser> factory) where T : ITokenParser
     {
-        _withArgs[typeof(T)] = factory;
+        WithArgs[typeof(T)] = factory;
     }
 
     public static Dictionary<Type, ITokenParser> CreateAll()
@@ -53,6 +53,7 @@ public static class ParserRegistry
                 typeof(ITokenParser).IsAssignableFrom(t) &&
                 !t.IsInterface &&
                 !t.IsAbstract &&
+                !t.IsGenericTypeDefinition &&
                 IsTerminalCoreParser(t)
             );
 
@@ -60,7 +61,7 @@ public static class ParserRegistry
         {
             ITokenParser parser = null;
 
-            if (_withArgs.TryGetValue(type, out var factory))
+            if (WithArgs.TryGetValue(type, out var factory))
             {
                 parser = factory();
             }
@@ -75,8 +76,13 @@ public static class ParserRegistry
             }
         }
 
+        var elementParsers = unordered.ToList();
+        var listParser = new ListParser(elementParsers);
+        elementParsers.Add(listParser);
+        unordered.Add(listParser);
+
         var result = new List<ITokenParser>();
-        foreach (var valueType in _parseOrder)
+        foreach (var valueType in ParseOrder)
         {
             result.AddRange(unordered.Where(p => p.Type == valueType));
         }

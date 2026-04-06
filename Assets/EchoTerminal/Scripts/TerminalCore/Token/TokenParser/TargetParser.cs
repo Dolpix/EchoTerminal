@@ -12,7 +12,7 @@ public class TargetParser : ITokenParser
 
 	public System.Type Type => typeof(string);
 
-	public TokenState ParseTokenState(string raw)
+	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
 		if (!raw.StartsWith("@"))
 		{
@@ -32,7 +32,7 @@ public class TargetParser : ITokenParser
 		return TokenState.Invalid;
 	}
 
-	public object ParseValue(string raw)
+	public object ParseValue(string raw, System.Type expectedType = null)
 	{
 		return raw;
 	}

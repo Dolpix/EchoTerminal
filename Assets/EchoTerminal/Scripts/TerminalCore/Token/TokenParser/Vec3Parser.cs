@@ -2,7 +2,7 @@ public class Vec3Parser : ITokenParser
 {
 	public System.Type Type => typeof(UnityEngine.Vector3);
 
-	public TokenState ParseTokenState(string raw)
+	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
 		if (raw.Length == 0 || raw[0] != '(')
 		{
@@ -31,7 +31,7 @@ public class Vec3Parser : ITokenParser
 		return TokenState.Resolved;
 	}
 
-	public object ParseValue(string raw)
+	public object ParseValue(string raw, System.Type expectedType = null)
 	{
 		var parts = raw[1..^1].Split(',');
 		return new UnityEngine.Vector3(
