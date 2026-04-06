@@ -2,14 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using EchoTerminal.TerminalCore;
 
 public class ListParser : ITokenParser
 {
-	private readonly IList<ITokenParser> _elementParsers;
+	private readonly List<ITokenParser> _parsers;
+	private Tokenizer _tokenizer;
 
-	public ListParser(IList<ITokenParser> elementParsers)
+	public ListParser(List<ITokenParser> parsers)
 	{
-		_elementParsers = elementParsers;
+		_parsers = parsers;
 	}
 
 	public Type Type => typeof(IList);
@@ -27,129 +29,119 @@ public class ListParser : ITokenParser
 		}
 
 		var inner = raw[1..^1];
-
 		if (string.IsNullOrWhiteSpace(inner))
 		{
 			return TokenState.Resolved;
 		}
 
-		var elementParser = GetElementParser(expectedType);
+		var tokens = GetTokenizer().Tokenize(Normalize(inner));
 
-		if (elementParser == null)
-		{
-			return _elementParsers.Any(ep => AllElementsResolve(inner, ep))
-				? TokenState.Resolved
-				: TokenState.Invalid;
-		}
-
-		var elements = SplitElements(inner, elementParser);
-
-		if (elements == null)
+		if (tokens.Any(t => t.State != TokenState.Resolved))
 		{
 			return TokenState.Invalid;
 		}
 
-		return elements.All(e => elementParser.ParseTokenState(e) == TokenState.Resolved)
-			? TokenState.Resolved
-			: TokenState.Invalid;
+		var elementType = GetElementType(expectedType);
+		if (elementType == null)
+		{
+			return TokenState.Resolved;
+		}
+
+		{
+			var elementParser = FindElementParser(elementType, tokens[0].Raw);
+			if (elementParser == null ||
+				tokens.Any(t => elementParser.ParseTokenState(t.Raw, elementType) != TokenState.Resolved))
+			{
+				return TokenState.Invalid;
+			}
+		}
+
+		return TokenState.Resolved;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)
 	{
 		var inner = raw[1..^1];
-		var elementParser = GetElementParser(expectedType);
-
-		if (elementParser == null)
-		{
-			if (string.IsNullOrWhiteSpace(inner))
-			{
-				return new List<object>();
-			}
-
-			foreach (var ep in _elementParsers)
-			{
-				var elements = SplitElements(inner, ep);
-
-				if (elements == null || elements.Any(e => ep.ParseTokenState(e) != TokenState.Resolved))
-				{
-					continue;
-				}
-
-				var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(ep.Type));
-
-				foreach (var e in elements)
-				{
-					list.Add(ep.ParseValue(e));
-				}
-
-				return list;
-			}
-
-			return new List<object>();
-		}
-
 		if (string.IsNullOrWhiteSpace(inner))
 		{
 			return CreateEmptyList(expectedType);
 		}
 
-		var splitElements = SplitElements(inner, elementParser);
+		var tokens = GetTokenizer().Tokenize(Normalize(inner));
+		var elementType = GetElementType(expectedType);
 
-		if (splitElements == null)
+		if (expectedType == null && tokens.Count > 0)
 		{
-			return CreateEmptyList(expectedType);
+			var firstType = tokens[0].Type;
+			if (firstType != null && tokens.All(t => t.Type == firstType))
+			{
+				expectedType = typeof(List<>).MakeGenericType(firstType);
+			}
 		}
 
-		var result = CreateEmptyList(expectedType);
+		var list = CreateEmptyList(expectedType);
+		elementType = GetElementType(expectedType);
 
-		foreach (var e in splitElements)
+		foreach (var token in tokens)
 		{
-			result.Add(elementParser.ParseValue(e));
+			var parser = FindElementParser(elementType ?? token.Type, token.Raw);
+			list.Add(parser?.ParseValue(token.Raw, elementType));
 		}
 
-		return result;
+		return list;
 	}
 
-	private bool AllElementsResolve(string inner, ITokenParser elementParser)
+	private ITokenParser FindElementParser(Type elementType, string sampleRaw)
 	{
-		var elements = SplitElements(inner, elementParser);
-		return elements != null && elements.All(e => elementParser.ParseTokenState(e) == TokenState.Resolved);
-	}
-
-	private ITokenParser GetElementParser(Type listType)
-	{
-		var elementType = GetElementType(listType);
-
 		if (elementType == null)
 		{
 			return null;
 		}
 
-		var exact = _elementParsers.FirstOrDefault(p => p.Type == elementType);
+		return _parsers.FirstOrDefault(p => p.Type == elementType) ??
+			   _parsers.FirstOrDefault(p => p.ParseTokenState(sampleRaw, elementType) == TokenState.Resolved);
+	}
 
-		if (exact != null)
+	private Tokenizer GetTokenizer()
+	{
+		return _tokenizer ??= new(_parsers);
+	}
+
+	private static string Normalize(string inner)
+	{
+		var depth = 0;
+		var inQuote = false;
+		var chars = inner.ToCharArray();
+		for (var i = 0; i < chars.Length; i++)
 		{
-			return exact;
+			var c = chars[i];
+			if (c == '"')
+			{
+				inQuote = !inQuote;
+			}
+			else
+			{
+				switch (inQuote)
+				{
+					case false when c is '[' or '(':
+						depth++;
+						break;
+					case false when c is ']' or ')':
+						depth--;
+						break;
+					case false when c == ',' && depth == 0:
+						chars[i] = ' ';
+						break;
+				}
+			}
 		}
 
-		if (!elementType.IsGenericType)
-		{
-			return null;
-		}
-
-		var contextual = _elementParsers.OfType<ListParser>().FirstOrDefault();
-
-		return contextual != null ? new BoundParser(contextual, elementType) : null;
+		return new(chars);
 	}
 
 	private static Type GetElementType(Type listType)
 	{
-		if (listType == null || !listType.IsGenericType)
-		{
-			return null;
-		}
-
-		return listType.GetGenericArguments().FirstOrDefault();
+		return listType?.IsGenericType == true ? listType.GetGenericArguments().FirstOrDefault() : null;
 	}
 
 	private static IList CreateEmptyList(Type listType)
@@ -162,112 +154,33 @@ public class ListParser : ITokenParser
 	{
 		var depth = 0;
 		var inQuote = false;
-
 		foreach (var c in raw)
 		{
 			if (c == '"')
 			{
 				inQuote = !inQuote;
 			}
-			else if (!inQuote && c == '[')
+			else
 			{
-				depth++;
-			}
-			else if (!inQuote && c == ']')
-			{
-				depth--;
-				if (depth < 0)
+				switch (inQuote)
 				{
-					return false;
+					case false when c == '[':
+						depth++;
+						break;
+					case false when c == ']':
+					{
+						depth--;
+						if (depth < 0)
+						{
+							return false;
+						}
+
+						break;
+					}
 				}
 			}
 		}
 
 		return depth == 0;
-	}
-
-	private static List<string> SplitElements(string inner, ITokenParser elementParser)
-	{
-		var parts = new List<string>();
-		var i = 0;
-
-		while (i < inner.Length)
-		{
-			while (i < inner.Length && char.IsWhiteSpace(inner[i]))
-			{
-				i++;
-			}
-
-			if (i >= inner.Length)
-			{
-				break;
-			}
-
-			var start = i;
-			var found = false;
-
-			while (i <= inner.Length)
-			{
-				if (i > start)
-				{
-					var candidate = inner[start..i].Trim();
-
-					if (elementParser.ParseTokenState(candidate) == TokenState.Resolved)
-					{
-						var j = i;
-
-						while (j < inner.Length && char.IsWhiteSpace(inner[j]))
-						{
-							j++;
-						}
-
-						if (j >= inner.Length || inner[j] == ',')
-						{
-							parts.Add(candidate);
-							i = j < inner.Length ? j + 1 : inner.Length;
-							found = true;
-							break;
-						}
-					}
-				}
-
-				if (i >= inner.Length)
-				{
-					break;
-				}
-
-				i++;
-			}
-
-			if (!found)
-			{
-				return null;
-			}
-		}
-
-		return parts;
-	}
-
-	private sealed class BoundParser : ITokenParser
-	{
-		private readonly ITokenParser _inner;
-
-		public BoundParser(ITokenParser inner, Type boundType)
-		{
-			_inner = inner;
-			Type = boundType;
-		}
-
-		public Type Type { get; }
-
-		public TokenState ParseTokenState(string raw, System.Type expectedType = null)
-		{
-			return _inner.ParseTokenState(raw, Type);
-		}
-
-		public object ParseValue(string raw, System.Type expectedType = null)
-		{
-			return _inner.ParseValue(raw, Type);
-		}
 	}
 }
