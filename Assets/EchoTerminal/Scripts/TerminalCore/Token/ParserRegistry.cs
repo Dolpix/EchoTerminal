@@ -10,10 +10,18 @@ public static class ParserRegistry
 
 	private static readonly Type[] TailOrder =
 	{
+		typeof(Vector2),
 		typeof(Vector3),
 		typeof(Color),
+		typeof(Quaternion),
+		typeof(Rect),
+		typeof(Vector2Int),
+		typeof(Vector3Int),
 		typeof(int),
+		typeof(long),
 		typeof(float),
+		typeof(double),
+		typeof(char),
 		typeof(string)
 	};
 
