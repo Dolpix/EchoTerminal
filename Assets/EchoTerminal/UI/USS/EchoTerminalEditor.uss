@@ -96,7 +96,7 @@
 }
 
 .echo-editor--dark .terminal-input > .unity-text-field__input {
-    color: #C4C4C4;
+    color: transparent;
     --unity-cursor-color: #EFEFEF;
 }
 

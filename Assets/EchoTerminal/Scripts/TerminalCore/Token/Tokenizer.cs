@@ -79,6 +79,11 @@ public class Tokenizer
 		return tokens;
 	}
 
+	public bool TryGetParser<T>(out ITokenParser parser)
+	{
+		return _parsersByType.TryGetValue(typeof(T), out parser);
+	}
+
 	public object ParseValue(Token token)
 	{
 		if (token.Type != null && _parsersByType.TryGetValue(token.Type, out var parser))

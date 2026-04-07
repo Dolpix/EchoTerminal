@@ -27,7 +27,7 @@ public class CommandNameParserTests
 	[TestCase("Kill", TokenState.Resolved)]
 	[TestCase("Tele", TokenState.Unresolved)]
 	[TestCase("teleport", TokenState.Unresolved)]
-	[TestCase("Unknown", TokenState.Unresolved)]
+	[TestCase("Unknown", TokenState.Invalid)]
 	[TestCase("", TokenState.Unresolved)]
 	public void CommandNameParse_ReturnsExpectedState(string raw, TokenState expected)
 	{

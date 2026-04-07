@@ -30,7 +30,20 @@ public class CommandNameParser : ITokenParser
 
 	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
-		return _registry.Contains(raw) ? TokenState.Resolved : TokenState.Unresolved;
+		if (_registry.Contains(raw))
+		{
+			return TokenState.Resolved;
+		}
+
+		foreach (var name in _registry)
+		{
+			if (name.StartsWith(raw, System.StringComparison.OrdinalIgnoreCase))
+			{
+				return TokenState.Unresolved;
+			}
+		}
+
+		return TokenState.Invalid;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)

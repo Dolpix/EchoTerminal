@@ -17,12 +17,13 @@ public class Terminal
 		Registry = new();
 		Registry.Scan();
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-		var tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
-		_executor = new(Registry, tokenizer);
+		Tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
+		_executor = new(Registry, Tokenizer);
 		BindCommand.Terminal = this;
 	}
 
 	public CommandRegistry Registry { get; }
+	public Tokenizer Tokenizer { get; }
 
 	public bool TryValidateCommand(string input, out string error)
 	{
