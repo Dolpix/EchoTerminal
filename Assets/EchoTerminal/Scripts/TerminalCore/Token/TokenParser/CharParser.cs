@@ -8,15 +8,15 @@ public class CharParser : ITokenParser
 	{
 		if (raw.Length == 0 || raw[0] != '\'')
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (!raw.EndsWith("'") || raw.Length == 1)
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
-		return raw.Length == 3 ? TokenState.Resolved : TokenState.Invalid;
+		return raw.Length == 3 ? TokenState.Completed : TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

@@ -19,16 +19,16 @@ public class LongParserTests
 		Assert.AreEqual(typeof(long), _parser.Type);
 	}
 
-	[TestCase("42", TokenState.Resolved)]
-	[TestCase("0", TokenState.Resolved)]
-	[TestCase("-10", TokenState.Resolved)]
-	[TestCase("9999999999999", TokenState.Resolved)]
-	[TestCase("-9999999999999", TokenState.Resolved)]
-	[TestCase("3.14", TokenState.Unresolved)]
-	[TestCase("1.0", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("@Player", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("42", TokenState.Completed)]
+	[TestCase("0", TokenState.Completed)]
+	[TestCase("-10", TokenState.Completed)]
+	[TestCase("9999999999999", TokenState.Completed)]
+	[TestCase("-9999999999999", TokenState.Completed)]
+	[TestCase("3.14", TokenState.Failed)]
+	[TestCase("1.0", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("@Player", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void LongParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

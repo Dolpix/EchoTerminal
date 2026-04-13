@@ -18,35 +18,35 @@ public class StringParser : ITokenParser
 	{
 		if (raw.Length == 0)
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (raw[0] == '"')
 		{
 			if (raw.Length >= 2 && raw[^1] == '"')
 			{
-				return TokenState.Resolved;
+				return TokenState.Completed;
 			}
 
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
 		if (!char.IsLetter(raw[0]))
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (_validValues == null || _validValues.Contains(raw))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		if (_validValues.Any(v => v.StartsWith(raw)))
 		{
-			return TokenState.Unresolved;
+			return TokenState.Partial;
 		}
 
-		return TokenState.Invalid;
+		return TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)

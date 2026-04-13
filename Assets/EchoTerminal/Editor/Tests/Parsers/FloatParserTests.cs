@@ -19,15 +19,15 @@ public class FloatParserTests
 		Assert.AreEqual(typeof(float), _parser.Type);
 	}
 
-	[TestCase("3.14", TokenState.Resolved)]
-	[TestCase("42", TokenState.Resolved)]
-	[TestCase("-1.5", TokenState.Resolved)]
-	[TestCase("0.0", TokenState.Resolved)]
-	[TestCase("0", TokenState.Resolved)]
-	[TestCase("1.2.3", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("@Player", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("3.14", TokenState.Completed)]
+	[TestCase("42", TokenState.Completed)]
+	[TestCase("-1.5", TokenState.Completed)]
+	[TestCase("0.0", TokenState.Completed)]
+	[TestCase("0", TokenState.Completed)]
+	[TestCase("1.2.3", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("@Player", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void FloatParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

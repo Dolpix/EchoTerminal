@@ -23,14 +23,14 @@ public class BoundCommandParserTests
 		Assert.AreEqual(typeof(BoundCommand), _parser.Type);
 	}
 
-	[TestCase(">Teleport (0, 0, 0)<", TokenState.Resolved)]
-	[TestCase(">Kill @Enemy1<", TokenState.Resolved)]
-	[TestCase(">Spawn 42<", TokenState.Resolved)]
-	[TestCase(">Spawn 3.14<", TokenState.Resolved)]
-	[TestCase(">Spawn hello<", TokenState.Resolved)]
-	[TestCase(">Kill<", TokenState.Resolved)]
-	[TestCase(">Teleport (0, 0, 0) @Player<", TokenState.Resolved)]
-	public void ParseTokenState_ValidCommand_ReturnsResolved(string raw, TokenState expected)
+	[TestCase(">Teleport (0, 0, 0)<", TokenState.Completed)]
+	[TestCase(">Kill @Enemy1<", TokenState.Completed)]
+	[TestCase(">Spawn 42<", TokenState.Completed)]
+	[TestCase(">Spawn 3.14<", TokenState.Completed)]
+	[TestCase(">Spawn hello<", TokenState.Completed)]
+	[TestCase(">Kill<", TokenState.Completed)]
+	[TestCase(">Teleport (0, 0, 0) @Player<", TokenState.Completed)]
+	public void ParseTokenState_ValidCommand_ReturnsCompleted(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
@@ -39,26 +39,21 @@ public class BoundCommandParserTests
 	[TestCase(">Teleport")]
 	[TestCase(">Teleport (0, 0,")]
 	[TestCase(">Spawn 4")]
-	public void ParseTokenState_UnclosedDelimiter_ReturnsPending(string raw)
+	public void ParseTokenState_UnclosedDelimiter_ReturnsPartial(string raw)
 	{
-		Assert.AreEqual(TokenState.Pending, _parser.ParseTokenState(raw));
+		Assert.AreEqual(TokenState.Partial, _parser.ParseTokenState(raw));
 	}
 
 	[TestCase("")]
 	[TestCase("Teleport")]
 	[TestCase("42")]
 	[TestCase("(0, 0, 0)")]
-	public void ParseTokenState_NoOpener_ReturnsUnresolved(string raw)
-	{
-		Assert.AreEqual(TokenState.Unresolved, _parser.ParseTokenState(raw));
-	}
-
 	[TestCase("><")]
 	[TestCase(">   <")]
 	[TestCase(">Teleport (0, 0, )<")]
-	public void ParseTokenState_InvalidContent_ReturnsInvalid(string raw)
+	public void ParseTokenState_NotRecognised_ReturnsFailed(string raw)
 	{
-		Assert.AreEqual(TokenState.Invalid, _parser.ParseTokenState(raw));
+		Assert.AreEqual(TokenState.Failed, _parser.ParseTokenState(raw));
 	}
 
 	[Test]
@@ -83,10 +78,10 @@ public class BoundCommandParserTests
 	}
 
 	[Test]
-	public void ParseValue_AllTokens_AreResolved()
+	public void ParseValue_AllTokens_AreCompleted()
 	{
 		var result = (BoundCommand)_parser.ParseValue(">Kill @Enemy1<");
-		Assert.IsTrue(result.Tokens.All(t => t.State == TokenState.Resolved));
+		Assert.IsTrue(result.Tokens.All(t => t.State == TokenState.Completed));
 	}
 
 	[Test]

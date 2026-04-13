@@ -1,6 +1,21 @@
 using System.Collections.Generic;
 using System.Linq;
 
+public readonly struct Target
+{
+	public readonly string Value;
+
+	public Target(string value)
+	{
+		Value = value;
+	}
+
+	public override string ToString()
+	{
+		return Value;
+	}
+}
+
 public class TargetParser : ITokenParser
 {
 	private readonly HashSet<string> _known;
@@ -10,30 +25,30 @@ public class TargetParser : ITokenParser
 		_known = new(knownTargets);
 	}
 
-	public System.Type Type => typeof(string);
+	public System.Type Type => typeof(Target);
 
 	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
 		if (!raw.StartsWith("@"))
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (_known.Contains(raw))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		if (_known.Any(t => t.StartsWith(raw)))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
-		return TokenState.Invalid;
+		return TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)
 	{
-		return raw;
+		return new Target(raw);
 	}
 }

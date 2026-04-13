@@ -22,23 +22,23 @@ public class CommandNameParserTests
 		Assert.AreEqual(typeof(CmdName), _parser.Type);
 	}
 
-	[TestCase("Teleport", TokenState.Resolved)]
-	[TestCase("Spawn", TokenState.Resolved)]
-	[TestCase("Kill", TokenState.Resolved)]
-	[TestCase("Tele", TokenState.Unresolved)]
-	[TestCase("teleport", TokenState.Unresolved)]
-	[TestCase("Unknown", TokenState.Invalid)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("Teleport", TokenState.Completed)]
+	[TestCase("Spawn", TokenState.Completed)]
+	[TestCase("Kill", TokenState.Completed)]
+	[TestCase("Tele", TokenState.Partial)]
+	[TestCase("Unknown", TokenState.Failed)]
+	[TestCase("teleport", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void CommandNameParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
 	[Test]
-	public void CommandNameParse_EmptyRegistry_ReturnsUnresolved()
+	public void CommandNameParse_EmptyRegistry_ReturnsFailed()
 	{
 		var empty = new Parser(Array.Empty<string>());
-		Assert.AreEqual(TokenState.Unresolved, empty.ParseTokenState("Teleport"));
+		Assert.AreEqual(TokenState.Failed, empty.ParseTokenState("Teleport"));
 	}
 
 	[TestCase("Teleport")]

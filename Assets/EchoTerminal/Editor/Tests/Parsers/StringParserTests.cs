@@ -19,16 +19,16 @@ public class StringParserTests
 		Assert.AreEqual(typeof(string), _parser.Type);
 	}
 
-	[TestCase("Goblin", TokenState.Resolved)]
-	[TestCase("Gob", TokenState.Resolved)]
-	[TestCase("\"Hello World\"", TokenState.Resolved)]
-	[TestCase("\"Hello\"", TokenState.Resolved)]
-	[TestCase("\"\"", TokenState.Resolved)]
-	[TestCase("\"Hello", TokenState.Pending)]
-	[TestCase("\"", TokenState.Pending)]
-	[TestCase("123abc", TokenState.Unresolved)]
-	[TestCase("@Player", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("Goblin", TokenState.Completed)]
+	[TestCase("Gob", TokenState.Completed)]
+	[TestCase("\"Hello World\"", TokenState.Completed)]
+	[TestCase("\"Hello\"", TokenState.Completed)]
+	[TestCase("\"\"", TokenState.Completed)]
+	[TestCase("\"Hello", TokenState.Partial)]
+	[TestCase("\"", TokenState.Partial)]
+	[TestCase("123abc", TokenState.Failed)]
+	[TestCase("@Player", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void StringParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

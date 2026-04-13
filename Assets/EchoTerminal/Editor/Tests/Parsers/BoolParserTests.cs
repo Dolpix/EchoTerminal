@@ -19,22 +19,22 @@ namespace EchoTerminal.Editor.Tests.Parsers
             Assert.AreEqual(typeof(bool), _parser.Type);
         }
 
-        [TestCase("true", TokenState.Resolved)]
-        [TestCase("false", TokenState.Resolved)]
-        [TestCase("True", TokenState.Resolved)]
-        [TestCase("False", TokenState.Resolved)]
-        [TestCase("TRUE", TokenState.Resolved)]
-        [TestCase("FALSE", TokenState.Resolved)]
-        [TestCase("tru", TokenState.Pending)]
-        [TestCase("fals", TokenState.Pending)]
-        [TestCase("T", TokenState.Pending)]
-        [TestCase("FA", TokenState.Pending)]
-        [TestCase("1", TokenState.Unresolved)]
-        [TestCase("0", TokenState.Unresolved)]
-        [TestCase("yes", TokenState.Unresolved)]
-        [TestCase("no", TokenState.Unresolved)]
-        [TestCase("abc", TokenState.Unresolved)]
-        [TestCase("", TokenState.Unresolved)]
+        [TestCase("true", TokenState.Completed)]
+        [TestCase("false", TokenState.Completed)]
+        [TestCase("True", TokenState.Completed)]
+        [TestCase("False", TokenState.Completed)]
+        [TestCase("TRUE", TokenState.Completed)]
+        [TestCase("FALSE", TokenState.Completed)]
+        [TestCase("tru", TokenState.Partial)]
+        [TestCase("fals", TokenState.Partial)]
+        [TestCase("T", TokenState.Partial)]
+        [TestCase("FA", TokenState.Partial)]
+        [TestCase("1", TokenState.Failed)]
+        [TestCase("0", TokenState.Failed)]
+        [TestCase("yes", TokenState.Failed)]
+        [TestCase("no", TokenState.Failed)]
+        [TestCase("abc", TokenState.Failed)]
+        [TestCase("", TokenState.Failed)]
         public void BoolParse_ReturnsExpectedState(string raw, TokenState expected)
         {
             Assert.AreEqual(expected, _parser.ParseTokenState(raw));

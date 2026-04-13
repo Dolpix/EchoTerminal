@@ -20,20 +20,20 @@ public class QuaternionParserTests
 		Assert.AreEqual(typeof(Quaternion), _parser.Type);
 	}
 
-	[TestCase("(0, 0, 0, 1)", TokenState.Resolved)]
-	[TestCase("(0.5, 0.5, 0.5, 0.5)", TokenState.Resolved)]
-	[TestCase("(-1, 0, 0, 1)", TokenState.Resolved)]
-	[TestCase("(0, 0, 0, 0)", TokenState.Resolved)]
-	[TestCase("(0, 0, 0", TokenState.Pending)]
-	[TestCase("(", TokenState.Pending)]
-	[TestCase("(0, 0, 0, )", TokenState.Invalid)]
-	[TestCase("(abc, 0, 0, 1)", TokenState.Invalid)]
-	[TestCase("(0, 0, 0)", TokenState.Invalid)]
-	[TestCase("(0, 0, 0, 1, 0)", TokenState.Invalid)]
-	[TestCase("(, , , )", TokenState.Invalid)]
-	[TestCase("0, 0, 0, 1", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("(0, 0, 0, 1)", TokenState.Completed)]
+	[TestCase("(0.5, 0.5, 0.5, 0.5)", TokenState.Completed)]
+	[TestCase("(-1, 0, 0, 1)", TokenState.Completed)]
+	[TestCase("(0, 0, 0, 0)", TokenState.Completed)]
+	[TestCase("(0, 0, 0", TokenState.Partial)]
+	[TestCase("(", TokenState.Partial)]
+	[TestCase("(0, 0, 0, )", TokenState.Failed)]
+	[TestCase("(abc, 0, 0, 1)", TokenState.Failed)]
+	[TestCase("(0, 0, 0)", TokenState.Failed)]
+	[TestCase("(0, 0, 0, 1, 0)", TokenState.Failed)]
+	[TestCase("(, , , )", TokenState.Failed)]
+	[TestCase("0, 0, 0, 1", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void QuaternionParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

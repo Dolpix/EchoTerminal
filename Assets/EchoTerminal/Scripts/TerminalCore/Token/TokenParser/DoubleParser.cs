@@ -6,7 +6,7 @@ public class DoubleParser : ITokenParser
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
-		return double.TryParse(raw, out _) ? TokenState.Resolved : TokenState.Unresolved;
+		return double.TryParse(raw, out _) ? TokenState.Completed : TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

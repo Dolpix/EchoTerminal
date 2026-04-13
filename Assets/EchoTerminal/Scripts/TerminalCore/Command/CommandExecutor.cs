@@ -25,7 +25,7 @@ public class CommandExecutor
 			return;
 		}
 
-		if (tokens[0].State != TokenState.Resolved)
+		if (tokens[0].State != TokenState.Completed)
 		{
 			Debug.LogError($"Unknown command '{tokens[0].Raw}'.");
 			return;
@@ -56,7 +56,7 @@ public class CommandExecutor
 				continue;
 			}
 
-			if (argTokens.Any(t => t.State != TokenState.Resolved))
+			if (argTokens.Any(t => t.State != TokenState.Completed))
 			{
 				continue;
 			}
@@ -99,7 +99,7 @@ public class CommandExecutor
 	{
 		var tokens = _tokenizer.Tokenize(input);
 
-		if (tokens.Count == 0 || tokens[0].State != TokenState.Resolved)
+		if (tokens.Count == 0 || tokens[0].State != TokenState.Completed)
 		{
 			error = $"Unknown command '{(tokens.Count > 0 ? tokens[0].Raw : input)}'.";
 			return false;
@@ -124,7 +124,7 @@ public class CommandExecutor
 				? new List<Token>()
 				: _tokenizer.Tokenize(argInput, expectedTypes);
 
-			if (argTokens.Count != parameters.Length || argTokens.Any(t => t.State != TokenState.Resolved))
+			if (argTokens.Count != parameters.Length || argTokens.Any(t => t.State != TokenState.Completed))
 			{
 				continue;
 			}

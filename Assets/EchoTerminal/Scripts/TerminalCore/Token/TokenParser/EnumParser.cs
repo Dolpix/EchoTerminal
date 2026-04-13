@@ -9,23 +9,23 @@ public class EnumParser : ITokenParser
 	{
 		if (raw.Length == 0 || expectedType is not { IsEnum: true })
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		var names = Enum.GetNames(expectedType);
 
 		if (names.Any(n => string.Equals(n, raw, StringComparison.OrdinalIgnoreCase)))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		var lower = raw.ToLowerInvariant();
 		if (names.Any(n => n.Length > raw.Length && n.ToLowerInvariant().StartsWith(lower)))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
-		return TokenState.Unresolved;
+		return TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

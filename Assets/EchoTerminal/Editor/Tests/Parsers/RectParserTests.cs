@@ -20,20 +20,20 @@ public class RectParserTests
 		Assert.AreEqual(typeof(Rect), _parser.Type);
 	}
 
-	[TestCase("(0, 0, 100, 50)", TokenState.Resolved)]
-	[TestCase("(10, 20, 300, 400)", TokenState.Resolved)]
-	[TestCase("(-5, -10, 1.5, 2.5)", TokenState.Resolved)]
-	[TestCase("(0, 0, 0, 0)", TokenState.Resolved)]
-	[TestCase("(0, 0, 100", TokenState.Pending)]
-	[TestCase("(", TokenState.Pending)]
-	[TestCase("(0, 0, 100, )", TokenState.Invalid)]
-	[TestCase("(abc, 0, 100, 50)", TokenState.Invalid)]
-	[TestCase("(0, 0, 100)", TokenState.Invalid)]
-	[TestCase("(0, 0, 100, 50, 0)", TokenState.Invalid)]
-	[TestCase("(, , , )", TokenState.Invalid)]
-	[TestCase("0, 0, 100, 50", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("(0, 0, 100, 50)", TokenState.Completed)]
+	[TestCase("(10, 20, 300, 400)", TokenState.Completed)]
+	[TestCase("(-5, -10, 1.5, 2.5)", TokenState.Completed)]
+	[TestCase("(0, 0, 0, 0)", TokenState.Completed)]
+	[TestCase("(0, 0, 100", TokenState.Partial)]
+	[TestCase("(", TokenState.Partial)]
+	[TestCase("(0, 0, 100, )", TokenState.Failed)]
+	[TestCase("(abc, 0, 100, 50)", TokenState.Failed)]
+	[TestCase("(0, 0, 100)", TokenState.Failed)]
+	[TestCase("(0, 0, 100, 50, 0)", TokenState.Failed)]
+	[TestCase("(, , , )", TokenState.Failed)]
+	[TestCase("0, 0, 100, 50", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void RectParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

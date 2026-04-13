@@ -8,23 +8,23 @@ public class BoolParser : ITokenParser
 	{
 		if (raw.Length == 0)
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		var lower = raw.ToLowerInvariant();
 
 		if (lower is "true" or "false")
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		if ((lower.Length < "true".Length && "true".StartsWith(lower)) ||
 			(lower.Length < "false".Length && "false".StartsWith(lower)))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
-		return TokenState.Unresolved;
+		return TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

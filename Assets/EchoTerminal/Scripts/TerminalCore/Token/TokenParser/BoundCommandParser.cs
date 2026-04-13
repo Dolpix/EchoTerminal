@@ -37,31 +37,31 @@ public class BoundCommandParser : ITokenParser
 	{
 		if (raw.Length == 0 || raw[0] != '>')
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (raw[^1] != '<')
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
 		var inner = raw[1..^1];
 
 		if (string.IsNullOrWhiteSpace(inner))
 		{
-			return TokenState.Invalid;
+			return TokenState.Failed;
 		}
 
 		var tokens = GetTokenizer().Tokenize(inner);
 
-		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Invalid))
+		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Failed))
 		{
-			return TokenState.Invalid;
+			return TokenState.Failed;
 		}
 
-		return tokens.Any(t => t.State == TokenState.Pending)
-			? TokenState.Pending
-			: TokenState.Resolved;
+		return tokens.Any(t => t.State == TokenState.Partial)
+			? TokenState.Partial
+			: TokenState.Completed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

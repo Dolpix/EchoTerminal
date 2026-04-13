@@ -19,19 +19,19 @@ public class CharParserTests
 		Assert.AreEqual(typeof(char), _parser.Type);
 	}
 
-	[TestCase("'a'", TokenState.Resolved)]
-	[TestCase("'z'", TokenState.Resolved)]
-	[TestCase("'A'", TokenState.Resolved)]
-	[TestCase("'0'", TokenState.Resolved)]
-	[TestCase("'!'", TokenState.Resolved)]
-	[TestCase("'", TokenState.Pending)]
-	[TestCase("'a", TokenState.Pending)]
-	[TestCase("''", TokenState.Invalid)]
-	[TestCase("'ab'", TokenState.Invalid)]
-	[TestCase("'abc'", TokenState.Invalid)]
-	[TestCase("a", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("'a'", TokenState.Completed)]
+	[TestCase("'z'", TokenState.Completed)]
+	[TestCase("'A'", TokenState.Completed)]
+	[TestCase("'0'", TokenState.Completed)]
+	[TestCase("'!'", TokenState.Completed)]
+	[TestCase("'", TokenState.Partial)]
+	[TestCase("'a", TokenState.Partial)]
+	[TestCase("''", TokenState.Failed)]
+	[TestCase("'ab'", TokenState.Failed)]
+	[TestCase("'abc'", TokenState.Failed)]
+	[TestCase("a", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void CharParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

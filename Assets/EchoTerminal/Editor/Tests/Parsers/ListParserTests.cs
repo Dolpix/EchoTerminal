@@ -24,68 +24,68 @@ public class ListParserTests
 		Assert.AreEqual(typeof(IList), _parser.Type);
 	}
 
-	[TestCase("[]", TokenState.Resolved)]
-	[TestCase("[1,2,3]", TokenState.Resolved)]
-	[TestCase("[1.5,2.5]", TokenState.Resolved)]
-	[TestCase("[true,false]", TokenState.Resolved)]
-	[TestCase("[\"hello\",\"world\"]", TokenState.Resolved)]
-	[TestCase("[abc]", TokenState.Resolved)]
-	[TestCase("[[1,2],[3,4]]", TokenState.Resolved)]
-	[TestCase("[", TokenState.Pending)]
-	[TestCase("[1,2", TokenState.Pending)]
-	[TestCase("[[1,2],[3,4]", TokenState.Pending)]
-	[TestCase("", TokenState.Unresolved)]
-	[TestCase("1,2,3", TokenState.Unresolved)]
-	[TestCase("[??!]", TokenState.Invalid)]
+	[TestCase("[]", TokenState.Completed)]
+	[TestCase("[1,2,3]", TokenState.Completed)]
+	[TestCase("[1.5,2.5]", TokenState.Completed)]
+	[TestCase("[true,false]", TokenState.Completed)]
+	[TestCase("[\"hello\",\"world\"]", TokenState.Completed)]
+	[TestCase("[abc]", TokenState.Completed)]
+	[TestCase("[[1,2],[3,4]]", TokenState.Completed)]
+	[TestCase("[", TokenState.Partial)]
+	[TestCase("[1,2", TokenState.Partial)]
+	[TestCase("[[1,2],[3,4]", TokenState.Partial)]
+	[TestCase("", TokenState.Failed)]
+	[TestCase("1,2,3", TokenState.Failed)]
+	[TestCase("[??!]", TokenState.Failed)]
 	public void ParseTokenState_Dynamic_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("[]", TokenState.Resolved)]
-	[TestCase("[1,2,3]", TokenState.Resolved)]
-	[TestCase("[ 1 , 2 , 3 ]", TokenState.Resolved)]
-	[TestCase("[-1,0,99]", TokenState.Resolved)]
-	[TestCase("[1,2", TokenState.Pending)]
-	[TestCase("[[1,2],[3,4]", TokenState.Pending)]
-	[TestCase("", TokenState.Unresolved)]
-	[TestCase("[abc]", TokenState.Invalid)]
-	[TestCase("[1.5]", TokenState.Invalid)]
+	[TestCase("[]", TokenState.Completed)]
+	[TestCase("[1,2,3]", TokenState.Completed)]
+	[TestCase("[ 1 , 2 , 3 ]", TokenState.Completed)]
+	[TestCase("[-1,0,99]", TokenState.Completed)]
+	[TestCase("[1,2", TokenState.Partial)]
+	[TestCase("[[1,2],[3,4]", TokenState.Partial)]
+	[TestCase("", TokenState.Failed)]
+	[TestCase("[abc]", TokenState.Failed)]
+	[TestCase("[1.5]", TokenState.Failed)]
 	public void ParseTokenState_IntExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(List<int>)));
 	}
 
-	[TestCase("[]", TokenState.Resolved)]
-	[TestCase("[1.5,2.0,3.14]", TokenState.Resolved)]
-	[TestCase("[1,2,3]", TokenState.Resolved)]
-	[TestCase("[abc]", TokenState.Invalid)]
+	[TestCase("[]", TokenState.Completed)]
+	[TestCase("[1.5,2.0,3.14]", TokenState.Completed)]
+	[TestCase("[1,2,3]", TokenState.Completed)]
+	[TestCase("[abc]", TokenState.Failed)]
 	public void ParseTokenState_FloatExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(List<float>)));
 	}
 
-	[TestCase("[]", TokenState.Resolved)]
-	[TestCase("[true,false]", TokenState.Resolved)]
-	[TestCase("[True]", TokenState.Resolved)]
-	[TestCase("[yes]", TokenState.Invalid)]
+	[TestCase("[]", TokenState.Completed)]
+	[TestCase("[true,false]", TokenState.Completed)]
+	[TestCase("[True]", TokenState.Completed)]
+	[TestCase("[yes]", TokenState.Failed)]
 	public void ParseTokenState_BoolExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(List<bool>)));
 	}
 
-	[TestCase("[]", TokenState.Resolved)]
-	[TestCase("[\"hello\",\"world\"]", TokenState.Resolved)]
-	[TestCase("[\"hello\",\"world\"", TokenState.Pending)]
+	[TestCase("[]", TokenState.Completed)]
+	[TestCase("[\"hello\",\"world\"]", TokenState.Completed)]
+	[TestCase("[\"hello\",\"world\"", TokenState.Partial)]
 	public void ParseTokenState_StringExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(List<string>)));
 	}
 
-	[TestCase("[[1,2],[3,4]]", TokenState.Resolved)]
-	[TestCase("[[1],[2,3,4],[]]", TokenState.Resolved)]
-	[TestCase("[[1,2],[3,4]", TokenState.Pending)]
-	[TestCase("[[1,abc]]", TokenState.Invalid)]
+	[TestCase("[[1,2],[3,4]]", TokenState.Completed)]
+	[TestCase("[[1],[2,3,4],[]]", TokenState.Completed)]
+	[TestCase("[[1,2],[3,4]", TokenState.Partial)]
+	[TestCase("[[1,abc]]", TokenState.Failed)]
 	public void ParseTokenState_NestedIntExpected_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(List<List<int>>)));

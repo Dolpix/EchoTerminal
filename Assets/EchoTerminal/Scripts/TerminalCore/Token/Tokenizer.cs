@@ -50,15 +50,15 @@ public class Tokenizer
 			pos++;
 			var raw = input[start..pos];
 
-			var pendingParser = FindPendingParser(raw, expectedType);
+			var partialParser = FindPartialParser(raw, expectedType);
 
-			if (pendingParser != null)
+			if (partialParser != null)
 			{
 				while (pos < input.Length)
 				{
 					pos++;
 					raw = input[start..pos];
-					if (pendingParser.ParseTokenState(raw) != TokenState.Pending)
+					if (partialParser.ParseTokenState(raw) != TokenState.Partial)
 					{
 						break;
 					}
@@ -113,11 +113,11 @@ public class Tokenizer
 		return null;
 	}
 
-	private ITokenParser FindPendingParser(string raw, Type expectedType)
+	private ITokenParser FindPartialParser(string raw, Type expectedType)
 	{
 		if (expectedType != null && _parsersByType.TryGetValue(expectedType, out var expected))
 		{
-			if (expected.ParseTokenState(raw) == TokenState.Pending)
+			if (expected.ParseTokenState(raw) == TokenState.Partial)
 			{
 				return expected;
 			}
@@ -125,7 +125,7 @@ public class Tokenizer
 
 		foreach (var p in _parsers)
 		{
-			if (p.ParseTokenState(raw) == TokenState.Resolved)
+			if (p.ParseTokenState(raw) == TokenState.Completed)
 			{
 				return null;
 			}
@@ -133,7 +133,7 @@ public class Tokenizer
 
 		foreach (var p in _parsers)
 		{
-			if (p.ParseTokenState(raw) == TokenState.Pending)
+			if (p.ParseTokenState(raw) == TokenState.Partial)
 			{
 				return p;
 			}
@@ -149,16 +149,12 @@ public class Tokenizer
 			if (_parsersByType.TryGetValue(expectedType, out var expected))
 			{
 				var state = expected.ParseTokenState(raw);
-				if (state == TokenState.Unresolved)
-				{
-					state = TokenState.Invalid;
-				}
 
 				return new()
 				{
 					Raw = raw,
 					State = state,
-					Type = state == TokenState.Invalid ? null : expectedType,
+					Type = state == TokenState.Failed ? null : expectedType,
 					ExpectedType = expectedType
 				};
 			}
@@ -171,7 +167,7 @@ public class Tokenizer
 				}
 
 				var state = p.ParseTokenState(raw, expectedType);
-				if (state == TokenState.Unresolved)
+				if (state == TokenState.Failed)
 				{
 					continue;
 				}
@@ -180,39 +176,31 @@ public class Tokenizer
 				{
 					Raw = raw,
 					State = state,
-					Type = state == TokenState.Invalid ? null : expectedType,
+					Type = state == TokenState.Failed ? null : expectedType,
 					ExpectedType = expectedType
 				};
 			}
 
-			return new() { Raw = raw, State = TokenState.Invalid, Type = null, ExpectedType = expectedType };
+			return new() { Raw = raw, State = TokenState.Failed, Type = null, ExpectedType = expectedType };
 		}
 
 		foreach (var p in _parsers)
 		{
-			if (p.ParseTokenState(raw) == TokenState.Resolved)
+			if (p.ParseTokenState(raw) == TokenState.Completed)
 			{
-				return new() { Raw = raw, State = TokenState.Resolved, Type = p.Type };
+				return new() { Raw = raw, State = TokenState.Completed, Type = p.Type };
 			}
 		}
 
 		foreach (var p in _parsers)
 		{
-			if (p.ParseTokenState(raw) == TokenState.Pending)
+			if (p.ParseTokenState(raw) == TokenState.Partial)
 			{
-				return new() { Raw = raw, State = TokenState.Pending, Type = p.Type };
+				return new() { Raw = raw, State = TokenState.Partial, Type = p.Type };
 			}
 		}
 
-		foreach (var p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Invalid)
-			{
-				return new() { Raw = raw, State = TokenState.Invalid, Type = p.Type };
-			}
-		}
-
-		return new() { Raw = raw, State = TokenState.Unresolved, Type = typeof(string) };
+		return new() { Raw = raw, State = TokenState.Failed, Type = typeof(string) };
 	}
 }
 }

@@ -16,7 +16,7 @@ public class ColorParser : ITokenParser
 	{
 		if (raw.Length == 0)
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		return raw[0] switch
@@ -51,24 +51,24 @@ public class ColorParser : ITokenParser
 	{
 		if (!raw.EndsWith(")"))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
 		var parts = raw[1..^1].Split(',');
 		if (parts.Length is not (3 or 4))
 		{
-			return TokenState.Invalid;
+			return TokenState.Failed;
 		}
 
 		foreach (var part in parts)
 		{
 			if (!float.TryParse(part.Trim(), out _))
 			{
-				return TokenState.Invalid;
+				return TokenState.Failed;
 			}
 		}
 
-		return TokenState.Resolved;
+		return TokenState.Completed;
 	}
 
 	private static TokenState ParseHexState(string raw)
@@ -77,9 +77,9 @@ public class ColorParser : ITokenParser
 
 		return hex.Length switch
 		{
-			6 or 8   => hex.All(Uri.IsHexDigit) ? TokenState.Resolved : TokenState.Invalid,
-			< 6 or 7 => hex.All(Uri.IsHexDigit) ? TokenState.Pending : TokenState.Invalid,
-			_        => TokenState.Invalid
+			6 or 8   => hex.All(Uri.IsHexDigit) ? TokenState.Completed : TokenState.Failed,
+			< 6 or 7 => hex.All(Uri.IsHexDigit) ? TokenState.Partial : TokenState.Failed,
+			_        => TokenState.Failed
 		};
 	}
 
@@ -89,15 +89,15 @@ public class ColorParser : ITokenParser
 
 		if (NamedColors.Contains(lower))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		if (NamedColors.Any(n => n.Length > lower.Length && n.StartsWith(lower)))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
-		return TokenState.Unresolved;
+		return TokenState.Failed;
 	}
 
 	private static Color ParseTupleValue(string raw)

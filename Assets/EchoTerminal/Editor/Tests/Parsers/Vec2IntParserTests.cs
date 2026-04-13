@@ -20,20 +20,20 @@ public class Vec2IntParserTests
 		Assert.AreEqual(typeof(Vector2Int), _parser.Type);
 	}
 
-	[TestCase("(10, 0)", TokenState.Resolved)]
-	[TestCase("(0, 0)", TokenState.Resolved)]
-	[TestCase("(-1, -2)", TokenState.Resolved)]
-	[TestCase("(100, 200)", TokenState.Resolved)]
-	[TestCase("(10, 0", TokenState.Pending)]
-	[TestCase("(", TokenState.Pending)]
-	[TestCase("(1.5, 2)", TokenState.Invalid)]
-	[TestCase("(1, 2.0)", TokenState.Invalid)]
-	[TestCase("(abc, 1)", TokenState.Invalid)]
-	[TestCase("(1, 2, 3)", TokenState.Invalid)]
-	[TestCase("(10, )", TokenState.Invalid)]
-	[TestCase("10, 0", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("(10, 0)", TokenState.Completed)]
+	[TestCase("(0, 0)", TokenState.Completed)]
+	[TestCase("(-1, -2)", TokenState.Completed)]
+	[TestCase("(100, 200)", TokenState.Completed)]
+	[TestCase("(10, 0", TokenState.Partial)]
+	[TestCase("(", TokenState.Partial)]
+	[TestCase("(1.5, 2)", TokenState.Failed)]
+	[TestCase("(1, 2.0)", TokenState.Failed)]
+	[TestCase("(abc, 1)", TokenState.Failed)]
+	[TestCase("(1, 2, 3)", TokenState.Failed)]
+	[TestCase("(10, )", TokenState.Failed)]
+	[TestCase("10, 0", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void Vec2IntParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));

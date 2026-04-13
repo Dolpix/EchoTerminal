@@ -20,43 +20,43 @@ public class ListParser : ITokenParser
 	{
 		if (raw.Length == 0 || raw[0] != '[')
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (!IsBalanced(raw))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
 		var inner = raw[1..^1];
 		if (string.IsNullOrWhiteSpace(inner))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		var tokens = GetTokenizer().Tokenize(Normalize(inner));
 
-		if (tokens.Any(t => t.State != TokenState.Resolved))
+		if (tokens.Any(t => t.State != TokenState.Completed))
 		{
-			return TokenState.Invalid;
+			return TokenState.Failed;
 		}
 
 		var elementType = GetElementType(expectedType);
 		if (elementType == null)
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
 		{
 			var elementParser = FindElementParser(elementType, tokens[0].Raw);
 			if (elementParser == null ||
-				tokens.Any(t => elementParser.ParseTokenState(t.Raw, elementType) != TokenState.Resolved))
+				tokens.Any(t => elementParser.ParseTokenState(t.Raw, elementType) != TokenState.Completed))
 			{
-				return TokenState.Invalid;
+				return TokenState.Failed;
 			}
 		}
 
-		return TokenState.Resolved;
+		return TokenState.Completed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)
@@ -99,7 +99,7 @@ public class ListParser : ITokenParser
 		}
 
 		return _parsers.FirstOrDefault(p => p.Type == elementType) ??
-			   _parsers.FirstOrDefault(p => p.ParseTokenState(sampleRaw, elementType) == TokenState.Resolved);
+			   _parsers.FirstOrDefault(p => p.ParseTokenState(sampleRaw, elementType) == TokenState.Completed);
 	}
 
 	private Tokenizer GetTokenizer()

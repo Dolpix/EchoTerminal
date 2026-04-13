@@ -20,103 +20,103 @@ public class ColorParserTests
 		Assert.AreEqual(typeof(Color), _parser.Type);
 	}
 
-	[TestCase("red", TokenState.Resolved)]
-	[TestCase("RED", TokenState.Resolved)]
-	[TestCase("Red", TokenState.Resolved)]
-	[TestCase("green", TokenState.Resolved)]
-	[TestCase("blue", TokenState.Resolved)]
-	[TestCase("white", TokenState.Resolved)]
-	[TestCase("black", TokenState.Resolved)]
-	[TestCase("yellow", TokenState.Resolved)]
-	[TestCase("cyan", TokenState.Resolved)]
-	[TestCase("magenta", TokenState.Resolved)]
-	[TestCase("clear", TokenState.Resolved)]
-	[TestCase("grey", TokenState.Resolved)]
-	[TestCase("gray", TokenState.Resolved)]
-	public void ParseTokenState_Named_Resolved(string raw, TokenState expected)
+	[TestCase("red", TokenState.Completed)]
+	[TestCase("RED", TokenState.Completed)]
+	[TestCase("Red", TokenState.Completed)]
+	[TestCase("green", TokenState.Completed)]
+	[TestCase("blue", TokenState.Completed)]
+	[TestCase("white", TokenState.Completed)]
+	[TestCase("black", TokenState.Completed)]
+	[TestCase("yellow", TokenState.Completed)]
+	[TestCase("cyan", TokenState.Completed)]
+	[TestCase("magenta", TokenState.Completed)]
+	[TestCase("clear", TokenState.Completed)]
+	[TestCase("grey", TokenState.Completed)]
+	[TestCase("gray", TokenState.Completed)]
+	public void ParseTokenState_Named_Completed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("r", TokenState.Pending)]
-	[TestCase("re", TokenState.Pending)]
-	[TestCase("gr", TokenState.Pending)]
-	[TestCase("bl", TokenState.Pending)]
-	[TestCase("wh", TokenState.Pending)]
-	[TestCase("ma", TokenState.Pending)]
-	[TestCase("cle", TokenState.Pending)]
-	[TestCase("cy", TokenState.Pending)]
-	public void ParseTokenState_Named_Pending(string raw, TokenState expected)
+	[TestCase("r", TokenState.Partial)]
+	[TestCase("re", TokenState.Partial)]
+	[TestCase("gr", TokenState.Partial)]
+	[TestCase("bl", TokenState.Partial)]
+	[TestCase("wh", TokenState.Partial)]
+	[TestCase("ma", TokenState.Partial)]
+	[TestCase("cle", TokenState.Partial)]
+	[TestCase("cy", TokenState.Partial)]
+	public void ParseTokenState_Named_Partial(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("purple", TokenState.Unresolved)]
-	[TestCase("orange", TokenState.Unresolved)]
-	[TestCase("pink", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
-	public void ParseTokenState_Named_Unresolved(string raw, TokenState expected)
+	[TestCase("purple", TokenState.Failed)]
+	[TestCase("orange", TokenState.Failed)]
+	[TestCase("pink", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
+	public void ParseTokenState_Named_Failed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("#FF0000", TokenState.Resolved)]
-	[TestCase("#00FF00", TokenState.Resolved)]
-	[TestCase("#0000FF", TokenState.Resolved)]
-	[TestCase("#FFFFFF", TokenState.Resolved)]
-	[TestCase("#000000", TokenState.Resolved)]
-	[TestCase("#ff0000", TokenState.Resolved)]
-	[TestCase("#FF0000FF", TokenState.Resolved)]
-	[TestCase("#00000080", TokenState.Resolved)]
-	public void ParseTokenState_Hex_Resolved(string raw, TokenState expected)
+	[TestCase("#FF0000", TokenState.Completed)]
+	[TestCase("#00FF00", TokenState.Completed)]
+	[TestCase("#0000FF", TokenState.Completed)]
+	[TestCase("#FFFFFF", TokenState.Completed)]
+	[TestCase("#000000", TokenState.Completed)]
+	[TestCase("#ff0000", TokenState.Completed)]
+	[TestCase("#FF0000FF", TokenState.Completed)]
+	[TestCase("#00000080", TokenState.Completed)]
+	public void ParseTokenState_Hex_Completed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("#", TokenState.Pending)]
-	[TestCase("#FF", TokenState.Pending)]
-	[TestCase("#FF00", TokenState.Pending)]
-	[TestCase("#FF000", TokenState.Pending)]
-	[TestCase("#FF0000F", TokenState.Pending)]
-	public void ParseTokenState_Hex_Pending(string raw, TokenState expected)
+	[TestCase("#", TokenState.Partial)]
+	[TestCase("#FF", TokenState.Partial)]
+	[TestCase("#FF00", TokenState.Partial)]
+	[TestCase("#FF000", TokenState.Partial)]
+	[TestCase("#FF0000F", TokenState.Partial)]
+	public void ParseTokenState_Hex_Partial(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("#GGGGGG", TokenState.Invalid)]
-	[TestCase("#FF00ZZ", TokenState.Invalid)]
-	[TestCase("#FFFFFFFFF", TokenState.Invalid)]
-	public void ParseTokenState_Hex_Invalid(string raw, TokenState expected)
+	[TestCase("#GGGGGG", TokenState.Failed)]
+	[TestCase("#FF00ZZ", TokenState.Failed)]
+	[TestCase("#FFFFFFFFF", TokenState.Failed)]
+	public void ParseTokenState_Hex_Failed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("(1,0,0)", TokenState.Resolved)]
-	[TestCase("(0,1,0)", TokenState.Resolved)]
-	[TestCase("(0,0,1)", TokenState.Resolved)]
-	[TestCase("(1,1,1)", TokenState.Resolved)]
-	[TestCase("(0,0,0,0)", TokenState.Resolved)]
-	[TestCase("(1,0,0,1)", TokenState.Resolved)]
-	[TestCase("(0.5,0.5,0.5)", TokenState.Resolved)]
-	public void ParseTokenState_Tuple_Resolved(string raw, TokenState expected)
+	[TestCase("(1,0,0)", TokenState.Completed)]
+	[TestCase("(0,1,0)", TokenState.Completed)]
+	[TestCase("(0,0,1)", TokenState.Completed)]
+	[TestCase("(1,1,1)", TokenState.Completed)]
+	[TestCase("(0,0,0,0)", TokenState.Completed)]
+	[TestCase("(1,0,0,1)", TokenState.Completed)]
+	[TestCase("(0.5,0.5,0.5)", TokenState.Completed)]
+	public void ParseTokenState_Tuple_Completed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("(", TokenState.Pending)]
-	[TestCase("(1", TokenState.Pending)]
-	[TestCase("(1,0", TokenState.Pending)]
-	[TestCase("(1,0,0", TokenState.Pending)]
-	public void ParseTokenState_Tuple_Pending(string raw, TokenState expected)
+	[TestCase("(", TokenState.Partial)]
+	[TestCase("(1", TokenState.Partial)]
+	[TestCase("(1,0", TokenState.Partial)]
+	[TestCase("(1,0,0", TokenState.Partial)]
+	public void ParseTokenState_Tuple_Partial(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("(1,0)", TokenState.Invalid)]
-	[TestCase("(1,0,0,0,0)", TokenState.Invalid)]
-	[TestCase("(a,b,c)", TokenState.Invalid)]
-	[TestCase("(1,x,0)", TokenState.Invalid)]
-	public void ParseTokenState_Tuple_Invalid(string raw, TokenState expected)
+	[TestCase("(1,0)", TokenState.Failed)]
+	[TestCase("(1,0,0,0,0)", TokenState.Failed)]
+	[TestCase("(a,b,c)", TokenState.Failed)]
+	[TestCase("(1,x,0)", TokenState.Failed)]
+	public void ParseTokenState_Tuple_Failed(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}

@@ -14,23 +14,23 @@ public class TargetParserTests
 	private TargetParser _parser;
 
 	[Test]
-	public void Type_IsString()
+	public void Type_IsTarget()
 	{
-		Assert.AreEqual(typeof(string), _parser.Type);
+		Assert.AreEqual(typeof(Target), _parser.Type);
 	}
 
-	[TestCase("@Player", TokenState.Resolved)]
-	[TestCase("@Enemy1", TokenState.Resolved)]
-	[TestCase("@Enemy2", TokenState.Resolved)]
-	[TestCase("@P", TokenState.Pending)]
-	[TestCase("@Pla", TokenState.Pending)]
-	[TestCase("@Play", TokenState.Pending)]
-	[TestCase("@Player3", TokenState.Invalid)]
-	[TestCase("@Unknown", TokenState.Invalid)]
-	[TestCase("@XYZ", TokenState.Invalid)]
-	[TestCase("@Z", TokenState.Invalid)]
-	[TestCase("Player", TokenState.Unresolved)]
-	[TestCase("abc", TokenState.Unresolved)]
+	[TestCase("@Player", TokenState.Completed)]
+	[TestCase("@Enemy1", TokenState.Completed)]
+	[TestCase("@Enemy2", TokenState.Completed)]
+	[TestCase("@P", TokenState.Partial)]
+	[TestCase("@Pla", TokenState.Partial)]
+	[TestCase("@Play", TokenState.Partial)]
+	[TestCase("@Player3", TokenState.Failed)]
+	[TestCase("@Unknown", TokenState.Failed)]
+	[TestCase("@XYZ", TokenState.Failed)]
+	[TestCase("@Z", TokenState.Failed)]
+	[TestCase("Player", TokenState.Failed)]
+	[TestCase("abc", TokenState.Failed)]
 	public void TargetParse_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
@@ -39,9 +39,10 @@ public class TargetParserTests
 	[TestCase("@Player")]
 	[TestCase("@Enemy1")]
 	[TestCase("@Enemy2")]
-	public void TargetParseValue_ReturnsRawString(string raw)
+	public void TargetParseValue_ReturnsTargetWithMatchingValue(string raw)
 	{
-		Assert.AreEqual(raw, _parser.ParseValue(raw));
+		var result = (Target)_parser.ParseValue(raw);
+		Assert.AreEqual(raw, result.Value);
 	}
 }
 }

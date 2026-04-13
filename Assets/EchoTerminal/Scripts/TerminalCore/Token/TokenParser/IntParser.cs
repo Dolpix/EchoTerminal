@@ -6,10 +6,10 @@ public class IntParser : ITokenParser
 	{
 		if (int.TryParse(raw, out _))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
-		return TokenState.Unresolved;
+		return TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)

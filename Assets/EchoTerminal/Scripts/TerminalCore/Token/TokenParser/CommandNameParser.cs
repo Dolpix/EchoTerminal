@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EchoTerminal.TerminalCore
 {
@@ -26,27 +28,26 @@ public class CommandNameParser : ITokenParser
 		_registry = new(commandNames);
 	}
 
-	public System.Type Type => typeof(CommandName);
+	public Type Type => typeof(CommandName);
 
-	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
+	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
 		if (_registry.Contains(raw))
 		{
-			return TokenState.Resolved;
+			return TokenState.Completed;
 		}
 
-		foreach (var name in _registry)
+		if (raw.Length <= 0)
 		{
-			if (name.StartsWith(raw, System.StringComparison.OrdinalIgnoreCase))
-			{
-				return TokenState.Unresolved;
-			}
+			return TokenState.Failed;
 		}
 
-		return TokenState.Invalid;
+		return _registry.Any(name => name.StartsWith(raw, StringComparison.Ordinal))
+			? TokenState.Partial
+			: TokenState.Failed;
 	}
 
-	public object ParseValue(string raw, System.Type expectedType = null)
+	public object ParseValue(string raw, Type expectedType = null)
 	{
 		return new CommandName(raw);
 	}

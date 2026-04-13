@@ -34,21 +34,21 @@ public class EnumParserTests
 	[TestCase("North")]
 	[TestCase("Space")]
 	[TestCase("Red")]
-	public void ParseTokenState_NoExpectedType_ReturnsUnresolved(string raw)
+	public void ParseTokenState_NoExpectedType_ReturnsFailed(string raw)
 	{
-		Assert.AreEqual(TokenState.Unresolved, _parser.ParseTokenState(raw));
+		Assert.AreEqual(TokenState.Failed, _parser.ParseTokenState(raw));
 	}
 
-	[TestCase("North", TokenState.Resolved)]
-	[TestCase("south", TokenState.Resolved)]
-	[TestCase("EAST", TokenState.Resolved)]
-	[TestCase("NorthEast", TokenState.Resolved)]
-	[TestCase("nor", TokenState.Pending)]
-	[TestCase("No", TokenState.Pending)]
-	[TestCase("northw", TokenState.Pending)]
-	[TestCase("Up", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
-	[TestCase("Northe", TokenState.Pending)]
+	[TestCase("North", TokenState.Completed)]
+	[TestCase("south", TokenState.Completed)]
+	[TestCase("EAST", TokenState.Completed)]
+	[TestCase("NorthEast", TokenState.Completed)]
+	[TestCase("nor", TokenState.Partial)]
+	[TestCase("No", TokenState.Partial)]
+	[TestCase("northw", TokenState.Partial)]
+	[TestCase("Up", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
+	[TestCase("Northe", TokenState.Partial)]
 	public void ParseTokenState_Direction_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(Direction)));
@@ -63,16 +63,16 @@ public class EnumParserTests
 		Assert.AreEqual(expected, _parser.ParseValue(raw, typeof(Direction)));
 	}
 
-	[TestCase("Space", TokenState.Resolved)]
-	[TestCase("space", TokenState.Resolved)]
-	[TestCase("SPACE", TokenState.Resolved)]
-	[TestCase("A", TokenState.Resolved)]
-	[TestCase("Enter", TokenState.Resolved)]
-	[TestCase("Sp", TokenState.Pending)]
-	[TestCase("Ent", TokenState.Pending)]
-	[TestCase("Lef", TokenState.Pending)]
-	[TestCase("ZZZ", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("Space", TokenState.Completed)]
+	[TestCase("space", TokenState.Completed)]
+	[TestCase("SPACE", TokenState.Completed)]
+	[TestCase("A", TokenState.Completed)]
+	[TestCase("Enter", TokenState.Completed)]
+	[TestCase("Sp", TokenState.Partial)]
+	[TestCase("Ent", TokenState.Partial)]
+	[TestCase("Lef", TokenState.Partial)]
+	[TestCase("ZZZ", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void ParseTokenState_Key_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(Key)));
@@ -99,15 +99,15 @@ public class EnumParserTests
 		Black
 	}
 
-	[TestCase("Red", TokenState.Resolved)]
-	[TestCase("red", TokenState.Resolved)]
-	[TestCase("GREEN", TokenState.Resolved)]
-	[TestCase("Blue", TokenState.Resolved)]
-	[TestCase("Bl", TokenState.Pending)]
-	[TestCase("Mag", TokenState.Pending)]
-	[TestCase("Wh", TokenState.Pending)]
-	[TestCase("Purple", TokenState.Unresolved)]
-	[TestCase("", TokenState.Unresolved)]
+	[TestCase("Red", TokenState.Completed)]
+	[TestCase("red", TokenState.Completed)]
+	[TestCase("GREEN", TokenState.Completed)]
+	[TestCase("Blue", TokenState.Completed)]
+	[TestCase("Bl", TokenState.Partial)]
+	[TestCase("Mag", TokenState.Partial)]
+	[TestCase("Wh", TokenState.Partial)]
+	[TestCase("Purple", TokenState.Failed)]
+	[TestCase("", TokenState.Failed)]
 	public void ParseTokenState_PaletteColor_ReturnsExpectedState(string raw, TokenState expected)
 	{
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw, typeof(PaletteColor)));

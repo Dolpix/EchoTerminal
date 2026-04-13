@@ -63,9 +63,9 @@ public class TokenizerTests
     [TestCase("Spawn Goblin (1, 2, 3)", 1, typeof(string))]
     [TestCase("Spawn Goblin", 1, typeof(string))]
     [TestCase("Kill Dragon", 1, typeof(string))]
-    [TestCase("Teleport @Player (10, 0, 5)", 1, typeof(string))]
-    [TestCase("Teleport @Enemy1", 1, typeof(string))]
-    [TestCase("Kill @Enemy2", 1, typeof(string))]
+    [TestCase("Teleport @Player (10, 0, 5)", 1, typeof(Target))]
+    [TestCase("Teleport @Enemy1", 1, typeof(Target))]
+    [TestCase("Kill @Enemy2", 1, typeof(Target))]
     [TestCase("Spawn \"Hello World\"", 1, typeof(string))]
     [TestCase("Kill \"test\"", 1, typeof(string))]
     [TestCase("Spawn Goblin (1, 2, 3)", 2, typeof(Vector3))]
@@ -95,24 +95,24 @@ public class TokenizerTests
     {
         var tokens = _tokenizer.Tokenize(input, new System.Collections.Generic.List<Type> { null, typeof(Color) });
         Assert.AreEqual(expected, tokens[index].Type);
-        Assert.AreEqual(TokenState.Resolved, tokens[index].State);
+        Assert.AreEqual(TokenState.Completed, tokens[index].State);
     }
 
-    [TestCase("Teleport @Player (10, 0, 5)", 0, TokenState.Resolved)]
-    [TestCase("Teleport @Player (10, 0, 5)", 1, TokenState.Resolved)]
-    [TestCase("Teleport @Player (10, 0, 5)", 2, TokenState.Resolved)]
-    [TestCase("Teleport", 0, TokenState.Resolved)]
-    public void Tokenize_SpaceTerminatedTokens_AreResolved(string input, int index, TokenState expected)
+    [TestCase("Teleport @Player (10, 0, 5)", 0, TokenState.Completed)]
+    [TestCase("Teleport @Player (10, 0, 5)", 1, TokenState.Completed)]
+    [TestCase("Teleport @Player (10, 0, 5)", 2, TokenState.Completed)]
+    [TestCase("Teleport", 0, TokenState.Completed)]
+    public void Tokenize_SpaceTerminatedTokens_AreCompleted(string input, int index, TokenState expected)
     {
         var tokens = _tokenizer.Tokenize(input);
         Assert.AreEqual(expected, tokens[index].State);
     }
 
-    [TestCase("Teleport @Player (10, 0, 5)", TokenState.Resolved)]
-    [TestCase("Teleport @Player (10, 0, ", TokenState.Pending)]
-    [TestCase("Teleport @Player (10, 0, )", TokenState.Invalid)]
-    [TestCase("Kill @Enemy1 \"Hello", TokenState.Pending)]
-    [TestCase("Kill @Enemy1 \"Hello\"", TokenState.Resolved)]
+    [TestCase("Teleport @Player (10, 0, 5)", TokenState.Completed)]
+    [TestCase("Teleport @Player (10, 0, ", TokenState.Partial)]
+    [TestCase("Teleport @Player (10, 0, )", TokenState.Failed)]
+    [TestCase("Kill @Enemy1 \"Hello", TokenState.Partial)]
+    [TestCase("Kill @Enemy1 \"Hello\"", TokenState.Completed)]
     public void Tokenize_LastToken_HasExpectedState(string input, TokenState expected)
     {
         var tokens = _tokenizer.Tokenize(input);

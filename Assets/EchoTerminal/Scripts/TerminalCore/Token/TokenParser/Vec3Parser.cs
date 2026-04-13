@@ -6,29 +6,29 @@ public class Vec3Parser : ITokenParser
 	{
 		if (raw.Length == 0 || raw[0] != '(')
 		{
-			return TokenState.Unresolved;
+			return TokenState.Failed;
 		}
 
 		if (!raw.EndsWith(")"))
 		{
-			return TokenState.Pending;
+			return TokenState.Partial;
 		}
 
 		var parts = raw[1..^1].Split(',');
 		if (parts.Length != 3)
 		{
-			return TokenState.Invalid;
+			return TokenState.Failed;
 		}
 
 		foreach (var part in parts)
 		{
 			if (!float.TryParse(part.Trim(), out _))
 			{
-				return TokenState.Invalid;
+				return TokenState.Failed;
 			}
 		}
 
-		return TokenState.Resolved;
+		return TokenState.Completed;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)
