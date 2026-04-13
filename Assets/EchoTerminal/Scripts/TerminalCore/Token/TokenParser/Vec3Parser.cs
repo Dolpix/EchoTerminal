@@ -11,6 +11,25 @@ public class Vec3Parser : ITokenParser
 
 		if (!raw.EndsWith(")"))
 		{
+			var inner = raw[1..];
+			var commaIndex = inner.IndexOf(',');
+			while (commaIndex >= 0)
+			{
+				var component = inner[..commaIndex].Trim();
+				if (!IsValidFloatComponent(component))
+				{
+					return TokenState.Failed;
+				}
+
+				inner = inner[(commaIndex + 1)..];
+				commaIndex = inner.IndexOf(',');
+			}
+
+			if (!IsValidFloatComponent(inner.Trim()))
+			{
+				return TokenState.Failed;
+			}
+
 			return TokenState.Partial;
 		}
 
@@ -29,6 +48,29 @@ public class Vec3Parser : ITokenParser
 		}
 
 		return TokenState.Completed;
+	}
+
+	private static bool IsValidFloatComponent(string s)
+	{
+		if (s.Length == 0)
+		{
+			return true;
+		}
+
+		if (float.TryParse(s, out _))
+		{
+			return true;
+		}
+
+		foreach (var c in s)
+		{
+			if (c != '-' && c != '+' && c != '.' && !char.IsDigit(c))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public object ParseValue(string raw, System.Type expectedType = null)

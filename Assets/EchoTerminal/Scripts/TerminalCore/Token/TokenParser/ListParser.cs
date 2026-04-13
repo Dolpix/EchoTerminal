@@ -25,6 +25,43 @@ public class ListParser : ITokenParser
 
 		if (!IsBalanced(raw))
 		{
+			var partial = raw[1..];
+			var allTokens = GetAllPartialTokens(partial);
+
+			var type = GetElementType(expectedType);
+			if (type == null)
+			{
+				if (allTokens == null)
+				{
+					return TokenState.Partial;
+				}
+
+				var committed = allTokens.Take(allTokens.Count - 1);
+				var last = allTokens[^1];
+				if (committed.Any(t => t.State == TokenState.Failed) ||
+				    last.State == TokenState.Failed)
+				{
+					return TokenState.Failed;
+				}
+
+				return TokenState.Partial;
+			}
+
+			if (allTokens is not { Count: > 0 })
+			{
+				return TokenState.Partial;
+			}
+
+			var elementParser = FindElementParser(type, allTokens[0].Raw);
+			var completedTokens = allTokens.Take(allTokens.Count - 1).ToList();
+			var lastToken = allTokens[^1];
+			if (elementParser == null ||
+			    completedTokens.Any(t => elementParser.ParseTokenState(t.Raw, type) != TokenState.Completed) ||
+			    elementParser.ParseTokenState(lastToken.Raw, type) == TokenState.Failed)
+			{
+				return TokenState.Failed;
+			}
+
 			return TokenState.Partial;
 		}
 
@@ -50,7 +87,7 @@ public class ListParser : ITokenParser
 		{
 			var elementParser = FindElementParser(elementType, tokens[0].Raw);
 			if (elementParser == null ||
-				tokens.Any(t => elementParser.ParseTokenState(t.Raw, elementType) != TokenState.Completed))
+			    tokens.Any(t => elementParser.ParseTokenState(t.Raw, elementType) != TokenState.Completed))
 			{
 				return TokenState.Failed;
 			}
@@ -99,12 +136,60 @@ public class ListParser : ITokenParser
 		}
 
 		return _parsers.FirstOrDefault(p => p.Type == elementType) ??
-			   _parsers.FirstOrDefault(p => p.ParseTokenState(sampleRaw, elementType) == TokenState.Completed);
+		       _parsers.FirstOrDefault(p => p.Type.IsAssignableFrom(elementType) &&
+		                                    p.ParseTokenState(sampleRaw, elementType) == TokenState.Completed);
+	}
+
+	private List<Token> GetAllPartialTokens(string partialInner)
+	{
+		var depth = 0;
+		var inQuote = false;
+		var lastComma = -1;
+		var segments = new List<string>();
+
+		for (var i = 0; i < partialInner.Length; i++)
+		{
+			var c = partialInner[i];
+			if (c == '"')
+			{
+				inQuote = !inQuote;
+			}
+			else if (!inQuote)
+			{
+				if (c is '[' or '(')
+				{
+					depth++;
+				}
+				else if (c is ']' or ')')
+				{
+					depth--;
+				}
+				else if (c == ',' && depth == 0)
+				{
+					segments.Add(partialInner[(lastComma + 1)..i].Trim());
+					lastComma = i;
+				}
+			}
+		}
+
+		var trailing = partialInner[(lastComma + 1)..].Trim();
+		if (!string.IsNullOrEmpty(trailing))
+		{
+			segments.Add(trailing);
+		}
+
+		if (segments.Count == 0)
+		{
+			return null;
+		}
+
+		var inner = string.Join(" ", segments);
+		return GetTokenizer().Tokenize(inner);
 	}
 
 	private Tokenizer GetTokenizer()
 	{
-		return _tokenizer ??= new(_parsers);
+		return _tokenizer ??= new Tokenizer(_parsers);
 	}
 
 	private static string Normalize(string inner)
@@ -136,7 +221,7 @@ public class ListParser : ITokenParser
 			}
 		}
 
-		return new(chars);
+		return new string(chars);
 	}
 
 	private static Type GetElementType(Type listType)
