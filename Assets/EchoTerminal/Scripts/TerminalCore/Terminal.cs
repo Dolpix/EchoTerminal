@@ -7,9 +7,12 @@ namespace EchoTerminal
 {
 public class Terminal
 {
+	public event Action OnCleared;
+	public event Action<TerminalEntry> OnEntryAdded;
+	public event Action OnSubmitted;
 	private readonly List<TerminalEntry> _entries = new();
-	private readonly int _maxEntries;
 	private readonly CommandExecutor _executor;
+	private readonly int _maxEntries;
 
 	public Terminal(int maxEntries = 1000)
 	{
@@ -17,7 +20,7 @@ public class Terminal
 		Registry = new();
 		Registry.Scan();
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-		Tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
+		Tokenizer = new(ParserRegistry.CreateAllParsers());
 		_executor = new(Registry, Tokenizer);
 		BindCommand.Terminal = this;
 	}
@@ -25,16 +28,12 @@ public class Terminal
 	public CommandRegistry Registry { get; }
 	public Tokenizer Tokenizer { get; }
 
+	public IReadOnlyList<TerminalEntry> Entries => _entries;
+
 	public bool TryValidateCommand(string input, out string error)
 	{
 		return _executor.TryValidateCommand(input, out error);
 	}
-
-	public IReadOnlyList<TerminalEntry> Entries => _entries;
-
-	public event Action OnCleared;
-	public event Action<TerminalEntry> OnEntryAdded;
-	public event Action OnSubmitted;
 
 	public void Submit(string input)
 	{

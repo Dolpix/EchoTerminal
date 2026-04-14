@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using EchoTerminal.TerminalCore;
 using UnityEngine;
@@ -7,6 +6,7 @@ namespace EchoTerminal
 {
 public class CommandExecutor
 {
+	private readonly CommandParser _commandParser;
 	private readonly CommandRegistry _registry;
 	private readonly Tokenizer _tokenizer;
 
@@ -14,136 +14,75 @@ public class CommandExecutor
 	{
 		_registry = registry;
 		_tokenizer = tokenizer;
+		_commandParser = new(registry, tokenizer);
 	}
 
 	public void Execute(string input)
 	{
-		var tokens = _tokenizer.Tokenize(input);
+		var result = _commandParser.Parse(input);
 
-		if (tokens.Count == 0)
+		if (!result.IsMatch)
+		{
+			Debug.LogError(BuildError(result));
+			return;
+		}
+
+		if (result.Entry == null)
 		{
 			return;
 		}
 
-		if (tokens[0].State != TokenState.Completed)
+		var entry = result.Entry.Value;
+		var args = result.ArgTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
+
+		if (entry.IsStatic)
 		{
-			Debug.LogError($"Unknown command '{tokens[0].Raw}'.");
+			entry.Method.Invoke(null, args);
 			return;
 		}
 
-		var commandName = tokens[0].Raw;
-		if (!_registry.TryGet(commandName, out var entries))
+		var instances = _registry.GetInstances(entry.MonoType);
+		if (instances.Length == 0)
 		{
-			Debug.LogError($"Unknown command '{commandName}'.");
+			Debug.LogError($"No active instance of '{entry.MonoType.Name}' found in the scene.");
 			return;
 		}
 
-		var argInput = input.TrimStart();
-		var spaceAfterCommand = argInput.IndexOf(' ');
-		argInput = spaceAfterCommand >= 0 ? argInput[(spaceAfterCommand + 1)..] : string.Empty;
-
-		foreach (var entry in entries)
+		foreach (var instance in instances)
 		{
-			var parameters = entry.Method.GetParameters();
-			var expectedTypes = parameters.Select(p => p.ParameterType).ToList();
-
-			var argTokens = string.IsNullOrWhiteSpace(argInput)
-				? new List<Token>()
-				: _tokenizer.Tokenize(argInput, expectedTypes);
-
-			if (argTokens.Count != parameters.Length)
-			{
-				continue;
-			}
-
-			if (argTokens.Any(t => t.State != TokenState.Completed))
-			{
-				continue;
-			}
-
-			var args = argTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
-
-			if (entry.IsStatic)
-			{
-				entry.Method.Invoke(null, args);
-			}
-			else
-			{
-				var instances = _registry.GetInstances(entry.MonoType);
-				if (instances.Length == 0)
-				{
-					Debug.LogError($"No active instance of '{entry.MonoType.Name}' found in the scene.");
-					return;
-				}
-
-				foreach (var instance in instances)
-				{
-					entry.Method.Invoke(instance, args);
-				}
-			}
-
-			return;
+			entry.Method.Invoke(instance, args);
 		}
-
-		if (entries.Count == 1)
-		{
-			Debug.LogError($"Invalid arguments for '{commandName}'. Expected: {BuildSignatureHint(entries[0])}");
-			return;
-		}
-
-		var signatures = string.Join(" | ", entries.Select(BuildSignatureHint));
-		Debug.LogError($"Invalid arguments for '{commandName}'. Expected one of: {signatures}");
 	}
 
 	public bool TryValidateCommand(string input, out string error)
 	{
-		var tokens = _tokenizer.Tokenize(input);
+		var result = _commandParser.Parse(input);
 
-		if (tokens.Count == 0 || tokens[0].State != TokenState.Completed)
+		if (result.IsMatch)
 		{
-			error = $"Unknown command '{(tokens.Count > 0 ? tokens[0].Raw : input)}'.";
-			return false;
-		}
-
-		var commandName = tokens[0].Raw;
-		if (!_registry.TryGet(commandName, out var entries))
-		{
-			error = $"Unknown command '{commandName}'.";
-			return false;
-		}
-
-		var argInput = input.TrimStart();
-		var spaceAfterCommand = argInput.IndexOf(' ');
-		argInput = spaceAfterCommand >= 0 ? argInput[(spaceAfterCommand + 1)..] : string.Empty;
-
-		foreach (var entry in entries)
-		{
-			var parameters = entry.Method.GetParameters();
-			var expectedTypes = parameters.Select(p => p.ParameterType).ToList();
-			var argTokens = string.IsNullOrWhiteSpace(argInput)
-				? new List<Token>()
-				: _tokenizer.Tokenize(argInput, expectedTypes);
-
-			if (argTokens.Count != parameters.Length || argTokens.Any(t => t.State != TokenState.Completed))
-			{
-				continue;
-			}
-
 			error = null;
 			return true;
 		}
 
-		if (entries.Count == 1)
+		error = BuildError(result);
+		return false;
+	}
+
+	private static string BuildError(CommandParseResult result)
+	{
+		if (result.Entries == null)
 		{
-			error = $"Invalid arguments for '{commandName}'. Expected: {BuildSignatureHint(entries[0])}";
-		}
-		else
-		{
-			var signatures = string.Join(" | ", entries.Select(BuildSignatureHint));
-			error = $"Invalid arguments for '{commandName}'. Expected one of: {signatures}";
+			return $"Unknown command '{result.CommandToken.Raw}'.";
 		}
 
-		return false;
+		if (result.Entries.Count == 1)
+		{
+			return
+				$"Invalid arguments for '{result.CommandToken.Raw}'. Expected: {BuildSignatureHint(result.Entries[0])}";
+		}
+
+		var signatures = string.Join(" | ", result.Entries.Select(BuildSignatureHint));
+		return $"Invalid arguments for '{result.CommandToken.Raw}'. Expected one of: {signatures}";
 	}
 
 	private static string BuildSignatureHint(CommandEntry entry)
