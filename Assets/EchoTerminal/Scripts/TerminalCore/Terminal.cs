@@ -21,10 +21,12 @@ public class Terminal
 		Registry.Scan();
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
 		Tokenizer = new(ParserRegistry.CreateAllParsers());
-		_executor = new(Registry, Tokenizer);
+		CommandParser = new(Registry, Tokenizer);
+		_executor = new(CommandParser, Registry, Tokenizer);
 		BindCommand.Terminal = this;
 	}
 
+	public CommandParser CommandParser { get; }
 	public CommandRegistry Registry { get; }
 	public Tokenizer Tokenizer { get; }
 

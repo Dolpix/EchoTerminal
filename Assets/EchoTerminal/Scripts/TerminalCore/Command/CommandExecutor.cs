@@ -10,11 +10,11 @@ public class CommandExecutor
 	private readonly CommandRegistry _registry;
 	private readonly Tokenizer _tokenizer;
 
-	public CommandExecutor(CommandRegistry registry, Tokenizer tokenizer)
+	public CommandExecutor(CommandParser commandParser, CommandRegistry registry, Tokenizer tokenizer)
 	{
 		_registry = registry;
 		_tokenizer = tokenizer;
-		_commandParser = new(registry, tokenizer);
+		_commandParser = commandParser;
 	}
 
 	public void Execute(string input)
