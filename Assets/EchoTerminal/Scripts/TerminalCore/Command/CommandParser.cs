@@ -16,23 +16,29 @@ public class CommandParser
 
 	public CommandParseResult Parse(string input)
 	{
-		var tokens = _tokenizer.Tokenize(input);
+		var trimmed = input.TrimStart();
 
-		if (tokens.Count == 0)
+		if (string.IsNullOrEmpty(trimmed))
 		{
 			return CommandParseResult.UnknownCommand(new() { Raw = string.Empty });
 		}
 
-		var commandToken = tokens[0];
+		// Command names are always a single word — extract to the first space, then
+		// ask CommandNameParser directly. Using the partial-parser loop would break
+		// early on any command name that is a prefix of a longer registered command.
+		var spaceIdx = trimmed.IndexOf(' ');
+		var commandRaw = spaceIdx >= 0 ? trimmed[..spaceIdx] : trimmed;
+
+		_tokenizer.TryGetParser<CommandName>(out var commandNameParser);
+		var commandState = commandNameParser?.ParseTokenState(commandRaw) ?? TokenState.Failed;
+		var commandToken = new Token { Raw = commandRaw, State = commandState };
 
 		if (commandToken.State != TokenState.Completed || !_registry.TryGet(commandToken.Raw, out var entries))
 		{
 			return CommandParseResult.UnknownCommand(commandToken);
 		}
 
-		var argInput = input.TrimStart();
-		var spaceAfterCommand = argInput.IndexOf(' ');
-		argInput = spaceAfterCommand >= 0 ? argInput[(spaceAfterCommand + 1)..] : string.Empty;
+		var argInput = spaceIdx >= 0 ? trimmed[(spaceIdx + 1)..] : string.Empty;
 
 		foreach (var entry in entries)
 		{

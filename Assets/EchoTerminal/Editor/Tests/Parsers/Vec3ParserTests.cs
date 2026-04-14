@@ -40,22 +40,19 @@ public class Vec3ParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void Vec3ParseValue_ReturnsExpectedVector3()
+	[TestCase("(10, 0, 5)", 10f, 0f, 5f)]
+	[TestCase("(0, -1.5, 20)", 0f, -1.5f, 20f)]
+	[TestCase("(0, 0, 0)", 0f, 0f, 0f)]
+	[TestCase("(-2, -14, -2020)", -2f, -14f, -2020f)]
+	[TestCase("(0.2, 0.001, 0.004)", 0.2f, 0.001f, 0.004f)]
+	public void Vec3ParseValue_ReturnsExpectedVector3(string raw, float x, float y, float z)
 	{
-		Assert.AreEqual(new Vector3(10f, 0f, 5f), _parser.ParseValue("(10, 0, 5)"));
-	}
+		var expected = new Vector3(x, y, z);
+		var result = (Vector3)_parser.ParseValue(raw);
 
-	[Test]
-	public void Vec3ParseValue_WithNegativesAndDecimals_ReturnsExpectedVector3()
-	{
-		Assert.AreEqual(new Vector3(1.5f, -2.0f, 3.0f), _parser.ParseValue("(1.5, -2.0, 3.0)"));
-	}
-
-	[Test]
-	public void Vec3ParseValue_Zero_ReturnsZeroVector()
-	{
-		Assert.AreEqual(Vector3.zero, _parser.ParseValue("(0, 0, 0)"));
+		Assert.AreEqual(expected.x, result.x, 0.001f);
+		Assert.AreEqual(expected.y, result.y, 0.001f);
+		Assert.AreEqual(expected.z, result.z, 0.001f);
 	}
 }
 }

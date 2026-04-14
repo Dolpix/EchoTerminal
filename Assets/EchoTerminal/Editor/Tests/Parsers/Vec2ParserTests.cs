@@ -6,13 +6,13 @@ namespace EchoTerminal.Editor.Tests.Parsers
 [TestFixture]
 public class Vec2ParserTests
 {
+	private Vec2Parser _parser;
+
 	[SetUp]
 	public void SetUp()
 	{
 		_parser = new();
 	}
-
-	private Vec2Parser _parser;
 
 	[Test]
 	public void Type_IsVector2()
@@ -38,22 +38,18 @@ public class Vec2ParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void Vec2ParseValue_ReturnsExpectedVector2()
+	[TestCase("(10, 0)", 10f, 0f)]
+	[TestCase("(1.5, -2.0)", 1.5f, -2.0f)]
+	[TestCase("(0, 0)", 0f, 0f)]
+	[TestCase("(-1, -2)", -1f, -2f)]
+	[TestCase("(0.005, 100.1)", 0.005f, 100.1f)]
+	public void Vec2ParseValue_ReturnsExpectedVector2(string raw, float x, float y)
 	{
-		Assert.AreEqual(new Vector2(10f, 0f), _parser.ParseValue("(10, 0)"));
-	}
+		var expected = new Vector2(x, y);
+		var result = (Vector2)_parser.ParseValue(raw);
 
-	[Test]
-	public void Vec2ParseValue_WithNegativesAndDecimals_ReturnsExpectedVector2()
-	{
-		Assert.AreEqual(new Vector2(1.5f, -2.0f), _parser.ParseValue("(1.5, -2.0)"));
-	}
-
-	[Test]
-	public void Vec2ParseValue_Zero_ReturnsZeroVector()
-	{
-		Assert.AreEqual(Vector2.zero, _parser.ParseValue("(0, 0)"));
+		Assert.AreEqual(expected.x, result.x, 0.001f);
+		Assert.AreEqual(expected.y, result.y, 0.001f);
 	}
 }
 }

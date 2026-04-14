@@ -40,22 +40,16 @@ public class Vec3IntParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void Vec3IntParseValue_ReturnsExpectedVector3Int()
+	[TestCase("(10, 0, 5)", 10, 0, 5)]
+	[TestCase("(-1, -2, -3)", -1, -2, -3)]
+	[TestCase("(0, 0, 0)", 0, 0, 0)]
+	[TestCase("(100, 200, 300)", 100, 200, 300)]
+	[TestCase("(-50, 25, 0)", -50, 25, 0)]
+	public void Vec3IntParseValue_ReturnsExpectedVector3Int(string raw, int x, int y, int z)
 	{
-		Assert.AreEqual(new Vector3Int(10, 0, 5), _parser.ParseValue("(10, 0, 5)"));
-	}
-
-	[Test]
-	public void Vec3IntParseValue_WithNegatives_ReturnsExpectedVector3Int()
-	{
-		Assert.AreEqual(new Vector3Int(-1, -2, -3), _parser.ParseValue("(-1, -2, -3)"));
-	}
-
-	[Test]
-	public void Vec3IntParseValue_Zero_ReturnsZeroVector()
-	{
-		Assert.AreEqual(Vector3Int.zero, _parser.ParseValue("(0, 0, 0)"));
+		var expected = new Vector3Int(x, y, z);
+		var result = (Vector3Int)_parser.ParseValue(raw);
+		Assert.AreEqual(expected, result);
 	}
 }
 }

@@ -2,21 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using EchoTerminal.TerminalCore;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace EchoTerminal.Components
 {
 public class TerminalHighlighter : IEchoComponent
 {
-	private const string _colorWhite = "#FFFFFF";
-	private static readonly string ColorCommand = ColorToHex(new(0.40f, 0.78f, 1.00f));
-	private static readonly string ColorValid = ColorToHex(new(0.67f, 0.85f, 0.47f));
-	private static readonly string ColorInvalid = ColorToHex(new(1.00f, 0.35f, 0.35f));
+	private const string _colorValidCommand = "#5599FF";
+	private const string _colorValidParameter = "#55FF88";
+	private const string _colorInprogress = "#FFFFFF";
+	private const string _colorInvalid = "#FF5555";
+
 	private readonly Label _highlightLabel;
 	private readonly TextField _inputField;
-
 	private readonly Terminal _terminal;
 
 	public TerminalHighlighter(Terminal terminal, VisualElement root)
@@ -40,158 +38,82 @@ public class TerminalHighlighter : IEchoComponent
 
 	private void OnInputChanged(ChangeEvent<string> evt)
 	{
-		_highlightLabel.text = string.IsNullOrEmpty(evt.newValue)
-			? string.Empty
-			: BuildHighlightedText(evt.newValue);
+		_highlightLabel.text = string.IsNullOrEmpty(evt.newValue) ? string.Empty : BuildHighlightedText(evt.newValue);
 	}
 
 	private string BuildHighlightedText(string input)
 	{
-		var tokenizer = _terminal.Tokenizer;
-		var registry = _terminal.Registry;
+		var result = _terminal.CommandParser.Parse(input);
+		var tokens = new List<(string raw, string color)>();
 
-		var rawTokens = tokenizer.Tokenize(input);
-		if (rawTokens.Count == 0)
+		if (!string.IsNullOrEmpty(result.CommandToken.Raw))
 		{
-			return string.Empty;
+			var commandColor = result.Entries == null
+				? result.CommandToken.State == TokenState.Partial ? _colorInprogress : _colorInvalid
+				: _colorValidCommand;
+
+			tokens.Add((result.CommandToken.Raw, commandColor));
 		}
 
-		var cmdToken = rawTokens[0];
-		var cmdState = tokenizer.TryGetParser<CommandName>(out var cmdParser)
-			? cmdParser.ParseTokenState(cmdToken.Raw)
-			: TokenState.Failed;
-
-		var allTokens = new List<Token> { cmdToken };
-		var allColors = new List<string> { TokenStateToCommandColor(cmdState) };
-
-		if (cmdState != TokenState.Completed || !registry.TryGet(cmdToken.Raw, out var entries))
-		{
-			var rest = tokenizer.Tokenize(input);
-			for (var i = 1; i < rest.Count; i++)
+		tokens.AddRange(
+			from token in GetArgTokens(input, result)
+			let color = token.State switch
 			{
-				allTokens.Add(rest[i]);
-				allColors.Add(ColorInvalid);
+				TokenState.Completed => _colorValidParameter,
+				TokenState.Partial   => _colorInprogress,
+				_                    => _colorInvalid
 			}
+			select (token.Raw, color));
 
-			return Colorize(input, allTokens, allColors);
-		}
-
-		var argInput = input.TrimStart();
-		var spaceAfterCmd = argInput.IndexOf(' ');
-		argInput = spaceAfterCmd >= 0 ? argInput[(spaceAfterCmd + 1)..] : string.Empty;
-
-		if (string.IsNullOrWhiteSpace(argInput))
-		{
-			return Colorize(input, allTokens, allColors);
-		}
-
-		List<Token> bestArgTokens = null;
-		var bestExpectedCount = -1;
-		var bestResolved = -1;
-		var bestNonFailed = -1;
-
-		foreach (var entry in entries)
-		{
-			var expectedTypes = entry.Method.GetParameters().Select(p => p.ParameterType).ToList();
-			var argTokens = tokenizer.Tokenize(argInput, expectedTypes);
-			var resolved = argTokens.Count(t => t.State == TokenState.Completed);
-			var nonFailed = argTokens.Count(t => t.State != TokenState.Failed);
-
-			if (bestArgTokens != null)
-			{
-				if (resolved < bestResolved)
-				{
-					continue;
-				}
-
-				if (resolved == bestResolved && nonFailed < bestNonFailed)
-				{
-					continue;
-				}
-
-				if (resolved == bestResolved &&
-					nonFailed == bestNonFailed &&
-					expectedTypes.Count <= bestExpectedCount)
-				{
-					continue;
-				}
-			}
-
-			bestArgTokens = argTokens;
-			bestExpectedCount = expectedTypes.Count;
-			bestResolved = resolved;
-			bestNonFailed = nonFailed;
-		}
-
-		if (bestArgTokens == null)
-		{
-			return Colorize(input, allTokens, allColors);
-		}
-
-		for (var i = 0; i < bestArgTokens.Count; i++)
-		{
-			var t = bestArgTokens[i];
-			allTokens.Add(t);
-			allColors.Add(i >= bestExpectedCount ? ColorInvalid : TokenStateToArgColor(t.State));
-		}
-
-		return Colorize(input, allTokens, allColors);
+		return ApplyColors(input, tokens);
 	}
 
-	private static string TokenStateToCommandColor(TokenState state)
+	private List<Token> GetArgTokens(string input, CommandParseResult result)
 	{
-		return state switch
+		if (result.IsMatch)
 		{
-			TokenState.Completed => ColorCommand,
-			TokenState.Partial   => _colorWhite,
-			_                    => ColorInvalid
-		};
+			return result.ArgTokens ?? new();
+		}
+
+		if (result.Entries == null)
+		{
+			return new();
+		}
+
+		var trimmed = input.TrimStart();
+		var spaceIdx = trimmed.IndexOf(' ');
+
+		if (spaceIdx < 0 || spaceIdx >= trimmed.Length - 1)
+		{
+			return new();
+		}
+
+		var argInput = trimmed[(spaceIdx + 1)..];
+		return string.IsNullOrWhiteSpace(argInput)
+			? new()
+			: _terminal.Tokenizer.Tokenize(argInput);
 	}
 
-	private static string TokenStateToArgColor(TokenState state)
-	{
-		return state switch
-		{
-			TokenState.Completed => ColorValid,
-			TokenState.Partial   => _colorWhite,
-			_                    => ColorInvalid
-		};
-	}
-
-	private static string Colorize(string input, List<Token> tokens, List<string> colors)
+	private static string ApplyColors(string input, List<(string raw, string color)> tokens)
 	{
 		var sb = new StringBuilder();
-		var cursor = 0;
+		var pos = 0;
 
-		for (var i = 0; i < tokens.Count; i++)
+		foreach (var (raw, color) in tokens)
 		{
-			var raw = tokens[i].Raw;
-			var start = input.IndexOf(raw, cursor, StringComparison.Ordinal);
-			if (start < 0)
+			var tokenStart = input.IndexOf(raw, pos, StringComparison.Ordinal);
+			if (tokenStart < 0)
 			{
 				break;
 			}
 
-			if (start > cursor)
-			{
-				sb.Append(new string(' ', start - cursor));
-			}
-
-			sb.Append($"<color={colors[i]}>{EscapeRichText(raw)}</color>");
-			cursor = start + raw.Length;
+			sb.Append(input[pos..tokenStart]);
+			sb.Append($"<color={color}>{raw}</color>");
+			pos = tokenStart + raw.Length;
 		}
 
+		sb.Append(input[pos..]);
 		return sb.ToString();
-	}
-
-	private static string EscapeRichText(string raw)
-	{
-		return raw.Replace("<", "<\u200b");
-	}
-
-	private static string ColorToHex(Color c)
-	{
-		return $"#{Mathf.RoundToInt(c.r * 255):X2}{Mathf.RoundToInt(c.g * 255):X2}{Mathf.RoundToInt(c.b * 255):X2}";
 	}
 }
 }

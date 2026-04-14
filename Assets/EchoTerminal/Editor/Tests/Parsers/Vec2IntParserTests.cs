@@ -39,22 +39,16 @@ public class Vec2IntParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void Vec2IntParseValue_ReturnsExpectedVector2Int()
+	[TestCase("(10, 0)", 10, 0)]
+	[TestCase("(-1, -2)", -1, -2)]
+	[TestCase("(0, 0)", 0, 0)]
+	[TestCase("(100, 200)", 100, 200)]
+	[TestCase("(-50, 25)", -50, 25)]
+	public void Vec2IntParseValue_ReturnsExpectedVector2Int(string raw, int x, int y)
 	{
-		Assert.AreEqual(new Vector2Int(10, 0), _parser.ParseValue("(10, 0)"));
-	}
-
-	[Test]
-	public void Vec2IntParseValue_WithNegatives_ReturnsExpectedVector2Int()
-	{
-		Assert.AreEqual(new Vector2Int(-1, -2), _parser.ParseValue("(-1, -2)"));
-	}
-
-	[Test]
-	public void Vec2IntParseValue_Zero_ReturnsZeroVector()
-	{
-		Assert.AreEqual(Vector2Int.zero, _parser.ParseValue("(0, 0)"));
+		var expected = new Vector2Int(x, y);
+		var result = (Vector2Int)_parser.ParseValue(raw);
+		Assert.AreEqual(expected, result);
 	}
 }
 }

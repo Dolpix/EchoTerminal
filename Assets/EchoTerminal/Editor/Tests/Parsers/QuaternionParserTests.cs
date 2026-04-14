@@ -39,22 +39,19 @@ public class QuaternionParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void QuaternionParseValue_Identity_ReturnsIdentityQuaternion()
+	[TestCase("(0, 0, 0, 1)", 0f, 0f, 0f, 1f)]
+	[TestCase("(0.5, 0.5, 0.5, 0.5)", 0.5f, 0.5f, 0.5f, 0.5f)]
+	[TestCase("(0, 0, 0, 0)", 0f, 0f, 0f, 0f)]
+	[TestCase("(-0.707, 0, 0, 0.707)", -0.707f, 0f, 0f, 0.707f)]
+	public void QuaternionParseValue_ReturnsExpectedQuaternion(string raw, float x, float y, float z, float w)
 	{
-		Assert.AreEqual(Quaternion.identity, _parser.ParseValue("(0, 0, 0, 1)"));
-	}
+		var expected = new Quaternion(x, y, z, w);
+		var result = (Quaternion)_parser.ParseValue(raw);
 
-	[Test]
-	public void QuaternionParseValue_ReturnsExpectedQuaternion()
-	{
-		Assert.AreEqual(new Quaternion(0.5f, 0.5f, 0.5f, 0.5f), _parser.ParseValue("(0.5, 0.5, 0.5, 0.5)"));
-	}
-
-	[Test]
-	public void QuaternionParseValue_Zero_ReturnsZeroQuaternion()
-	{
-		Assert.AreEqual(new Quaternion(0f, 0f, 0f, 0f), _parser.ParseValue("(0, 0, 0, 0)"));
+		Assert.AreEqual(expected.x, result.x, 0.001f);
+		Assert.AreEqual(expected.y, result.y, 0.001f);
+		Assert.AreEqual(expected.z, result.z, 0.001f);
+		Assert.AreEqual(expected.w, result.w, 0.001f);
 	}
 }
 }

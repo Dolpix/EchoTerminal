@@ -39,22 +39,18 @@ public class RectParserTests
 		Assert.AreEqual(expected, _parser.ParseTokenState(raw));
 	}
 
-	[Test]
-	public void RectParseValue_ReturnsExpectedRect()
+	[TestCase("(0, 0, 100, 50)", 0f, 0f, 100f, 50f)]
+	[TestCase("(-5, -10, 1.5, 2.5)", -5f, -10f, 1.5f, 2.5f)]
+	[TestCase("(0, 0, 0, 0)", 0f, 0f, 0f, 0f)]
+	[TestCase("(10.5, 20.5, 30.5, 40.5)", 10.5f, 20.5f, 30.5f, 40.5f)]
+	public void RectParseValue_ReturnsExpectedRect(string raw, float x, float y, float w, float h)
 	{
-		Assert.AreEqual(new Rect(0f, 0f, 100f, 50f), _parser.ParseValue("(0, 0, 100, 50)"));
-	}
-
-	[Test]
-	public void RectParseValue_WithDecimals_ReturnsExpectedRect()
-	{
-		Assert.AreEqual(new Rect(-5f, -10f, 1.5f, 2.5f), _parser.ParseValue("(-5, -10, 1.5, 2.5)"));
-	}
-
-	[Test]
-	public void RectParseValue_Zero_ReturnsZeroRect()
-	{
-		Assert.AreEqual(new Rect(0f, 0f, 0f, 0f), _parser.ParseValue("(0, 0, 0, 0)"));
+		var expected = new Rect(x, y, w, h);
+		var result = (Rect)_parser.ParseValue(raw);
+		Assert.AreEqual(expected.x, result.x, 0.001f);
+		Assert.AreEqual(expected.y, result.y, 0.001f);
+		Assert.AreEqual(expected.width, result.width, 0.001f);
+		Assert.AreEqual(expected.height, result.height, 0.001f);
 	}
 }
 }

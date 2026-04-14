@@ -58,8 +58,18 @@ public class Tokenizer
 				{
 					pos++;
 					raw = input[start..pos];
-					if (partialParser.ParseTokenState(raw) != TokenState.Partial)
+					var next = partialParser.ParseTokenState(raw);
+					if (next == TokenState.Completed)
 					{
+						break;
+					}
+
+					// A space is always a word boundary — retreat past it and stop.
+					// A non-space Failed is not a stop: the parser may recover on the
+					// next character (e.g. "-" is a Failed int but "-1" is Completed).
+					if (next == TokenState.Failed && input[pos - 1] == ' ')
+					{
+						pos--;
 						break;
 					}
 				}
