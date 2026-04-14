@@ -30,11 +30,6 @@ public class Terminal
 
 	public IReadOnlyList<TerminalEntry> Entries => _entries;
 
-	public bool TryValidateCommand(string input, out string error)
-	{
-		return _executor.TryValidateCommand(input, out error);
-	}
-
 	public void Submit(string input)
 	{
 		OnSubmitted?.Invoke();

@@ -18,10 +18,14 @@ public static class BindCommand
 			return;
 		}
 
-		if (Terminal != null && !Terminal.TryValidateCommand(command.Raw, out var error))
+		if (Terminal != null)
 		{
-			Debug.LogError($"Cannot bind — {error}");
-			return;
+			var parseResult = new CommandParser(Terminal.Registry, Terminal.Tokenizer).Parse(command.Raw);
+			if (!parseResult.IsMatch)
+			{
+				Debug.LogError($"Cannot bind — {parseResult.GetError()}");
+				return;
+			}
 		}
 
 		var existing = BindStore.GetAll();

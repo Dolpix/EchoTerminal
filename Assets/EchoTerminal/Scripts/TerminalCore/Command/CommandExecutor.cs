@@ -23,7 +23,7 @@ public class CommandExecutor
 
 		if (!result.IsMatch)
 		{
-			Debug.LogError(BuildError(result));
+			Debug.LogError(result.GetError());
 			return;
 		}
 
@@ -52,49 +52,6 @@ public class CommandExecutor
 		{
 			entry.Method.Invoke(instance, args);
 		}
-	}
-
-	public bool TryValidateCommand(string input, out string error)
-	{
-		var result = _commandParser.Parse(input);
-
-		if (result.IsMatch)
-		{
-			error = null;
-			return true;
-		}
-
-		error = BuildError(result);
-		return false;
-	}
-
-	private static string BuildError(CommandParseResult result)
-	{
-		if (result.Entries == null)
-		{
-			return $"Unknown command '{result.CommandToken.Raw}'.";
-		}
-
-		if (result.Entries.Count == 1)
-		{
-			return
-				$"Invalid arguments for '{result.CommandToken.Raw}'. Expected: {BuildSignatureHint(result.Entries[0])}";
-		}
-
-		var signatures = string.Join(" | ", result.Entries.Select(BuildSignatureHint));
-		return $"Invalid arguments for '{result.CommandToken.Raw}'. Expected one of: {signatures}";
-	}
-
-	private static string BuildSignatureHint(CommandEntry entry)
-	{
-		var parameters = entry.Method.GetParameters();
-		if (parameters.Length == 0)
-		{
-			return "(no arguments)";
-		}
-
-		var paramList = string.Join(", ", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
-		return $"({paramList})";
 	}
 }
 }
