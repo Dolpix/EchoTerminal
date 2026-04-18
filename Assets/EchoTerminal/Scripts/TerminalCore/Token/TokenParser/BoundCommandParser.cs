@@ -42,7 +42,14 @@ public class BoundCommandParser : ITokenParser
 
 		if (raw[^1] != '<')
 		{
-			return TokenState.Partial;
+			var partialInner = raw[1..];
+			if (partialInner.Length <= 0)
+			{
+				return TokenState.Partial;
+			}
+
+			var partialTokens = GetTokenizer().Tokenize(partialInner);
+			return partialTokens.Any(t => t.State == TokenState.Failed) ? TokenState.Failed : TokenState.Partial;
 		}
 
 		var inner = raw[1..^1];
@@ -54,7 +61,7 @@ public class BoundCommandParser : ITokenParser
 
 		var tokens = GetTokenizer().Tokenize(inner);
 
-		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Failed))
+		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Failed) || tokens.Count > 2)
 		{
 			return TokenState.Failed;
 		}
