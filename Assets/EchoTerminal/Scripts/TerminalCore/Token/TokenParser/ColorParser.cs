@@ -39,6 +39,11 @@ public class ColorParser : ITokenParser
 			return ParseTupleValue(raw);
 		}
 
+		if (ParseTokenState(raw) != TokenState.Completed)
+		{
+			return null;
+		}
+
 		if (ColorUtility.TryParseHtmlString(raw, out var color))
 		{
 			return color;
