@@ -16,7 +16,7 @@ public class CommandParserTests
 		registry.Scan();
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(registry.GetCommandNames()));
 		var tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
-		_parser = new(registry, tokenizer);
+		_parser = new CommandParser(registry, tokenizer);
 	}
 
 	private static class TestCommands
@@ -74,14 +74,15 @@ public class CommandParserTests
 
 	private CommandParser _parser;
 
-	[TestCase("XyzUnknown", TokenState.Failed)]    // unknown name           → red
-	[TestCase("XyzUnknown 42", TokenState.Failed)] // unknown name with args  → red
-	[TestCase("zzz 1 2 3", TokenState.Failed)]     // unknown multi-arg       → red
-	[TestCase("123cmd", TokenState.Failed)]        // invalid start char      → red
-	[TestCase("T", TokenState.Partial)]            // single char prefix      → white
-	[TestCase("TstI", TokenState.Partial)]         // prefix TstInt/TstIntList → white
-	[TestCase("Tst", TokenState.Partial)]          // prefix multiple cmds    → white
-	[TestCase("TstN", TokenState.Partial)]         // prefix TstNoArgs        → white
+	[TestCase("XyzUnknown", TokenState.Failed)]
+	[TestCase("XyzUnknown 42", TokenState.Failed)]
+	[TestCase("zzz 1 2 3", TokenState.Failed)]
+	[TestCase("123cmd", TokenState.Failed)]
+	[TestCase("T 1 2 3", TokenState.Failed)]
+	[TestCase("T", TokenState.Partial)]
+	[TestCase("TstI", TokenState.Partial)]
+	[TestCase("Tst", TokenState.Partial)]
+	[TestCase("TstN", TokenState.Partial)]
 	public void Parse_UnknownCommand(string input, TokenState expectedCmdState)
 	{
 		var result = _parser.Parse(input);
@@ -91,24 +92,24 @@ public class CommandParserTests
 		Assert.AreEqual(expectedCmdState, result.CommandToken.State);
 	}
 
-	[TestCase("TstInt")]               // missing required arg
-	[TestCase("TstInt ")]              // trailing space, no arg yet
-	[TestCase("TstInt abc")]           // wrong arg type
-	[TestCase("TstInt 3.14")]          // float given for int
-	[TestCase("TstNoArgs extra")]      // too many (0 expected, 1 given)
-	[TestCase("TstInt 1 2")]           // too many (1 expected, 2 given)
-	[TestCase("TstBool true false")]   // too many (1 expected, 2 given)
-	[TestCase("TstFloats 1 2 3 4")]    // too many (3 expected, 4 given)
-	[TestCase("TstBool maybe")]        // invalid bool literal
-	[TestCase("TstIntList [abc]")]     // wrong element type in list
-	[TestCase("TstIntList [1,2,abc]")] // bad element mid-list
-	[TestCase("TstBound ><")]          // empty bound command body
-	[TestCase("TstVec (1, 2, ")]       // vec3 in-progress
-	[TestCase("TstBool tr")]           // bool in-progress
-	[TestCase("TstBool tru")]          // bool in-progress
-	[TestCase("TstIntList [1,2,")]     // list in-progress
-	[TestCase("TstBound >TstNoArgs")]  // bound command in-progress (no closing >)
-	[TestCase("TstBound >TstInt 4")]   // bound command in-progress with partial arg
+	[TestCase("TstInt")]
+	[TestCase("TstInt ")]
+	[TestCase("TstInt abc")]
+	[TestCase("TstInt 3.14")]
+	[TestCase("TstNoArgs extra")]
+	[TestCase("TstInt 1 2")]
+	[TestCase("TstBool true false")]
+	[TestCase("TstFloats 1 2 3 4")]
+	[TestCase("TstBool maybe")]
+	[TestCase("TstIntList [abc]")]
+	[TestCase("TstIntList [1,2,abc]")]
+	[TestCase("TstBound ><")]
+	[TestCase("TstVec (1, 2, ")]
+	[TestCase("TstBool tr")]
+	[TestCase("TstBool tru")]
+	[TestCase("TstIntList [1,2,")]
+	[TestCase("TstBound >TstNoArgs")]
+	[TestCase("TstBound >TstInt 4")]
 	public void Parse_KnownCommand_NoMatch(string input)
 	{
 		var result = _parser.Parse(input);
@@ -151,21 +152,21 @@ public class CommandParserTests
 			"All arg tokens must be Completed on a match");
 	}
 
-	[TestCase("TstInt 42", 0, TokenState.Completed)]             // valid int
-	[TestCase("TstBool true", 0, TokenState.Completed)]          // valid bool
-	[TestCase("TstVec (1, 2, 3)", 0, TokenState.Completed)]      // valid vec3
-	[TestCase("TstFloats 1.0 2.0 3.0", 0, TokenState.Completed)] // float arg 0
-	[TestCase("TstFloats 1.0 2.0 3.0", 1, TokenState.Completed)] // float arg 1
-	[TestCase("TstFloats 1.0 2.0 3.0", 2, TokenState.Completed)] // float arg 2
-	[TestCase("TstBool tr", 0, TokenState.Partial)]              // bool in-progress
-	[TestCase("TstBool tru", 0, TokenState.Partial)]             // bool in-progress
-	[TestCase("TstVec (1, 2, ", 0, TokenState.Partial)]          // vec3 in-progress
-	[TestCase("TstInt abc", 0, TokenState.Failed)]               // wrong type for int
-	[TestCase("TstInt 3.14", 0, TokenState.Failed)]              // float given for int
-	[TestCase("TstVec (1, 2, )", 0, TokenState.Failed)]          // malformed vec3
-	[TestCase("TstNoArgs extra", 0, TokenState.Failed)]          // too many — extra has no expected type
-	[TestCase("TstInt 1 2", 0, TokenState.Completed)]            // too many — first arg valid
-	[TestCase("TstInt 1 2", 1, TokenState.Failed)]               // too many — extra has no expected type
+	[TestCase("TstInt 42", 0, TokenState.Completed)]
+	[TestCase("TstBool true", 0, TokenState.Completed)]
+	[TestCase("TstVec (1, 2, 3)", 0, TokenState.Completed)]
+	[TestCase("TstFloats 1.0 2.0 3.0", 0, TokenState.Completed)]
+	[TestCase("TstFloats 1.0 2.0 3.0", 1, TokenState.Completed)]
+	[TestCase("TstFloats 1.0 2.0 3.0", 2, TokenState.Completed)]
+	[TestCase("TstBool tr", 0, TokenState.Partial)]
+	[TestCase("TstBool tru", 0, TokenState.Partial)]
+	[TestCase("TstVec (1, 2, ", 0, TokenState.Partial)]
+	[TestCase("TstInt abc", 0, TokenState.Failed)]
+	[TestCase("TstInt 3.14", 0, TokenState.Failed)]
+	[TestCase("TstVec (1, 2, )", 0, TokenState.Failed)]
+	[TestCase("TstNoArgs extra", 0, TokenState.Failed)]
+	[TestCase("TstInt 1 2", 0, TokenState.Completed)]
+	[TestCase("TstInt 1 2", 1, TokenState.Failed)]
 	public void Parse_ArgToken_State_ByIndex(string input, int argIndex, TokenState expected)
 	{
 		var result = _parser.Parse(input);
