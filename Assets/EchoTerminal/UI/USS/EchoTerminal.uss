@@ -236,6 +236,20 @@
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
 }
 
+.terminal-ghost {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 14px;
+    padding: 5px 6px;
+    margin: 0;
+    overflow: hidden;
+    white-space: pre;
+    -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
+}
+
 .terminal-suggestion-popup {
     position: absolute;
     bottom: 100%;

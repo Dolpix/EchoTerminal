@@ -1,0 +1,293 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using EchoTerminal.TerminalCore;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace EchoTerminal.Components
+{
+public class TerminalSuggestions : IEchoComponent
+{
+	private readonly Label _ghostLabel;
+	private readonly TextField _inputField;
+	private readonly VisualTreeAsset _itemTemplate;
+	private readonly ScrollView _list;
+	private readonly VisualElement _popup;
+	private int _selectedIndex = -1;
+
+	private List<string> _suggestions = new();
+
+	private readonly Terminal _terminal;
+
+	public TerminalSuggestions(Terminal terminal, VisualElement root, TerminalConfig config)
+	{
+		_terminal = terminal;
+		_inputField = root?.Q<TextField>("input-field");
+		_ghostLabel = root?.Q<Label>("ghost-label");
+
+		if (_inputField == null || config.SuggestionPopupTemplate == null || config.SuggestionItemTemplate == null)
+		{
+			return;
+		}
+
+		_itemTemplate = config.SuggestionItemTemplate;
+
+		var inputRow = root.Q<VisualElement>("input-row");
+		TemplateContainer popupClone = config.SuggestionPopupTemplate.CloneTree();
+		_popup = popupClone.Q<VisualElement>("suggestion-popup");
+		_list = popupClone.Q<ScrollView>("suggestion-list");
+		inputRow.Insert(0, _popup);
+
+		_inputField.RegisterValueChangedCallback(OnInputChanged);
+		_inputField.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+		_inputField.RegisterCallback<FocusOutEvent>(OnFocusOut);
+	}
+
+	private void AcceptSuggestion(string suggestion)
+	{
+		string current = _inputField.value;
+		string activePartial = GetActivePartial(current);
+		string prefix = current[..^activePartial.Length];
+		_inputField.value = prefix + suggestion + " ";
+		HidePopup();
+		_inputField.schedule.Execute(() =>
+		{
+			_inputField.Focus();
+			int length = _inputField.value.Length;
+			_inputField.SelectRange(length, length);
+		});
+	}
+
+	private List<string> BuildSuggestions(string input)
+	{
+		CommandParseResult result = _terminal.CommandParser.Parse(input);
+		string activePartial = GetActivePartial(input);
+		ISuggester suggestor = ResolveSuggester(input, result);
+
+		if (suggestor == null)
+		{
+			return new List<string>();
+		}
+
+		Token? activeToken = GetActiveToken(result);
+		return suggestor.GetSuggestions(activePartial, activeToken?.ExpectedType).ToList();
+	}
+
+	private static int GetActiveParamIndex(CommandParseResult result)
+	{
+		if (result.ArgTokens == null)
+		{
+			return -1;
+		}
+
+		int last = result.ArgTokens.Count - 1;
+		if (last < 0)
+		{
+			return -1;
+		}
+
+		return result.ArgTokens[last].State != TokenState.Completed ? last : -1;
+	}
+
+	private static string GetActivePartial(string input)
+	{
+		if (string.IsNullOrEmpty(input))
+		{
+			return string.Empty;
+		}
+
+		int spaceIdx = input.LastIndexOf(' ');
+		return spaceIdx < 0 ? input : input[(spaceIdx + 1)..];
+	}
+
+	private static Token? GetActiveToken(CommandParseResult result)
+	{
+		if (result.ArgTokens == null || result.ArgTokens.Count == 0)
+		{
+			return null;
+		}
+
+		Token last = result.ArgTokens[^1];
+		return last.State != TokenState.Completed ? last : null;
+	}
+
+	private void HidePopup()
+	{
+		if (_popup != null)
+		{
+			_popup.style.display = DisplayStyle.None;
+		}
+
+		if (_ghostLabel != null)
+		{
+			_ghostLabel.text = string.Empty;
+		}
+
+		_suggestions.Clear();
+		_selectedIndex = -1;
+	}
+
+	private static bool IsCommandTokenActive(string input, CommandParseResult result)
+	{
+		return !input.Contains(' ') ||
+		       (result.CommandToken.State == TokenState.Partial && !input.Contains(' '));
+	}
+
+	private void OnFocusOut(FocusOutEvent evt)
+	{
+		HidePopup();
+	}
+
+	private void OnInputChanged(ChangeEvent<string> evt)
+	{
+		Rebuild(evt.newValue);
+	}
+
+	private void OnKeyDown(KeyDownEvent evt)
+	{
+		if (_suggestions.Count == 0)
+		{
+			return;
+		}
+
+		switch (evt.keyCode)
+		{
+			case KeyCode.UpArrow:
+				_selectedIndex = _selectedIndex <= 0 ? _suggestions.Count - 1 : _selectedIndex - 1;
+				RefreshSelection();
+				evt.StopPropagation();
+				return;
+			case KeyCode.DownArrow:
+				_selectedIndex = _selectedIndex >= _suggestions.Count - 1 ? 0 : _selectedIndex + 1;
+				RefreshSelection();
+				evt.StopPropagation();
+				return;
+			case KeyCode.Return or KeyCode.KeypadEnter or KeyCode.Tab when
+				_selectedIndex >= 0:
+				AcceptSuggestion(_suggestions[_selectedIndex]);
+				evt.StopPropagation();
+				evt.PreventDefault();
+				break;
+		}
+	}
+
+	private void Rebuild(string input)
+	{
+		_suggestions = BuildSuggestions(input);
+		_selectedIndex = _suggestions.Count > 0 ? 0 : -1;
+
+		_list.Clear();
+
+		if (_suggestions.Count == 0)
+		{
+			HidePopup();
+			return;
+		}
+
+		foreach (string suggestion in _suggestions)
+		{
+			TemplateContainer clone = _itemTemplate.CloneTree();
+			var label = clone.Q<Label>("suggestion-label");
+			label.text = suggestion;
+			label.RegisterCallback<ClickEvent>(_ => AcceptSuggestion(suggestion));
+			_list.Add(clone);
+		}
+
+		_popup.style.display = DisplayStyle.Flex;
+		RefreshSelection();
+	}
+
+	private void RefreshSelection()
+	{
+		List<Label> items = _list.Query<Label>(className: "terminal-suggestion-item").ToList();
+
+		for (var i = 0; i < items.Count; i++)
+		{
+			if (i == _selectedIndex)
+			{
+				items[i].AddToClassList("terminal-suggestion-item--selected");
+				int idx = i;
+				_list.schedule.Execute(() => _list.ScrollTo(items[idx]));
+			}
+			else
+			{
+				items[i].RemoveFromClassList("terminal-suggestion-item--selected");
+			}
+		}
+
+		UpdateGhost();
+	}
+
+	private ISuggester ResolveSuggester(string input, CommandParseResult result)
+	{
+		if (result.Entries == null || IsCommandTokenActive(input, result))
+		{
+			_terminal.Suggestors.TryGet(typeof(CommandName), out ISuggester s);
+			return s;
+		}
+
+		Token? activeToken = GetActiveToken(result);
+		if (activeToken == null)
+		{
+			return null;
+		}
+
+		int paramIndex = GetActiveParamIndex(result);
+		if (paramIndex >= 0)
+		{
+			CommandEntry bestEntry = result.Entries.FirstOrDefault();
+			ParameterInfo[] parameters = bestEntry.Method.GetParameters();
+			if (paramIndex < parameters.Length)
+			{
+				var attr = parameters[paramIndex].GetCustomAttribute<SuggestAttribute>();
+				if (attr != null)
+				{
+					return attr.Suggester;
+				}
+			}
+		}
+
+		Type expectedType = activeToken.Value.ExpectedType;
+		_terminal.Suggestors.TryGet(expectedType, out ISuggester suggester);
+		return suggester;
+	}
+
+	private void UpdateGhost()
+	{
+		if (_ghostLabel == null)
+		{
+			return;
+		}
+
+		if (_selectedIndex < 0 || _selectedIndex >= _suggestions.Count)
+		{
+			_ghostLabel.text = string.Empty;
+			return;
+		}
+
+		string current = _inputField.value;
+		string suggestion = _suggestions[_selectedIndex];
+		string activePartial = GetActivePartial(current);
+
+		if (!suggestion.StartsWith(activePartial, StringComparison.OrdinalIgnoreCase))
+		{
+			_ghostLabel.text = string.Empty;
+			return;
+		}
+
+		string suffix = suggestion[activePartial.Length..];
+		_ghostLabel.text = $"<color=#00000000>{current}</color><color={GhostColor}>{suffix}</color>";
+	}
+
+	private const string GhostColor = "#606060";
+
+	~TerminalSuggestions()
+	{
+		_inputField?.UnregisterValueChangedCallback(OnInputChanged);
+		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+		_inputField?.UnregisterCallback<FocusOutEvent>(OnFocusOut);
+	}
+}
+}

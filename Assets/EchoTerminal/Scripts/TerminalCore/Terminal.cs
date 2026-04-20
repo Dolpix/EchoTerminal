@@ -7,9 +7,16 @@ namespace EchoTerminal
 {
 public class Terminal
 {
+	public CommandParser CommandParser { get; }
+
+	public IReadOnlyList<TerminalEntry> Entries => _entries;
+	public CommandRegistry Registry { get; }
+	public SuggestorRegistry Suggestors { get; }
+	public Tokenizer Tokenizer { get; }
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
 	public event Action OnSubmitted;
+
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly CommandExecutor _executor;
 	private readonly int _maxEntries;
@@ -17,26 +24,21 @@ public class Terminal
 	public Terminal(int maxEntries = 1000)
 	{
 		_maxEntries = maxEntries;
-		Registry = new();
+		Registry = new CommandRegistry();
 		Registry.Scan();
+		Suggestors = new SuggestorRegistry();
+		Suggestors.Scan(Registry);
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-		Tokenizer = new(ParserRegistry.CreateAllParsers());
-		CommandParser = new(Registry, Tokenizer);
-		_executor = new(CommandParser, Registry, Tokenizer);
+		Tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
+		CommandParser = new CommandParser(Registry, Tokenizer);
+		_executor = new CommandExecutor(CommandParser, Registry, Tokenizer);
 		BindCommand.Terminal = this;
 	}
 
-	public CommandParser CommandParser { get; }
-	public CommandRegistry Registry { get; }
-	public Tokenizer Tokenizer { get; }
-
-	public IReadOnlyList<TerminalEntry> Entries => _entries;
-
-	public void Submit(string input)
+	public void Clear()
 	{
-		OnSubmitted?.Invoke();
-		Log(input, kind: LogKind.Command);
-		_executor.Execute(input);
+		_entries.Clear();
+		OnCleared?.Invoke();
 	}
 
 	public void Log(string text, Color? color = null, LogKind kind = LogKind.Log)
@@ -51,10 +53,11 @@ public class Terminal
 		OnEntryAdded?.Invoke(entry);
 	}
 
-	public void Clear()
+	public void Submit(string input)
 	{
-		_entries.Clear();
-		OnCleared?.Invoke();
+		OnSubmitted?.Invoke();
+		Log(input, kind: LogKind.Command);
+		_executor.Execute(input);
 	}
 }
 }
