@@ -37,6 +37,10 @@ public class CommandParser
 
 		_tokenizer.TryGetParser<CommandName>(out var commandNameParser);
 		var commandState = commandNameParser?.ParseTokenState(commandRaw) ?? TokenState.Failed;
+		if (commandState == TokenState.Partial && spaceIdx >= 0)
+		{
+			commandState = TokenState.Failed;
+		}
 		var commandToken = new Token { Raw = commandRaw, State = commandState };
 
 		if (commandToken.State != TokenState.Completed || !_registry.TryGet(commandToken.Raw, out var entries))
