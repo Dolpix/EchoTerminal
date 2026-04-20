@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using EchoTerminal.TerminalCore;
 using NUnit.Framework;
 using UnityEngine;
@@ -73,121 +74,115 @@ public class CommandParserTests
 
 	private CommandParser _parser;
 
-	[TestCase("TstNoArgs")]
-	[TestCase("TstInt 42")]
-	[TestCase("TstInt -7")]
-	[TestCase("TstInt 0")]
-	[TestCase("TstBool true")]
-	[TestCase("TstBool false")]
-	[TestCase("TstStr \"hello world\"")]
-	[TestCase("TstVec (1, 2, 3)")]
-	[TestCase("TstFloats 1.0 2.0 3.0")]
-	[TestCase("TstOverload (1, 2, 3)")]
-	[TestCase("TstOverload 1.0 2.0 3.0")]
-	[TestCase("TstIntList []")]
-	[TestCase("TstIntList [1,2,3]")]
-	[TestCase("TstIntList [-1,0,99]")]
-	[TestCase("TstBound >TstNoArgs<")]
-	[TestCase("TstBound >TstInt 42<")]
-	[TestCase("TstBound >TstBool true<")]
-	public void Parse_ValidInput_IsMatch(string input)
-	{
-		Assert.IsTrue(_parser.Parse(input).IsMatch);
-	}
-
-	[TestCase("XyzUnknown")]
-	[TestCase("XyzUnknown 42")]
-	[TestCase("zzz 1 2 3")]
-	public void Parse_UnknownCommand_EntriesIsNull(string input)
-	{
-		Assert.IsNull(_parser.Parse(input).Entries);
-	}
-
-	[TestCase("TstInt")]
-	[TestCase("TstInt abc")]
-	[TestCase("TstInt 3.14")]
-	[TestCase("TstNoArgs extra")]
-	[TestCase("TstBool tr")]
-	[TestCase("TstBool tru")]
-	[TestCase("TstBool maybe")]
-	[TestCase("TstIntList [abc]")]
-	[TestCase("TstIntList [1,2,abc]")]
-	[TestCase("TstBound ><")]
-	public void Parse_KnownCommandBadArgs_EntriesNotNullNotMatch(string input)
+	[TestCase("XyzUnknown", TokenState.Failed)]    // unknown name           → red
+	[TestCase("XyzUnknown 42", TokenState.Failed)] // unknown name with args  → red
+	[TestCase("zzz 1 2 3", TokenState.Failed)]     // unknown multi-arg       → red
+	[TestCase("123cmd", TokenState.Failed)]        // invalid start char      → red
+	[TestCase("T", TokenState.Partial)]            // single char prefix      → white
+	[TestCase("TstI", TokenState.Partial)]         // prefix TstInt/TstIntList → white
+	[TestCase("Tst", TokenState.Partial)]          // prefix multiple cmds    → white
+	[TestCase("TstN", TokenState.Partial)]         // prefix TstNoArgs        → white
+	public void Parse_UnknownCommand(string input, TokenState expectedCmdState)
 	{
 		var result = _parser.Parse(input);
-		Assert.IsNotNull(result.Entries, "Command should be recognised");
-		Assert.IsFalse(result.IsMatch, "Should not fully match with bad args");
+		Assert.IsNull(result.Entries, "Entries must be null for unknown command");
+		Assert.IsNull(result.Entry, "Entry must be null for unknown command");
+		Assert.IsFalse(result.IsMatch, "IsMatch must be false for unknown command");
+		Assert.AreEqual(expectedCmdState, result.CommandToken.State);
 	}
 
-	[TestCase("TstI", TokenState.Partial)]
-	[TestCase("Tst", TokenState.Partial)]
-	[TestCase("TstN", TokenState.Partial)]
-	[TestCase("Zzz", TokenState.Failed)]
-	[TestCase("123cmd", TokenState.Failed)]
-	public void Parse_CommandToken_HasExpectedState(string input, TokenState expected)
+	[TestCase("TstInt")]               // missing required arg
+	[TestCase("TstInt ")]              // trailing space, no arg yet
+	[TestCase("TstInt abc")]           // wrong arg type
+	[TestCase("TstInt 3.14")]          // float given for int
+	[TestCase("TstNoArgs extra")]      // too many (0 expected, 1 given)
+	[TestCase("TstInt 1 2")]           // too many (1 expected, 2 given)
+	[TestCase("TstBool true false")]   // too many (1 expected, 2 given)
+	[TestCase("TstFloats 1 2 3 4")]    // too many (3 expected, 4 given)
+	[TestCase("TstBool maybe")]        // invalid bool literal
+	[TestCase("TstIntList [abc]")]     // wrong element type in list
+	[TestCase("TstIntList [1,2,abc]")] // bad element mid-list
+	[TestCase("TstBound ><")]          // empty bound command body
+	[TestCase("TstVec (1, 2, ")]       // vec3 in-progress
+	[TestCase("TstBool tr")]           // bool in-progress
+	[TestCase("TstBool tru")]          // bool in-progress
+	[TestCase("TstIntList [1,2,")]     // list in-progress
+	[TestCase("TstBound >TstNoArgs")]  // bound command in-progress (no closing >)
+	[TestCase("TstBound >TstInt 4")]   // bound command in-progress with partial arg
+	public void Parse_KnownCommand_NoMatch(string input)
 	{
-		Assert.AreEqual(expected, _parser.Parse(input).CommandToken.State);
-	}
-
-	[TestCase("TstInt 42", "TstInt")]
-	[TestCase("TstNoArgs", "TstNoArgs")]
-	[TestCase("UnknownCmd 1", "UnknownCmd")]
-	[TestCase("Tst 1 2 3", "Tst")]
-	public void Parse_CommandToken_RawIsCorrect(string input, string expectedRaw)
-	{
-		Assert.AreEqual(expectedRaw, _parser.Parse(input).CommandToken.Raw);
+		var result = _parser.Parse(input);
+		Assert.IsNotNull(result.Entries, "Entries must be set for a recognised command");
+		Assert.IsNull(result.Entry, "Entry must be null when no overload matched");
+		Assert.IsFalse(result.IsMatch, "IsMatch must be false when args do not satisfy any overload");
+		Assert.AreEqual(
+			TokenState.Completed,
+			result.CommandToken.State,
+			"Command token must be Completed for a known command"
+		);
 	}
 
 	[TestCase("TstNoArgs", 0)]
 	[TestCase("TstInt 42", 1)]
+	[TestCase("TstInt -7", 1)]
+	[TestCase("TstInt 0", 1)]
+	[TestCase("TstBool true", 1)]
 	[TestCase("TstBool false", 1)]
+	[TestCase("TstStr \"hello world\"", 1)]
+	[TestCase("TstVec (1, 2, 3)", 1)]
 	[TestCase("TstFloats 1.0 2.0 3.0", 3)]
-	public void Parse_Match_ArgTokenCount(string input, int expectedCount)
+	[TestCase("TstOverload (1, 2, 3)", 1)]
+	[TestCase("TstOverload 1.0 2.0 3.0", 3)]
+	[TestCase("TstIntList []", 1)]
+	[TestCase("TstIntList [1,2,3]", 1)]
+	[TestCase("TstIntList [-1,0,99]", 1)]
+	[TestCase("TstBound >TstNoArgs<", 1)]
+	[TestCase("TstBound >TstInt 42<", 1)]
+	[TestCase("TstBound >TstBool true<", 1)]
+	public void Parse_KnownCommand_FullMatch(string input, int expectedArgCount)
 	{
 		var result = _parser.Parse(input);
-		Assert.IsTrue(result.IsMatch);
-		Assert.AreEqual(expectedCount, result.ArgTokens.Count);
+		Assert.IsTrue(result.IsMatch, "IsMatch must be true for a valid command+args");
+		Assert.IsNotNull(result.Entry, "Entry must be set on a successful match");
+		Assert.IsNotNull(result.Entries, "Entries must be set for a recognised command");
+		Assert.AreEqual(TokenState.Completed, result.CommandToken.State, "Command token must be Completed");
+		Assert.AreEqual(expectedArgCount, result.ArgTokens.Count, "Arg token count must match parameter count");
+		Assert.IsTrue(result.ArgTokens.All(t => t.State == TokenState.Completed),
+			"All arg tokens must be Completed on a match");
 	}
 
-	[TestCase("TstInt 42", 0)]
-	[TestCase("TstBool true", 0)]
-	[TestCase("TstFloats 1.0 2.0 3.0", 0)]
-	[TestCase("TstFloats 1.0 2.0 3.0", 1)]
-	[TestCase("TstFloats 1.0 2.0 3.0", 2)]
-	[TestCase("TstOverload 1.0 2.0 3.0", 0)]
-	public void Parse_Match_ArgToken_IsCompleted(string input, int argIndex)
+	[TestCase("TstInt 42", 0, TokenState.Completed)]             // valid int
+	[TestCase("TstBool true", 0, TokenState.Completed)]          // valid bool
+	[TestCase("TstVec (1, 2, 3)", 0, TokenState.Completed)]      // valid vec3
+	[TestCase("TstFloats 1.0 2.0 3.0", 0, TokenState.Completed)] // float arg 0
+	[TestCase("TstFloats 1.0 2.0 3.0", 1, TokenState.Completed)] // float arg 1
+	[TestCase("TstFloats 1.0 2.0 3.0", 2, TokenState.Completed)] // float arg 2
+	[TestCase("TstBool tr", 0, TokenState.Partial)]              // bool in-progress
+	[TestCase("TstBool tru", 0, TokenState.Partial)]             // bool in-progress
+	[TestCase("TstVec (1, 2, ", 0, TokenState.Partial)]          // vec3 in-progress
+	[TestCase("TstInt abc", 0, TokenState.Failed)]               // wrong type for int
+	[TestCase("TstInt 3.14", 0, TokenState.Failed)]              // float given for int
+	[TestCase("TstVec (1, 2, )", 0, TokenState.Failed)]          // malformed vec3
+	[TestCase("TstNoArgs extra", 0, TokenState.Failed)]          // too many — extra has no expected type
+	[TestCase("TstInt 1 2", 0, TokenState.Completed)]            // too many — first arg valid
+	[TestCase("TstInt 1 2", 1, TokenState.Failed)]               // too many — extra has no expected type
+	public void Parse_ArgToken_State_ByIndex(string input, int argIndex, TokenState expected)
 	{
 		var result = _parser.Parse(input);
-		Assert.IsTrue(result.IsMatch);
-		Assert.AreEqual(TokenState.Completed, result.ArgTokens[argIndex].State);
-	}
-
-	[TestCase("TstVec (1, 2, ")]
-	[TestCase("TstBool tr")]
-	[TestCase("TstBool tru")]
-	[TestCase("TstIntList [1,2,")]
-	[TestCase("TstBound >TstNoArgs")]
-	[TestCase("TstBound >TstInt 4")]
-	public void Parse_PartialArg_CommandRecognisedNoMatch(string input)
-	{
-		var result = _parser.Parse(input);
-		Assert.IsNotNull(result.Entries, "Command should be recognised");
-		Assert.IsFalse(result.IsMatch);
+		Assert.IsNotNull(result.ArgTokens, $"ArgTokens must not be null for '{input}'");
+		Assert.AreEqual(expected, result.ArgTokens[argIndex].State);
 	}
 
 	[Test]
 	public void GetError_UnknownCommand_ContainsCommandName()
 	{
-		var result = _parser.Parse("XyzUnknown 42");
-		StringAssert.Contains("XyzUnknown", result.GetError());
+		StringAssert.Contains("XyzUnknown", _parser.Parse("XyzUnknown 42").GetError());
 	}
 
 	[Test]
 	public void GetError_KnownCommandBadArgs_ContainsCommandName()
 	{
-		var result = _parser.Parse("TstInt abc");
-		StringAssert.Contains("TstInt", result.GetError());
+		StringAssert.Contains("TstInt", _parser.Parse("TstInt abc").GetError());
 	}
 }
 }

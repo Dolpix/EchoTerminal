@@ -56,7 +56,7 @@ public class TerminalHighlighter : IEchoComponent
 		}
 
 		tokens.AddRange(
-			from token in GetArgTokens(input, result)
+			from token in result.ArgTokens ?? new()
 			let color = token.State switch
 			{
 				TokenState.Completed => _colorValidParameter,
@@ -66,32 +66,6 @@ public class TerminalHighlighter : IEchoComponent
 			select (token.Raw, color));
 
 		return ApplyColors(input, tokens);
-	}
-
-	private List<Token> GetArgTokens(string input, CommandParseResult result)
-	{
-		if (result.IsMatch)
-		{
-			return result.ArgTokens ?? new();
-		}
-
-		if (result.Entries == null)
-		{
-			return new();
-		}
-
-		var trimmed = input.TrimStart();
-		var spaceIdx = trimmed.IndexOf(' ');
-
-		if (spaceIdx < 0 || spaceIdx >= trimmed.Length - 1)
-		{
-			return new();
-		}
-
-		var argInput = trimmed[(spaceIdx + 1)..];
-		return string.IsNullOrWhiteSpace(argInput)
-			? new()
-			: _terminal.Tokenizer.Tokenize(argInput);
 	}
 
 	private static string ApplyColors(string input, List<(string raw, string color)> tokens)

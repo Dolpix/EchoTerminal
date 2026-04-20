@@ -29,9 +29,9 @@ public readonly struct CommandParseResult
 		return new(commandToken, null, null, null);
 	}
 
-	public static CommandParseResult NoMatch(Token commandToken, List<CommandEntry> entries)
+	public static CommandParseResult NoMatch(Token commandToken, List<CommandEntry> entries, List<Token> argTokens)
 	{
-		return new(commandToken, entries, null, null);
+		return new(commandToken, entries, null, argTokens);
 	}
 
 	public static CommandParseResult Match(

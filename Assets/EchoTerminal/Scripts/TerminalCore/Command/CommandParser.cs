@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using EchoTerminal.TerminalCore;
 
@@ -12,6 +13,11 @@ public class CommandParser
 	{
 		_registry = registry;
 		_tokenizer = tokenizer;
+
+		if (tokenizer.TryGetParser<BoundCommand>(out var bp))
+		{
+			((BoundCommandParser)bp).SetCommandValidator(input => Parse(input).IsMatch);
+		}
 	}
 
 	public CommandParseResult Parse(string input)
@@ -40,6 +46,10 @@ public class CommandParser
 
 		var argInput = spaceIdx >= 0 ? trimmed[(spaceIdx + 1)..] : string.Empty;
 
+		List<Token> bestArgTokens = null;
+		var bestCompletedCount = -1;
+		var bestParamCount = 0;
+
 		foreach (var entry in entries)
 		{
 			var parameters = entry.Method.GetParameters();
@@ -52,9 +62,33 @@ public class CommandParser
 			{
 				return CommandParseResult.Match(commandToken, entries, entry, argTokens);
 			}
+
+			var completedCount = argTokens.Count(t => t.State == TokenState.Completed);
+			if (completedCount <= bestCompletedCount)
+			{
+				continue;
+			}
+
+			bestCompletedCount = completedCount;
+			bestArgTokens = argTokens;
+			bestParamCount = parameters.Length;
 		}
 
-		return CommandParseResult.NoMatch(commandToken, entries);
+		if (bestArgTokens == null)
+		{
+			return CommandParseResult.NoMatch(commandToken, entries, new());
+		}
+
+		{
+			for (var i = bestParamCount; i < bestArgTokens.Count; i++)
+			{
+				var token = bestArgTokens[i];
+				token.State = TokenState.Failed;
+				bestArgTokens[i] = token;
+			}
+		}
+
+		return CommandParseResult.NoMatch(commandToken, entries, bestArgTokens ?? new());
 	}
 }
 }

@@ -24,6 +24,7 @@ public readonly struct BoundCommand
 public class BoundCommandParser : ITokenParser
 {
 	private readonly List<ITokenParser> _parsers;
+	private Func<string, bool> _commandValidator;
 	private Tokenizer _tokenizer;
 
 	public BoundCommandParser(List<ITokenParser> parsers)
@@ -59,6 +60,11 @@ public class BoundCommandParser : ITokenParser
 			return TokenState.Failed;
 		}
 
+		if (_commandValidator != null)
+		{
+			return _commandValidator(inner) ? TokenState.Completed : TokenState.Failed;
+		}
+
 		var tokens = GetTokenizer().Tokenize(inner);
 
 		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Failed) || tokens.Count > 2)
@@ -76,6 +82,11 @@ public class BoundCommandParser : ITokenParser
 		var inner = raw[1..^1];
 		var tokens = GetTokenizer().Tokenize(inner);
 		return new BoundCommand(inner, tokens);
+	}
+
+	public void SetCommandValidator(Func<string, bool> validator)
+	{
+		_commandValidator = validator;
 	}
 
 	private Tokenizer GetTokenizer()
