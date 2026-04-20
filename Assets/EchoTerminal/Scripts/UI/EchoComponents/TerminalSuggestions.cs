@@ -64,15 +64,14 @@ public class TerminalSuggestions : IEchoComponent
 	{
 		CommandParseResult result = _terminal.CommandParser.Parse(input);
 		string activePartial = GetActivePartial(input);
-		ISuggester suggestor = ResolveSuggester(input, result);
+		ISuggester suggestor = ResolveSuggester(input, result, out Type expectedType);
 
 		if (suggestor == null)
 		{
 			return new List<string>();
 		}
 
-		Token? activeToken = GetActiveToken(result);
-		return suggestor.GetSuggestions(activePartial, activeToken?.ExpectedType).ToList();
+		return suggestor.GetSuggestions(activePartial, expectedType).ToList();
 	}
 
 	private static int GetActiveParamIndex(CommandParseResult result)
@@ -220,8 +219,10 @@ public class TerminalSuggestions : IEchoComponent
 		UpdateGhost();
 	}
 
-	private ISuggester ResolveSuggester(string input, CommandParseResult result)
+	private ISuggester ResolveSuggester(string input, CommandParseResult result, out Type expectedType)
 	{
+		expectedType = null;
+
 		if (result.Entries == null || IsCommandTokenActive(input, result))
 		{
 			_terminal.Suggestors.TryGet(typeof(CommandName), out ISuggester s);
@@ -229,12 +230,11 @@ public class TerminalSuggestions : IEchoComponent
 		}
 
 		Token? activeToken = GetActiveToken(result);
-		if (activeToken == null)
-		{
-			return null;
-		}
 
-		int paramIndex = GetActiveParamIndex(result);
+		int paramIndex = activeToken == null
+			? (result.ArgTokens?.Count ?? 0)
+			: GetActiveParamIndex(result);
+
 		if (paramIndex >= 0)
 		{
 			CommandEntry bestEntry = result.Entries.FirstOrDefault();
@@ -244,12 +244,25 @@ public class TerminalSuggestions : IEchoComponent
 				var attr = parameters[paramIndex].GetCustomAttribute<SuggestAttribute>();
 				if (attr != null)
 				{
+					expectedType = parameters[paramIndex].ParameterType;
 					return attr.Suggester;
+				}
+
+				if (activeToken == null)
+				{
+					expectedType = parameters[paramIndex].ParameterType;
+					_terminal.Suggestors.TryGet(expectedType, out ISuggester nextSuggester);
+					return nextSuggester;
 				}
 			}
 		}
 
-		Type expectedType = activeToken.Value.ExpectedType;
+		if (activeToken == null)
+		{
+			return null;
+		}
+
+		expectedType = activeToken.Value.ExpectedType;
 		_terminal.Suggestors.TryGet(expectedType, out ISuggester suggester);
 		return suggester;
 	}
