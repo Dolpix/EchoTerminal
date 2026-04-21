@@ -322,9 +322,8 @@ public class TerminalSuggestions : IEchoComponent
 			return;
 		}
 
-		string displaySuggestion = GetDisplayText(suggestion, _isComplexSuggestion);
-		string prefix = current[..^activePartial.Length];
-		_ghostLabel.text = $"<color=#00000000>{prefix}</color><color={_ghostColor}>{displaySuggestion}</color>";
+		string suffix = suggestion[activePartial.Length..];
+		_ghostLabel.text = $"<color=#00000000>{current}</color><color={_ghostColor}>{suffix}</color>";
 	}
 
 	~TerminalSuggestions()
