@@ -21,6 +21,7 @@ public class TerminalSuggestions : IEchoComponent
 	private readonly Terminal _terminal;
 	private int _selectedIndex = -1;
 	private string _activeReplacePartial = string.Empty;
+	private bool _isComplexSuggestion;
 
 	private List<string> _suggestions = new();
 
@@ -80,6 +81,7 @@ public class TerminalSuggestions : IEchoComponent
 		bool isComplex = IsComplexType(expectedType) && activeToken != null;
 		string partial = isComplex ? activeToken.Value.Raw : GetActivePartial(input);
 		_activeReplacePartial = partial;
+		_isComplexSuggestion = isComplex;
 
 		return suggestor.GetSuggestions(partial, expectedType).ToList();
 	}
@@ -87,6 +89,19 @@ public class TerminalSuggestions : IEchoComponent
 	private static bool IsComplexType(Type t)
 	{
 		return t != null && (t == typeof(BoundCommand) || typeof(IList).IsAssignableFrom(t));
+	}
+
+	private static string GetDisplayText(string suggestion, bool isComplex)
+	{
+		if (!isComplex)
+		{
+			return suggestion;
+		}
+
+		string inner = suggestion.Length > 0 && (suggestion[0] == '>' || suggestion[0] == '[')
+			? suggestion[1..]
+			: suggestion;
+		return GetActivePartial(inner);
 	}
 
 	private static int GetActiveParamIndex(CommandParseResult result)
@@ -204,7 +219,7 @@ public class TerminalSuggestions : IEchoComponent
 		{
 			TemplateContainer clone = _itemTemplate.CloneTree();
 			var label = clone.Q<Label>("suggestion-label");
-			label.text = suggestion;
+			label.text = GetDisplayText(suggestion, _isComplexSuggestion);
 			label.RegisterCallback<ClickEvent>(_ => AcceptSuggestion(suggestion));
 			_list.Add(clone);
 		}
@@ -307,8 +322,9 @@ public class TerminalSuggestions : IEchoComponent
 			return;
 		}
 
-		string suffix = suggestion[activePartial.Length..];
-		_ghostLabel.text = $"<color=#00000000>{current}</color><color={_ghostColor}>{suffix}</color>";
+		string displaySuggestion = GetDisplayText(suggestion, _isComplexSuggestion);
+		string prefix = current[..^activePartial.Length];
+		_ghostLabel.text = $"<color=#00000000>{prefix}</color><color={_ghostColor}>{displaySuggestion}</color>";
 	}
 
 	~TerminalSuggestions()

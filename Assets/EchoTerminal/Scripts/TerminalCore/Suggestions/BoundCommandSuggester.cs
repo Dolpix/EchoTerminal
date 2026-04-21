@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -131,8 +132,26 @@ public class BoundCommandSuggester : ISuggester
 			return Array.Empty<string>();
 		}
 
-		return paramSuggester.GetSuggestions(activePartial, paramExpectedType)
-							 .Select(s => ">" + innerPrefix + s)
+		bool innerIsComplex = paramExpectedType != null &&
+							  (paramExpectedType == typeof(BoundCommand) ||
+							   typeof(IList).IsAssignableFrom(paramExpectedType));
+
+		string suggestionInput;
+		string prefixForWrap;
+
+		if (innerIsComplex && innerActiveToken != null)
+		{
+			suggestionInput = innerActiveToken.Value.Raw;
+			prefixForWrap = inner[..^suggestionInput.Length];
+		}
+		else
+		{
+			suggestionInput = activePartial;
+			prefixForWrap = innerPrefix;
+		}
+
+		return paramSuggester.GetSuggestions(suggestionInput, paramExpectedType)
+							 .Select(s => ">" + prefixForWrap + s)
 							 .ToList();
 	}
 }
