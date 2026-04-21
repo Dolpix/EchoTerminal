@@ -261,8 +261,10 @@ public class TerminalSuggestions : IEchoComponent
 
 		Token? activeToken = GetActiveToken(result);
 
+		bool cursorAdvanced = input.Length > 0 && input[^1] == ' ';
+
 		int paramIndex = activeToken == null
-			? result.ArgTokens?.Count ?? 0
+			? cursorAdvanced ? result.ArgTokens?.Count ?? 0 : (result.ArgTokens?.Count ?? 1) - 1
 			: GetActiveParamIndex(result);
 
 		if (paramIndex >= 0)
@@ -278,7 +280,7 @@ public class TerminalSuggestions : IEchoComponent
 					return attr.Suggester;
 				}
 
-				if (activeToken == null)
+				if (activeToken == null && cursorAdvanced)
 				{
 					expectedType = parameters[paramIndex].ParameterType;
 					_terminal.Suggestors.TryGet(expectedType, out ISuggester nextSuggester);
@@ -289,7 +291,15 @@ public class TerminalSuggestions : IEchoComponent
 
 		if (activeToken == null)
 		{
-			return null;
+			if (cursorAdvanced || !(result.ArgTokens?.Count > 0))
+			{
+				return null;
+			}
+
+			Token lastToken = result.ArgTokens[^1];
+			expectedType = lastToken.ExpectedType;
+			_terminal.Suggestors.TryGet(expectedType, out ISuggester lastSuggester);
+			return lastSuggester;
 		}
 
 		expectedType = activeToken.Value.ExpectedType;
