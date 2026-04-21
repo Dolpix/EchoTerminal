@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using EchoTerminal.TerminalCore;
@@ -60,6 +61,20 @@ public class SuggestorRegistry
 					_suggestors[attr.TokenType] = instance;
 				}
 			}
+		}
+	}
+
+	public void InitComplexSuggesters(CommandRegistry commandRegistry, CommandParser commandParser)
+	{
+		if (_suggestors.TryGetValue(typeof(BoundCommand), out ISuggester bcs) &&
+			bcs is BoundCommandSuggester bSuggester)
+		{
+			bSuggester.Init(commandRegistry, this, commandParser);
+		}
+
+		if (_suggestors.TryGetValue(typeof(IList), out ISuggester ls) && ls is ListSuggester listSuggester)
+		{
+			listSuggester.Init(this);
 		}
 	}
 

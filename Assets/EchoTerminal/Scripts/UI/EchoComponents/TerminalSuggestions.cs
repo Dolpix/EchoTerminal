@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,16 +11,18 @@ namespace EchoTerminal.Components
 {
 public class TerminalSuggestions : IEchoComponent
 {
+	private const string _ghostColor = "#606060";
 	private readonly Label _ghostLabel;
 	private readonly TextField _inputField;
 	private readonly VisualTreeAsset _itemTemplate;
 	private readonly ScrollView _list;
 	private readonly VisualElement _popup;
-	private int _selectedIndex = -1;
-
-	private List<string> _suggestions = new();
 
 	private readonly Terminal _terminal;
+	private int _selectedIndex = -1;
+	private string _activeReplacePartial = string.Empty;
+
+	private List<string> _suggestions = new();
 
 	public TerminalSuggestions(Terminal terminal, VisualElement root, TerminalConfig config)
 	{
@@ -48,7 +51,9 @@ public class TerminalSuggestions : IEchoComponent
 	private void AcceptSuggestion(string suggestion)
 	{
 		string current = _inputField.value;
-		string activePartial = GetActivePartial(current);
+		string activePartial = _activeReplacePartial.Length > 0 && current.EndsWith(_activeReplacePartial)
+			? _activeReplacePartial
+			: GetActivePartial(current);
 		string prefix = current[..^activePartial.Length];
 		_inputField.value = prefix + suggestion + " ";
 		HidePopup();
@@ -63,15 +68,25 @@ public class TerminalSuggestions : IEchoComponent
 	private List<string> BuildSuggestions(string input)
 	{
 		CommandParseResult result = _terminal.CommandParser.Parse(input);
-		string activePartial = GetActivePartial(input);
+		Token? activeToken = GetActiveToken(result);
 		ISuggester suggestor = ResolveSuggester(input, result, out Type expectedType);
 
 		if (suggestor == null)
 		{
-			return new List<string>();
+			_activeReplacePartial = string.Empty;
+			return new();
 		}
 
-		return suggestor.GetSuggestions(activePartial, expectedType).ToList();
+		bool isComplex = IsComplexType(expectedType) && activeToken != null;
+		string partial = isComplex ? activeToken.Value.Raw : GetActivePartial(input);
+		_activeReplacePartial = partial;
+
+		return suggestor.GetSuggestions(partial, expectedType).ToList();
+	}
+
+	private static bool IsComplexType(Type t)
+	{
+		return t != null && (t == typeof(BoundCommand) || typeof(IList).IsAssignableFrom(t));
 	}
 
 	private static int GetActiveParamIndex(CommandParseResult result)
@@ -126,12 +141,13 @@ public class TerminalSuggestions : IEchoComponent
 
 		_suggestions.Clear();
 		_selectedIndex = -1;
+		_activeReplacePartial = string.Empty;
 	}
 
 	private static bool IsCommandTokenActive(string input, CommandParseResult result)
 	{
-		return !input.Contains(' ') ||
-		       (result.CommandToken.State == TokenState.Partial && !input.Contains(' '));
+		bool b = result.CommandToken.State == TokenState.Partial && !input.Contains(' ');
+		return !input.Contains(' ') || b;
 	}
 
 	private void OnFocusOut(FocusOutEvent evt)
@@ -167,7 +183,6 @@ public class TerminalSuggestions : IEchoComponent
 				_selectedIndex >= 0:
 				AcceptSuggestion(_suggestions[_selectedIndex]);
 				evt.StopPropagation();
-				evt.PreventDefault();
 				break;
 		}
 	}
@@ -232,7 +247,7 @@ public class TerminalSuggestions : IEchoComponent
 		Token? activeToken = GetActiveToken(result);
 
 		int paramIndex = activeToken == null
-			? (result.ArgTokens?.Count ?? 0)
+			? result.ArgTokens?.Count ?? 0
 			: GetActiveParamIndex(result);
 
 		if (paramIndex >= 0)
@@ -282,7 +297,9 @@ public class TerminalSuggestions : IEchoComponent
 
 		string current = _inputField.value;
 		string suggestion = _suggestions[_selectedIndex];
-		string activePartial = GetActivePartial(current);
+		string activePartial = _activeReplacePartial.Length > 0 && current.EndsWith(_activeReplacePartial)
+			? _activeReplacePartial
+			: GetActivePartial(current);
 
 		if (!suggestion.StartsWith(activePartial, StringComparison.OrdinalIgnoreCase))
 		{
@@ -291,10 +308,8 @@ public class TerminalSuggestions : IEchoComponent
 		}
 
 		string suffix = suggestion[activePartial.Length..];
-		_ghostLabel.text = $"<color=#00000000>{current}</color><color={GhostColor}>{suffix}</color>";
+		_ghostLabel.text = $"<color=#00000000>{current}</color><color={_ghostColor}>{suffix}</color>";
 	}
-
-	private const string GhostColor = "#606060";
 
 	~TerminalSuggestions()
 	{

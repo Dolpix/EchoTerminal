@@ -16,7 +16,6 @@ public class Terminal
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
 	public event Action OnSubmitted;
-
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly CommandExecutor _executor;
 	private readonly int _maxEntries;
@@ -24,14 +23,15 @@ public class Terminal
 	public Terminal(int maxEntries = 1000)
 	{
 		_maxEntries = maxEntries;
-		Registry = new CommandRegistry();
+		Registry = new();
 		Registry.Scan();
-		Suggestors = new SuggestorRegistry();
+		Suggestors = new();
 		Suggestors.Scan(Registry);
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
-		Tokenizer = new Tokenizer(ParserRegistry.CreateAllParsers());
-		CommandParser = new CommandParser(Registry, Tokenizer);
-		_executor = new CommandExecutor(CommandParser, Registry, Tokenizer);
+		Tokenizer = new(ParserRegistry.CreateAllParsers());
+		CommandParser = new(Registry, Tokenizer);
+		Suggestors.InitComplexSuggesters(Registry, CommandParser);
+		_executor = new(CommandParser, Registry, Tokenizer);
 		BindCommand.Terminal = this;
 	}
 
