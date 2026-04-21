@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EchoTerminal.TerminalCore;
 
-public class ListParser : ITokenParser
+public class ListParser : ITokenParser, IRecursiveParser
 {
 	private readonly List<ITokenParser> _parsers;
 	private Tokenizer _tokenizer;
@@ -138,6 +138,79 @@ public class ListParser : ITokenParser
 		return _parsers.FirstOrDefault(p => p.Type == elementType) ??
 		       _parsers.FirstOrDefault(p => p.Type.IsAssignableFrom(elementType) &&
 		                                    p.ParseTokenState(sampleRaw, elementType) == TokenState.Completed);
+	}
+
+	public List<Token> GetSubTokens(string raw, Type expectedType)
+	{
+		var outerState = ParseTokenState(raw, expectedType);
+		var result = new List<Token>();
+
+		if (raw.Length == 0 || raw[0] != '[')
+		{
+			result.Add(new Token { Raw = raw, State = outerState, ExpectedType = expectedType });
+			return result;
+		}
+
+		bool hasClose = IsBalanced(raw) && raw[^1] == ']';
+		string inner = hasClose ? raw[1..^1] : raw[1..];
+
+		var bracketState = hasClose ? outerState : TokenState.Partial;
+		result.Add(new Token { Raw = "[", State = bracketState });
+
+		if (inner.Length > 0)
+		{
+			var elementType = GetElementType(expectedType);
+			var elementTokens = hasClose
+				? GetTokenizer().Tokenize(Normalize(inner))
+				: GetAllPartialTokens(inner);
+
+			if (elementTokens == null || elementTokens.Count == 0)
+			{
+				result.Add(new Token { Raw = inner, State = bracketState });
+			}
+			else
+			{
+				var ep = elementType != null ? FindElementParser(elementType, elementTokens[0].Raw) : null;
+				int pos = 0;
+
+				for (int i = 0; i < elementTokens.Count; i++)
+				{
+					var elemRaw = elementTokens[i].Raw;
+					int elemStart = inner.IndexOf(elemRaw, pos, StringComparison.Ordinal);
+					if (elemStart < 0) { break; }
+
+					if (elemStart > pos)
+					{
+						result.Add(new Token { Raw = inner[pos..elemStart], State = bracketState });
+					}
+
+					TokenState elemState;
+					if (ep != null)
+					{
+						elemState = ep.ParseTokenState(elemRaw, elementType);
+					}
+					else
+					{
+						elemState = elementTokens[i].State;
+					}
+
+					result.Add(new Token { Raw = elemRaw, State = elemState, ExpectedType = elementType });
+					pos = elemStart + elemRaw.Length;
+				}
+
+				if (pos < inner.Length)
+				{
+					result.Add(new Token { Raw = inner[pos..], State = bracketState });
+				}
+			}
+		}
+
+		if (hasClose)
+		{
+			result.Add(new Token { Raw = "]", State = outerState });
+		}
+
+		return result;
 	}
 
 	private List<Token> GetAllPartialTokens(string partialInner)

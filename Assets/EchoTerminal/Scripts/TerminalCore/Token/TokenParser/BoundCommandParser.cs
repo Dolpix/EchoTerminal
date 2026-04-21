@@ -21,10 +21,11 @@ public readonly struct BoundCommand
 	}
 }
 
-public class BoundCommandParser : ITokenParser
+public class BoundCommandParser : ITokenParser, IRecursiveParser
 {
 	private readonly List<ITokenParser> _parsers;
 	private Func<string, bool> _commandValidator;
+	private Func<string, CommandParseResult> _commandParser;
 	private Tokenizer _tokenizer;
 
 	public BoundCommandParser(List<ITokenParser> parsers)
@@ -87,6 +88,80 @@ public class BoundCommandParser : ITokenParser
 	public void SetCommandValidator(Func<string, bool> validator)
 	{
 		_commandValidator = validator;
+	}
+
+	public void SetCommandParser(Func<string, CommandParseResult> parser)
+	{
+		_commandParser = parser;
+	}
+
+	public List<Token> GetSubTokens(string raw, Type expectedType)
+	{
+		var outerState = ParseTokenState(raw, expectedType);
+		var result = new List<Token>();
+
+		if (raw.Length == 0 || raw[0] != '>')
+		{
+			result.Add(new Token { Raw = raw, State = outerState, ExpectedType = expectedType });
+			return result;
+		}
+
+		bool hasClose = raw[^1] == '<';
+		string inner = hasClose ? raw[1..^1] : raw[1..];
+
+		var delimState = hasClose ? outerState : TokenState.Partial;
+		result.Add(new Token { Raw = ">", State = delimState });
+
+		if (inner.Length > 0)
+		{
+			List<Token> innerTokens;
+			if (_commandParser != null)
+			{
+				var parseResult = _commandParser(inner);
+				var allInner = new List<Token>();
+				if (!string.IsNullOrEmpty(parseResult.CommandToken.Raw))
+				{
+					allInner.Add(parseResult.CommandToken);
+				}
+
+				if (parseResult.ArgTokens != null)
+				{
+					allInner.AddRange(parseResult.ArgTokens);
+				}
+
+				innerTokens = allInner;
+			}
+			else
+			{
+				innerTokens = GetTokenizer().Tokenize(inner);
+			}
+
+			int pos = 0;
+			foreach (var token in innerTokens)
+			{
+				int tokenStart = inner.IndexOf(token.Raw, pos, StringComparison.Ordinal);
+				if (tokenStart < 0) { break; }
+				if (tokenStart > pos)
+				{
+					result.Add(new Token { Raw = inner[pos..tokenStart], State = delimState });
+				}
+
+				result.Add(token);
+				pos = tokenStart + token.Raw.Length;
+			}
+
+			if (pos < inner.Length)
+			{
+				result.Add(new Token { Raw = inner[pos..], State = delimState });
+			}
+		}
+
+		if (hasClose)
+		{
+			result.Add(new Token { Raw = "<", State = outerState });
+		}
+
+		return result;
 	}
 
 	private Tokenizer GetTokenizer()

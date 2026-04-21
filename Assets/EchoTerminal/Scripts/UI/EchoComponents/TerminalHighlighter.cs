@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine.UIElements;
 
@@ -55,18 +54,45 @@ public class TerminalHighlighter : IEchoComponent
 			tokens.Add((result.CommandToken.Raw, commandColor));
 		}
 
-		tokens.AddRange(
-			from token in result.ArgTokens ?? new()
-			let color = token.State switch
-			{
-				TokenState.Completed => _colorValidParameter,
-				TokenState.Partial   => _colorInprogress,
-				_                    => _colorInvalid
-			}
-			select (token.Raw, color));
+		foreach (var token in result.ArgTokens ?? new())
+		{
+			tokens.AddRange(ExpandToken(token));
+		}
 
 		return ApplyColors(input, tokens);
 	}
+
+	private List<(string raw, string color)> ExpandToken(Token token)
+	{
+		var resolvedType = token.Type ?? token.ExpectedType;
+		if (resolvedType == null ||
+		    !_terminal.Tokenizer.TryGetParser(resolvedType, out var parser) ||
+		    parser is not IRecursiveParser recursive)
+		{
+			return new List<(string, string)> { (token.Raw, ColorForState(token.State)) };
+		}
+
+		var subs = recursive.GetSubTokens(token.Raw, token.ExpectedType);
+		if (subs.Count > 1 || (subs.Count == 1 && subs[0].Raw != token.Raw))
+		{
+			var spans = new List<(string raw, string color)>();
+			foreach (var sub in subs)
+			{
+				spans.AddRange(ExpandToken(sub));
+			}
+
+			return spans;
+		}
+
+		return new List<(string, string)> { (token.Raw, ColorForState(token.State)) };
+	}
+
+	private string ColorForState(TokenState state) => state switch
+	{
+		TokenState.Completed => _colorValidParameter,
+		TokenState.Partial   => _colorInprogress,
+		_                    => _colorInvalid
+	};
 
 	private static string ApplyColors(string input, List<(string raw, string color)> tokens)
 	{

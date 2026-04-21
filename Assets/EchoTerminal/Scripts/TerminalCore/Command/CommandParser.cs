@@ -16,7 +16,9 @@ public class CommandParser
 
 		if (tokenizer.TryGetParser<BoundCommand>(out var bp))
 		{
-			((BoundCommandParser)bp).SetCommandValidator(input => Parse(input).IsMatch);
+			var bcp = (BoundCommandParser)bp;
+			bcp.SetCommandValidator(input => Parse(input).IsMatch);
+			bcp.SetCommandParser(Parse);
 		}
 	}
 
