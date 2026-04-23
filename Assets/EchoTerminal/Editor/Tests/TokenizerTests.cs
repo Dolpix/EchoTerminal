@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using EchoTerminal.TerminalCore;
 using NUnit.Framework;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine;
 [TestFixture]
 public class TokenizerTests
 {
+	private Tokenizer _tokenizer;
+
 	[SetUp]
 	public void SetUp()
 	{
@@ -13,8 +16,6 @@ public class TokenizerTests
 		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }));
 		_tokenizer = new(ParserRegistry.CreateAllParsers());
 	}
-
-	private Tokenizer _tokenizer;
 
 	[TestCase("Teleport @Player (10, 0, 5)", 3)]
 	[TestCase("Kill @Enemy1", 2)]
@@ -53,15 +54,15 @@ public class TokenizerTests
 	[TestCase("Spawn #00FF00FF 3", 1, typeof(Color))]
 	public void Tokenize_ResolvesCorrectTypes(string input, int index, Type expected)
 	{
-		Assert.AreEqual(expected, _tokenizer.Tokenize(input)[index].Type);
+		Assert.AreEqual(expected, _tokenizer.Tokenize(input)[index].ExpectedType);
 	}
 
 	[TestCase("Spawn (1,0,0)", 1, typeof(Color))]
 	[TestCase("Spawn (0,1,0,0.5)", 1, typeof(Color))]
 	public void Tokenize_ColorTuple_WithExpectedType_ResolvesAsColor(string input, int index, Type expected)
 	{
-		var tokens = _tokenizer.Tokenize(input, new() { null, typeof(Color) });
-		Assert.AreEqual(expected, tokens[index].Type);
+		List<Token> tokens = _tokenizer.Tokenize(input, new() { null, typeof(Color) });
+		Assert.AreEqual(expected, tokens[index].ExpectedType);
 		Assert.AreEqual(TokenState.Completed, tokens[index].State);
 	}
 
@@ -69,9 +70,9 @@ public class TokenizerTests
 	[TestCase("3.14", typeof(float))]
 	public void Tokenize_AmbiguousNumber_ResolvesToMoreSpecificType(string input, Type expected)
 	{
-		var tokens = _tokenizer.Tokenize(input);
+		List<Token> tokens = _tokenizer.Tokenize(input);
 		Assert.AreEqual(1, tokens.Count);
-		Assert.AreEqual(expected, tokens[0].Type);
+		Assert.AreEqual(expected, tokens[0].ExpectedType);
 	}
 
 	[TestCase("42", 1, 0, TokenState.Completed)]        // valid int arg
@@ -90,7 +91,7 @@ public class TokenizerTests
 		int index,
 		TokenState expected)
 	{
-		var tokens = _tokenizer.Tokenize(argInput);
+		List<Token> tokens = _tokenizer.Tokenize(argInput);
 		Assert.AreEqual(expectedCount, tokens.Count, $"Token count for '{argInput}'");
 		Assert.AreEqual(expected, tokens[index].State, $"Token[{index}].State for '{argInput}'");
 	}

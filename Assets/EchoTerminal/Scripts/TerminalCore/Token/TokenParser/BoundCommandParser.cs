@@ -23,6 +23,7 @@ public readonly struct BoundCommand
 
 public class BoundCommandParser : ITokenParser, IRecursiveParser
 {
+	public Type Type => typeof(BoundCommand);
 	private readonly List<ITokenParser> _parsers;
 	private Func<string, bool> _commandValidator;
 	private Func<string, CommandParseResult> _commandParser;
@@ -33,8 +34,6 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 		_parsers = parsers;
 	}
 
-	public Type Type => typeof(BoundCommand);
-
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
 		if (raw.Length == 0 || raw[0] != '>')
@@ -44,17 +43,17 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 
 		if (raw[^1] != '<')
 		{
-			var partialInner = raw[1..];
+			string partialInner = raw[1..];
 			if (partialInner.Length <= 0)
 			{
 				return TokenState.Partial;
 			}
 
-			var partialTokens = GetTokenizer().Tokenize(partialInner);
+			List<Token> partialTokens = GetTokenizer().Tokenize(partialInner);
 			return partialTokens.Any(t => t.State == TokenState.Failed) ? TokenState.Failed : TokenState.Partial;
 		}
 
-		var inner = raw[1..^1];
+		string inner = raw[1..^1];
 
 		if (string.IsNullOrWhiteSpace(inner))
 		{
@@ -66,7 +65,7 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 			return _commandValidator(inner) ? TokenState.Completed : TokenState.Failed;
 		}
 
-		var tokens = GetTokenizer().Tokenize(inner);
+		List<Token> tokens = GetTokenizer().Tokenize(inner);
 
 		if (tokens.Count == 0 || tokens.Any(t => t.State == TokenState.Failed) || tokens.Count > 2)
 		{
@@ -80,8 +79,8 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 
 	public object ParseValue(string raw, Type expectedType = null)
 	{
-		var inner = raw[1..^1];
-		var tokens = GetTokenizer().Tokenize(inner);
+		string inner = raw[1..^1];
+		List<Token> tokens = GetTokenizer().Tokenize(inner);
 		return new BoundCommand(inner, tokens);
 	}
 
@@ -97,27 +96,27 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 
 	public List<Token> GetSubTokens(string raw, Type expectedType)
 	{
-		var outerState = ParseTokenState(raw, expectedType);
+		TokenState outerState = ParseTokenState(raw, expectedType);
 		var result = new List<Token>();
 
 		if (raw.Length == 0 || raw[0] != '>')
 		{
-			result.Add(new Token { Raw = raw, State = outerState, ExpectedType = expectedType });
+			result.Add(new() { Raw = raw, State = outerState, ExpectedType = expectedType });
 			return result;
 		}
 
 		bool hasClose = raw[^1] == '<';
 		string inner = hasClose ? raw[1..^1] : raw[1..];
 
-		var delimState = hasClose ? outerState : TokenState.Partial;
-		result.Add(new Token { Raw = ">", State = delimState });
+		TokenState delimState = hasClose ? outerState : TokenState.Partial;
+		result.Add(new() { Raw = ">", State = delimState, ExpectedType = typeof(BoundCommand) });
 
 		if (inner.Length > 0)
 		{
 			List<Token> innerTokens;
 			if (_commandParser != null)
 			{
-				var parseResult = _commandParser(inner);
+				CommandParseResult parseResult = _commandParser(inner);
 				var allInner = new List<Token>();
 				if (!string.IsNullOrEmpty(parseResult.CommandToken.Raw))
 				{
@@ -136,14 +135,19 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 				innerTokens = GetTokenizer().Tokenize(inner);
 			}
 
-			int pos = 0;
-			foreach (var token in innerTokens)
+			var pos = 0;
+			foreach (Token token in innerTokens)
 			{
 				int tokenStart = inner.IndexOf(token.Raw, pos, StringComparison.Ordinal);
-				if (tokenStart < 0) { break; }
+				if (tokenStart < 0)
+				{
+					break;
+				}
+
 				if (tokenStart > pos)
 				{
-					result.Add(new Token { Raw = inner[pos..tokenStart], State = delimState });
+					result.Add(new()
+						{ Raw = inner[pos..tokenStart], State = delimState, ExpectedType = typeof(BoundCommand) });
 				}
 
 				result.Add(token);
@@ -152,13 +156,13 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser
 
 			if (pos < inner.Length)
 			{
-				result.Add(new Token { Raw = inner[pos..], State = delimState });
+				result.Add(new() { Raw = inner[pos..], State = delimState, ExpectedType = typeof(BoundCommand) });
 			}
 		}
 
 		if (hasClose)
 		{
-			result.Add(new Token { Raw = "<", State = outerState });
+			result.Add(new() { Raw = "<", State = outerState, ExpectedType = typeof(BoundCommand) });
 		}
 
 		return result;

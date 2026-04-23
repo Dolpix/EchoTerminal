@@ -12,113 +12,23 @@ public class Tokenizer
 	public Tokenizer(List<ITokenParser> parsers)
 	{
 		_parsers = parsers;
-		_parsersByType = new Dictionary<Type, ITokenParser>();
+		_parsersByType = new();
 		foreach (ITokenParser p in parsers)
 		{
 			_parsersByType[p.Type] = p;
 		}
 	}
 
-	private Token BuildToken(string raw, Type expectedType)
-	{
-		if (expectedType != null)
-		{
-			if (_parsersByType.TryGetValue(expectedType, out ITokenParser expected))
-			{
-				TokenState state = expected.ParseTokenState(raw);
-
-				return new Token
-				{
-					Raw = raw,
-					State = state,
-					Type = state == TokenState.Failed ? null : expectedType,
-					ExpectedType = expectedType
-				};
-			}
-
-			foreach (ITokenParser p in _parsers)
-			{
-				if (!p.Type.IsAssignableFrom(expectedType))
-				{
-					continue;
-				}
-
-				TokenState state = p.ParseTokenState(raw, expectedType);
-				if (state == TokenState.Failed)
-				{
-					continue;
-				}
-
-				return new Token
-				{
-					Raw = raw,
-					State = state,
-					Type = state == TokenState.Failed ? null : expectedType,
-					ExpectedType = expectedType
-				};
-			}
-
-			return new Token { Raw = raw, State = TokenState.Failed, Type = null, ExpectedType = expectedType };
-		}
-
-		foreach (ITokenParser p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Completed)
-			{
-				return new Token { Raw = raw, State = TokenState.Completed, Type = p.Type };
-			}
-		}
-
-		foreach (ITokenParser p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Partial)
-			{
-				return new Token { Raw = raw, State = TokenState.Partial, Type = p.Type };
-			}
-		}
-
-		return new Token { Raw = raw, State = TokenState.Failed, Type = typeof(string) };
-	}
-
-	private ITokenParser FindPartialParser(string raw, Type expectedType)
-	{
-		if (expectedType != null && _parsersByType.TryGetValue(expectedType, out ITokenParser expected))
-		{
-			if (expected.ParseTokenState(raw) == TokenState.Partial)
-			{
-				return expected;
-			}
-		}
-
-		foreach (ITokenParser p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Completed)
-			{
-				return null;
-			}
-		}
-
-		foreach (ITokenParser p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Partial)
-			{
-				return p;
-			}
-		}
-
-		return null;
-	}
-
 	public object ParseValue(Token token)
 	{
-		if (token.Type != null && _parsersByType.TryGetValue(token.Type, out ITokenParser parser))
-		{
-			return parser.ParseValue(token.Raw);
-		}
-
 		if (token.ExpectedType == null)
 		{
 			return null;
+		}
+
+		if (_parsersByType.TryGetValue(token.ExpectedType, out ITokenParser parser))
+		{
+			return parser.ParseValue(token.Raw, token.ExpectedType);
 		}
 
 		foreach (ITokenParser p in _parsers)
@@ -227,6 +137,83 @@ public class Tokenizer
 		}
 
 		return false;
+	}
+
+	private Token BuildToken(string raw, Type expectedType)
+	{
+		if (expectedType != null)
+		{
+			if (_parsersByType.TryGetValue(expectedType, out ITokenParser expected))
+			{
+				TokenState state = expected.ParseTokenState(raw);
+				return new() { Raw = raw, State = state, ExpectedType = expectedType };
+			}
+
+			foreach (ITokenParser p in _parsers)
+			{
+				if (!p.Type.IsAssignableFrom(expectedType))
+				{
+					continue;
+				}
+
+				TokenState state = p.ParseTokenState(raw, expectedType);
+				if (state == TokenState.Failed)
+				{
+					continue;
+				}
+
+				return new() { Raw = raw, State = state, ExpectedType = expectedType };
+			}
+
+			return new() { Raw = raw, State = TokenState.Failed, ExpectedType = expectedType };
+		}
+
+		foreach (ITokenParser p in _parsers)
+		{
+			if (p.ParseTokenState(raw) == TokenState.Completed)
+			{
+				return new() { Raw = raw, State = TokenState.Completed, ExpectedType = p.Type };
+			}
+		}
+
+		foreach (ITokenParser p in _parsers)
+		{
+			if (p.ParseTokenState(raw) == TokenState.Partial)
+			{
+				return new() { Raw = raw, State = TokenState.Partial, ExpectedType = p.Type };
+			}
+		}
+
+		return new() { Raw = raw, State = TokenState.Failed, ExpectedType = null };
+	}
+
+	private ITokenParser FindPartialParser(string raw, Type expectedType)
+	{
+		if (expectedType != null && _parsersByType.TryGetValue(expectedType, out ITokenParser expected))
+		{
+			if (expected.ParseTokenState(raw) == TokenState.Partial)
+			{
+				return expected;
+			}
+		}
+
+		foreach (ITokenParser p in _parsers)
+		{
+			if (p.ParseTokenState(raw) == TokenState.Completed)
+			{
+				return null;
+			}
+		}
+
+		foreach (ITokenParser p in _parsers)
+		{
+			if (p.ParseTokenState(raw) == TokenState.Partial)
+			{
+				return p;
+			}
+		}
+
+		return null;
 	}
 }
 }

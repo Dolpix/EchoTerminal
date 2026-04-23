@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using EchoTerminal.TerminalCore;
 using UnityEngine;
@@ -12,7 +13,9 @@ public static class BindCommand
 	[TerminalCommand("BindsAdd", "Bind a key to a command. Usage: BindsAdd <key> ><command args><")]
 	private static void BindsAdd(Key key, BoundCommand command)
 	{
-		if (command.Tokens.Count == 0 || command.Tokens[0].Type != typeof(CommandName))
+		if (command.Tokens.Count == 0 ||
+			command.Tokens[0].ExpectedType != typeof(CommandName) ||
+			command.Tokens[0].State == TokenState.Failed)
 		{
 			Debug.LogError($"'{command.Raw}' is not a recognised command.");
 			return;
@@ -20,7 +23,8 @@ public static class BindCommand
 
 		if (Terminal != null)
 		{
-			var parseResult = new CommandParser(Terminal.Registry, Terminal.Tokenizer).Parse(command.Raw);
+			CommandParseResult parseResult =
+				new CommandParser(Terminal.Registry, Terminal.Tokenizer).Parse(command.Raw);
 			if (!parseResult.IsMatch)
 			{
 				Debug.LogError($"Cannot bind — {parseResult.GetError()}");
@@ -28,8 +32,8 @@ public static class BindCommand
 			}
 		}
 
-		var existing = BindStore.GetAll();
-		var wasRebound = existing.TryGetValue(key, out var previous);
+		Dictionary<Key, string> existing = BindStore.GetAll();
+		bool wasRebound = existing.TryGetValue(key, out string previous);
 
 		BindStore.Set(key, command.Raw);
 
@@ -54,7 +58,7 @@ public static class BindCommand
 	[TerminalCommand("BindsClear", "Remove all key bindings")]
 	private static void BindsClear()
 	{
-		var count = BindStore.GetAll().Count;
+		int count = BindStore.GetAll().Count;
 
 		if (count == 0)
 		{
@@ -69,7 +73,7 @@ public static class BindCommand
 	[TerminalCommand("BindsLog", "List all current key bindings")]
 	private static void BindsLog()
 	{
-		var all = BindStore.GetAll();
+		Dictionary<Key, string> all = BindStore.GetAll();
 
 		if (all.Count == 0)
 		{
@@ -80,7 +84,7 @@ public static class BindCommand
 		var sb = new StringBuilder();
 		sb.AppendLine($"Bindings ({all.Count}):");
 
-		foreach (var (key, command) in all)
+		foreach ((Key key, string command) in all)
 		{
 			sb.AppendLine($"  {key,-12} → {command}");
 		}

@@ -6,7 +6,7 @@ namespace EchoTerminal
 [CreateAssetMenu(fileName = "TerminalConfig", menuName = "Echo Terminal/UI Config")]
 public class TerminalConfig : ScriptableObject
 {
-	[Header("Templates")]
+	[Header("Templates")] 
 	[SerializeField] private VisualTreeAsset _logEntryTemplate;
 	[SerializeField] private VisualTreeAsset _suggestionPopupTemplate;
 	[SerializeField] private VisualTreeAsset _suggestionItemTemplate;
@@ -14,13 +14,17 @@ public class TerminalConfig : ScriptableObject
 	[Header("Cursors")]
 	[SerializeField] private TerminalCursorSet _cursorSet;
 
-	[Header("Window Settings")]
+	[Header("Window Settings")] 
 	[SerializeField] private TerminalDragConstraints _dragConstraints;
+
+	[Header("Highlighting")] [SerializeField]
+	private HighlighterSet _highlighterSet;
 
 	public VisualTreeAsset LogEntryTemplate => _logEntryTemplate;
 	public VisualTreeAsset SuggestionPopupTemplate => _suggestionPopupTemplate;
 	public VisualTreeAsset SuggestionItemTemplate => _suggestionItemTemplate;
 	public TerminalCursorSet CursorSet => _cursorSet;
 	public TerminalDragConstraints DragConstraints => _dragConstraints;
+	public HighlighterSet HighlighterSet => _highlighterSet;
 }
 }
