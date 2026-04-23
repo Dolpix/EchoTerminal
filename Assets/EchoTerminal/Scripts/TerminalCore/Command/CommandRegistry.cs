@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -24,7 +25,7 @@ public class CommandRegistry
 
 	public Component[] GetInstances(Type monoType)
 	{
-		if (_instanceCache.TryGetValue(monoType, out var cached))
+		if (_instanceCache.TryGetValue(monoType, out Component[] cached))
 		{
 			return cached;
 		}
@@ -43,9 +44,9 @@ public class CommandRegistry
 
 		_scanned = true;
 
-		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+		foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 		{
-			if (assembly.IsDynamic)
+			if (assembly.IsDynamic || IsTestAssembly(assembly))
 			{
 				continue;
 			}
@@ -60,7 +61,7 @@ public class CommandRegistry
 				types = e.Types;
 			}
 
-			foreach (var type in types)
+			foreach (Type type in types)
 			{
 				if (type == null)
 				{
@@ -85,9 +86,25 @@ public class CommandRegistry
 		}
 	}
 
+	public void RegisterType(Type type)
+	{
+		ScanMethods(type, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null);
+
+		if (typeof(MonoBehaviour).IsAssignableFrom(type) && !type.IsAbstract)
+		{
+			ScanMethods(type, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, type);
+		}
+	}
+
+	private static bool IsTestAssembly(Assembly assembly)
+	{
+		return assembly.GetReferencedAssemblies()
+					   .Any(r => r.Name.Equals("nunit.framework", StringComparison.OrdinalIgnoreCase));
+	}
+
 	private void ScanMethods(Type type, BindingFlags flags, Type monoType)
 	{
-		foreach (var method in type.GetMethods(flags))
+		foreach (MethodInfo method in type.GetMethods(flags))
 		{
 			var attr = method.GetCustomAttribute<TerminalCommandAttribute>();
 			if (attr == null)
@@ -95,11 +112,11 @@ public class CommandRegistry
 				continue;
 			}
 
-			var name = string.IsNullOrEmpty(attr.Name)
+			string name = string.IsNullOrEmpty(attr.Name)
 				? method.Name
 				: attr.Name;
 
-			if (!_commands.TryGetValue(name, out var list))
+			if (!_commands.TryGetValue(name, out List<CommandEntry> list))
 			{
 				list = new();
 				_commands[name] = list;

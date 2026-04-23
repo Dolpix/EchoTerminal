@@ -15,7 +15,7 @@ public class BoundCommandParserTests
 	public void SetUp()
 	{
 		var registry = new CommandRegistry();
-		registry.Scan();
+		registry.RegisterType(typeof(TestCommands));
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(registry.GetCommandNames()));
 		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1" }));
 		List<ITokenParser> parsers = ParserRegistry.CreateAllParsers();
