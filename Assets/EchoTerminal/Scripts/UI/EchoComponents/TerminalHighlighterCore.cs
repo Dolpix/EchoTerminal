@@ -5,7 +5,7 @@ using EchoTerminal.TerminalCore;
 
 namespace EchoTerminal.Components
 {
-internal class TerminalHighlighterCore
+public class TerminalHighlighterCore
 {
 	private const string _colorInprogress = "#FFFFFF";
 	private const string _colorInvalid = "#FF5555";
@@ -17,7 +17,7 @@ internal class TerminalHighlighterCore
 	private readonly Tokenizer _tokenizer;
 	private readonly HighlighterSet _highlighterSet;
 
-	internal TerminalHighlighterCore(CommandParser commandParser, Tokenizer tokenizer, HighlighterSet highlighterSet)
+	public TerminalHighlighterCore(CommandParser commandParser, Tokenizer tokenizer, HighlighterSet highlighterSet)
 	{
 		_commandParser = commandParser;
 		_tokenizer = tokenizer;
@@ -126,7 +126,7 @@ internal class TerminalHighlighterCore
 		return sb.ToString();
 	}
 
-	internal string BuildHighlightedText(string input)
+	public string BuildHighlightedText(string input)
 	{
 		CommandParseResult result = _commandParser.Parse(input);
 		var spans = new List<(int start, int length, string richText)>();

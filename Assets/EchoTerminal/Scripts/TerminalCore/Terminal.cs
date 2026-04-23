@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EchoTerminal.Components;
 using EchoTerminal.TerminalCore;
 using UnityEngine;
 
@@ -16,11 +17,12 @@ public class Terminal
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
 	public event Action OnSubmitted;
+	public TerminalHighlighterCore HighlighterCore { get; }
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly CommandExecutor _executor;
 	private readonly int _maxEntries;
 
-	public Terminal(int maxEntries = 1000)
+	public Terminal(HighlighterSet highlighterSet = null, int maxEntries = 1000)
 	{
 		_maxEntries = maxEntries;
 		Registry = new();
@@ -32,6 +34,7 @@ public class Terminal
 		CommandParser = new(Registry, Tokenizer);
 		Suggestors.InitComplexSuggesters(Registry, CommandParser);
 		_executor = new(CommandParser, Registry, Tokenizer);
+		HighlighterCore = new(CommandParser, Tokenizer, highlighterSet);
 		BindCommand.Terminal = this;
 	}
 
@@ -56,7 +59,8 @@ public class Terminal
 	public void Submit(string input)
 	{
 		OnSubmitted?.Invoke();
-		Log(input, kind: LogKind.Command);
+		string logText = HighlighterCore.BuildHighlightedText(input);
+		Log(logText, kind: LogKind.Command);
 		_executor.Execute(input);
 	}
 }

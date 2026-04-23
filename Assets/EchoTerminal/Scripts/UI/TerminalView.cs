@@ -11,12 +11,12 @@ public class TerminalView
 
 	public TerminalView(VisualElement root, TerminalConfig config)
 	{
-		Terminal = new();
+		Terminal = new(config?.HighlighterSet);
 
 		_components.Add(new TerminalLogDisplay(Terminal, root, config));
 		_components.Add(new TerminalAutoScroll(Terminal, root));
 		_components.Add(new TerminalInput(Terminal, root, config));
-		_components.Add(new TerminalHighlighter(Terminal, root, config?.HighlighterSet));
+		_components.Add(new TerminalHighlighter(Terminal, root));
 		_components.Add(new TerminalSuggestions(Terminal, root, config));
 		_components.Add(new TerminalToolbar(Terminal, root));
 		_components.Add(new TerminalCopyButton(Terminal, root));

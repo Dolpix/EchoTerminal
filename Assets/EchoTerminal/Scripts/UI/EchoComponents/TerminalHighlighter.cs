@@ -8,9 +8,9 @@ public class TerminalHighlighter : IEchoComponent
 	private readonly Label _highlightLabel;
 	private readonly TextField _inputField;
 
-	public TerminalHighlighter(Terminal terminal, VisualElement root, HighlighterSet highlighterSet = null)
+	public TerminalHighlighter(Terminal terminal, VisualElement root)
 	{
-		_core = new(terminal.CommandParser, terminal.Tokenizer, highlighterSet);
+		_core = terminal.HighlighterCore;
 		_inputField = root?.Q<TextField>("input-field");
 		_highlightLabel = root?.Q<Label>("highlight-label");
 
