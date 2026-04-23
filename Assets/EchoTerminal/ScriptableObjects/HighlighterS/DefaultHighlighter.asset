@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea5b27fe06c8d424492627d83743734d, type: 3}
   m_Name: DefaultHighlighter
   m_EditorClassIdentifier: EchoTerminal::EchoTerminal.FlatColorHighlighter
-  _color: {r: 1, g: 1, b: 1, a: 1}
+  _color: {r: 0.8862745, g: 0.9098039, b: 0.9411765, a: 1}
