@@ -25,6 +25,8 @@ public class TargetParser : ITokenParser
 	private IReadOnlyList<string> _lastList;
 	private HashSet<string> _knownSet = new(StringComparer.OrdinalIgnoreCase);
 
+	public TargetParser() : this(new LiteralTargetProvider()) { }
+
 	public TargetParser(ITargetProvider provider)
 	{
 		_provider = provider;

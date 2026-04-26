@@ -86,3 +86,7 @@ MonoBehaviour:
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     TypeDisplayName: BoundCommand
     Highlighter: {fileID: 11400000, guid: 4c49d44de26523a43935a2d8c0530b79, type: 2}
+  - TypeAssemblyQualifiedName: Target, EchoTerminal, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    TypeDisplayName: Target
+    Highlighter: {fileID: 11400000, guid: 1eb2f4e24596f994c9a426dec5137370, type: 2}
