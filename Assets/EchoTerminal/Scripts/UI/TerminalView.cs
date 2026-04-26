@@ -16,6 +16,7 @@ public class TerminalView
 		_components.Add(new TerminalLogDisplay(Terminal, root, config));
 		_components.Add(new TerminalAutoScroll(Terminal, root));
 		_components.Add(new TerminalInput(Terminal, root, config));
+		_components.Add(new TerminalInputHistory(Terminal, root));
 		_components.Add(new TerminalHighlighter(Terminal, root));
 		_components.Add(new TerminalSuggestions(Terminal, root, config));
 		_components.Add(new TerminalToolbar(Terminal, root));

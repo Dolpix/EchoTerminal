@@ -17,6 +17,7 @@ public class Terminal
 	public event Action OnCleared;
 	public event Action<TerminalEntry> OnEntryAdded;
 	public event Action OnSubmitted;
+	public event Action<string> OnCommandSubmitted;
 	public TerminalHighlighterCore HighlighterCore { get; }
 	private readonly List<TerminalEntry> _entries = new();
 	private readonly CommandExecutor _executor;
@@ -60,6 +61,7 @@ public class Terminal
 
 	public void Submit(string input)
 	{
+		OnCommandSubmitted?.Invoke(input);
 		OnSubmitted?.Invoke();
 		string logText = HighlighterCore.BuildHighlightedText(input);
 		Log(logText, kind: LogKind.Command);
