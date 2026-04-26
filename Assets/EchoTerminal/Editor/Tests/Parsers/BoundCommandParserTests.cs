@@ -17,7 +17,7 @@ public class BoundCommandParserTests
 		var registry = new CommandRegistry();
 		registry.RegisterType(typeof(TestCommands));
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(registry.GetCommandNames()));
-		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1" }));
+		ParserRegistry.Register<TargetParser>(() => new TargetParser(new LiteralTargetProvider("@Player", "@Enemy1")));
 		List<ITokenParser> parsers = ParserRegistry.CreateAllParsers();
 		var tokenizer = new Tokenizer(parsers);
 		_ = new CommandParser(registry, tokenizer);
@@ -60,7 +60,6 @@ public class BoundCommandParserTests
 	[TestCase(">Teleport (0, 0, 0)<", "Teleport (0, 0, 0)", 2)]
 	[TestCase(">Spawn 42<", "Spawn 42", 2)]
 	[TestCase(">Kill<", "Kill", 1)]
-	[TestCase(">Teleport @Player<", "Teleport @Player", 2)]
 	public void ParseValue_ReturnsPopulatedBoundCommand(string raw, string expectedRaw, int expectedTokenCount)
 	{
 		var result = (BoundCommand)_parser.ParseValue(raw);
@@ -88,6 +87,11 @@ public class BoundCommandParserTests
 
 		[TerminalCommand("Teleport")]
 		private static void Teleport(Vector3 destination)
+		{
+		}
+
+		[TerminalCommand("Teleport")]
+		private static void TeleportTarget()
 		{
 		}
 

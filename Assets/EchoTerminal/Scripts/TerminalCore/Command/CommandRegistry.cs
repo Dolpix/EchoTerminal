@@ -18,6 +18,15 @@ public class CommandRegistry
 		return _commands.Keys;
 	}
 
+	internal IEnumerable<Type> GetMonoTypes()
+	{
+		return _commands.Values
+			.SelectMany(entries => entries)
+			.Where(e => e.MonoType != null)
+			.Select(e => e.MonoType)
+			.Distinct();
+	}
+
 	public bool TryGet(string name, out List<CommandEntry> entries)
 	{
 		return _commands.TryGetValue(name, out entries);
@@ -122,7 +131,13 @@ public class CommandRegistry
 				_commands[name] = list;
 			}
 
-			list.Add(new(method, monoType));
+			bool hasTarget = method.GetCustomAttribute<TerminalTargetAttribute>() != null;
+			if (hasTarget && monoType == null)
+			{
+				Debug.LogWarning($"[TerminalTarget] on static method '{type.Name}.{method.Name}' has no effect — target filtering requires an instance command. Attribute ignored.");
+				hasTarget = false;
+			}
+			list.Add(new(method, monoType, hasTarget));
 		}
 	}
 }

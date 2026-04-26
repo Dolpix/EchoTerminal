@@ -10,7 +10,7 @@ public class SuggestorRegistry
 {
 	private readonly Dictionary<Type, ISuggester> _suggestors = new();
 
-	public void Scan(CommandRegistry commandRegistry)
+	public void Scan(CommandRegistry commandRegistry, ITargetProvider targetProvider = null)
 	{
 		foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 		{
@@ -48,6 +48,15 @@ public class SuggestorRegistry
 					if (type == typeof(CommandNameSuggester))
 					{
 						instance = new CommandNameSuggester(commandRegistry);
+					}
+					else if (type == typeof(TargetSuggester))
+					{
+						if (targetProvider == null)
+						{
+							continue;
+						}
+
+						instance = new TargetSuggester(targetProvider);
 					}
 					else if (type.GetConstructor(Type.EmptyTypes) != null)
 					{

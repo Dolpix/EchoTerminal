@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using EchoTerminal;
 
 public readonly struct Target
 {
@@ -18,28 +20,42 @@ public readonly struct Target
 
 public class TargetParser : ITokenParser
 {
-	private readonly HashSet<string> _known;
+	public Type Type => typeof(Target);
+	private readonly ITargetProvider _provider;
+	private IReadOnlyList<string> _lastList;
+	private HashSet<string> _knownSet = new(StringComparer.OrdinalIgnoreCase);
 
-	public TargetParser(IEnumerable<string> knownTargets)
+	public TargetParser(ITargetProvider provider)
 	{
-		_known = new(knownTargets);
+		_provider = provider;
 	}
 
-	public System.Type Type => typeof(Target);
+	private HashSet<string> GetKnownSet()
+	{
+		IReadOnlyList<string> list = _provider.GetTargets();
+		if (!ReferenceEquals(list, _lastList))
+		{
+			_lastList = list;
+			_knownSet = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+		}
+		return _knownSet;
+	}
 
-	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
+	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
 		if (!raw.StartsWith("@"))
 		{
 			return TokenState.Failed;
 		}
 
-		if (_known.Contains(raw))
+		HashSet<string> known = GetKnownSet();
+
+		if (known.Contains(raw))
 		{
 			return TokenState.Completed;
 		}
 
-		if (_known.Any(t => t.StartsWith(raw)))
+		if (known.Any(t => t.StartsWith(raw, StringComparison.OrdinalIgnoreCase)))
 		{
 			return TokenState.Partial;
 		}
@@ -47,7 +63,7 @@ public class TargetParser : ITokenParser
 		return TokenState.Failed;
 	}
 
-	public object ParseValue(string raw, System.Type expectedType = null)
+	public object ParseValue(string raw, Type expectedType = null)
 	{
 		return new Target(raw);
 	}

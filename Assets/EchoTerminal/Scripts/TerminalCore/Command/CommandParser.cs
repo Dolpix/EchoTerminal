@@ -62,12 +62,18 @@ public class CommandParser
 		foreach (CommandEntry entry in entries)
 		{
 			ParameterInfo[] parameters = entry.Method.GetParameters();
-			List<Type> expectedTypes = parameters.Select(p => p.ParameterType).ToList();
+			IEnumerable<Type> paramTypes = parameters.Select(p => p.ParameterType);
+			List<Type> expectedTypes = entry.HasTarget
+				? paramTypes.Prepend(typeof(Target)).ToList()
+				: paramTypes.ToList();
+
 			List<Token> argTokens = string.IsNullOrWhiteSpace(argInput)
 				? new()
 				: _tokenizer.Tokenize(argInput, expectedTypes);
 
-			if (argTokens.Count == parameters.Length && argTokens.All(t => t.State == TokenState.Completed))
+			int paramCount = entry.HasTarget ? parameters.Length + 1 : parameters.Length;
+
+			if (argTokens.Count == paramCount && argTokens.All(t => t.State == TokenState.Completed))
 			{
 				return CommandParseResult.Match(commandToken, entries, entry, argTokens);
 			}
@@ -80,7 +86,7 @@ public class CommandParser
 
 			bestCompletedCount = completedCount;
 			bestArgTokens = argTokens;
-			bestParamCount = parameters.Length;
+			bestParamCount = paramCount;
 		}
 
 		if (bestArgTokens == null)

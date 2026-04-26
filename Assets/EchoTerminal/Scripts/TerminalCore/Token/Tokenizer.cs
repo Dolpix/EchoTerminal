@@ -84,14 +84,18 @@ public class Tokenizer
 
 			if (partialParser != null)
 			{
+				int lastCompletedPos = -1;
+
 				while (pos < input.Length)
 				{
 					pos++;
 					raw = input[start..pos];
 					TokenState next = partialParser.ParseTokenState(raw);
+
 					if (next == TokenState.Completed)
 					{
-						break;
+						lastCompletedPos = pos;
+						continue;
 					}
 
 					if (next != TokenState.Failed || input[pos - 1] != ' ')
@@ -99,8 +103,14 @@ public class Tokenizer
 						continue;
 					}
 
-					pos--;
+					pos = lastCompletedPos >= 0 ? lastCompletedPos : pos - 1;
 					break;
+				}
+
+				raw = input[start..pos];
+				if (lastCompletedPos >= 0 && partialParser.ParseTokenState(raw) == TokenState.Failed)
+				{
+					pos = lastCompletedPos;
 				}
 			}
 			else

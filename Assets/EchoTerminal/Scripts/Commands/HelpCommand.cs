@@ -38,19 +38,24 @@ public static class HelpCommand
 
 			foreach (var entry in entries)
 			{
-				output.AppendLine(BuildLine(name, entry.Method));
+				output.AppendLine(BuildLine(name, entry));
 			}
 		}
 
 		terminal.Log(output.ToString().TrimEnd());
 	}
 
-	private static string BuildLine(string name, MethodInfo method)
+	private static string BuildLine(string name, CommandEntry entry)
 	{
 		var sb = new StringBuilder();
 		sb.Append($"  <color={_colCommand}>{name}</color>");
 
-		foreach (var param in method.GetParameters())
+		if (entry.HasTarget)
+		{
+			sb.Append($" <color={_colParams}><@target></color>");
+		}
+
+		foreach (var param in entry.Method.GetParameters())
 		{
 			if (param.ParameterType == typeof(Terminal))
 			{
@@ -60,7 +65,7 @@ public static class HelpCommand
 			sb.Append($" <color={_colParams}><{param.ParameterType.Name} {param.Name}></color>");
 		}
 
-		var desc = method.GetCustomAttribute<TerminalCommandAttribute>()?.Description;
+		var desc = entry.Method.GetCustomAttribute<TerminalCommandAttribute>()?.Description;
 		if (!string.IsNullOrEmpty(desc))
 		{
 			sb.Append($"  <color={_colArrow}>→</color>  <color={_colDesc}>{desc}</color>");

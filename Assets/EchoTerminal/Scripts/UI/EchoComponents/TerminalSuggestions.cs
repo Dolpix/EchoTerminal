@@ -260,8 +260,8 @@ public class TerminalSuggestions : IEchoComponent
 		}
 
 		Token? activeToken = GetActiveToken(result);
-
 		bool cursorAdvanced = input.Length > 0 && input[^1] == ' ';
+		bool allHaveTarget = result.Entries.All(e => e.HasTarget);
 
 		int paramIndex = activeToken == null
 			? cursorAdvanced ? result.ArgTokens?.Count ?? 0 : (result.ArgTokens?.Count ?? 1) - 1
@@ -269,20 +269,41 @@ public class TerminalSuggestions : IEchoComponent
 
 		if (paramIndex >= 0)
 		{
-			CommandEntry bestEntry = result.Entries.FirstOrDefault();
-			ParameterInfo[] parameters = bestEntry.Method.GetParameters();
-			if (paramIndex < parameters.Length)
+			if (paramIndex == 0 && allHaveTarget)
 			{
-				var attr = parameters[paramIndex].GetCustomAttribute<SuggestAttribute>();
+				expectedType = typeof(Target);
+				_terminal.Suggestors.TryGet(expectedType, out ISuggester targetSuggester);
+				return targetSuggester;
+			}
+
+			bool inTargetContext = allHaveTarget &&
+			                      result.ArgTokens?.Count > 0 &&
+			                      result.ArgTokens[0].ExpectedType == typeof(Target);
+
+			CommandEntry lookupEntry = inTargetContext
+				? result.Entries.FirstOrDefault(e => e.HasTarget)
+				: result.Entries.FirstOrDefault();
+
+			if (lookupEntry.Method == null)
+			{
+				return null;
+			}
+
+			int actualParamIndex = inTargetContext ? paramIndex - 1 : paramIndex;
+			ParameterInfo[] parameters = lookupEntry.Method.GetParameters();
+
+			if (actualParamIndex >= 0 && actualParamIndex < parameters.Length)
+			{
+				var attr = parameters[actualParamIndex].GetCustomAttribute<SuggestAttribute>();
 				if (attr != null)
 				{
-					expectedType = parameters[paramIndex].ParameterType;
+					expectedType = parameters[actualParamIndex].ParameterType;
 					return attr.Suggester;
 				}
 
 				if (activeToken == null && cursorAdvanced)
 				{
-					expectedType = parameters[paramIndex].ParameterType;
+					expectedType = parameters[actualParamIndex].ParameterType;
 					_terminal.Suggestors.TryGet(expectedType, out ISuggester nextSuggester);
 					return nextSuggester;
 				}

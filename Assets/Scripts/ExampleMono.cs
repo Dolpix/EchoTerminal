@@ -68,13 +68,15 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Teleport(float x, float y, float z)
 	{
 		transform.position = new(x, y, z);
-		Debug.Log("New position: " + transform.position);
+		Debug.Log($"[{gameObject.name}] New position: {transform.position}");
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Teleport(Vector3 position)
 	{
 		transform.position = new(position.x, position.y, position.z);
@@ -82,18 +84,21 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void SetHealth(int value)
 	{
 		Debug.Log($"Health set to {value}");
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Say(string message)
 	{
 		Debug.Log($"[{gameObject.name}]: {message}");
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Toggle(bool enabled)
 	{
 		gameObject.SetActive(enabled);
@@ -101,6 +106,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Move(Vector3 offset)
 	{
 		transform.position += offset;
@@ -108,12 +114,14 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Look(Vector2 direction)
 	{
 		Debug.Log($"Looking at ({direction.x}, {direction.y})");
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Paint(Color color)
 	{
 		var meshRenderer = GetComponentInChildren<MeshRenderer>();
@@ -126,12 +134,14 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Speed(double value)
 	{
 		Debug.Log($"Speed set to {value:F4}");
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Damage(List<int> amounts)
 	{
 		var total = 0;
@@ -144,6 +154,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Waypoints(List<Vector3> points)
 	{
 		var sb = new StringBuilder();
@@ -157,6 +168,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Path(List<Vector2> points)
 	{
 		var sb = new StringBuilder();
@@ -170,6 +182,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Scales(List<float> values)
 	{
 		var sb = new StringBuilder();
@@ -183,6 +196,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Flags(List<bool> flags)
 	{
 		var sb = new StringBuilder();
@@ -196,6 +210,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Palette(List<Color> colors)
 	{
 		var sb = new StringBuilder();
@@ -209,6 +224,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalTarget]
 	private void Tags(List<string> tags)
 	{
 		var sb = new StringBuilder();

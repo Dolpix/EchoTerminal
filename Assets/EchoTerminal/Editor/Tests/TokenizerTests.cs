@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using EchoTerminal;
 using EchoTerminal.TerminalCore;
 using NUnit.Framework;
 using UnityEngine;
@@ -13,7 +14,7 @@ public class TokenizerTests
 	public void SetUp()
 	{
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(new[] { "Teleport", "Spawn", "Kill" }));
-		ParserRegistry.Register<TargetParser>(() => new TargetParser(new[] { "@Player", "@Enemy1", "@Enemy2" }));
+		ParserRegistry.Register<TargetParser>(() => new TargetParser(new LiteralTargetProvider("@Player", "@Enemy1", "@Enemy2")));
 		_tokenizer = new(ParserRegistry.CreateAllParsers());
 	}
 

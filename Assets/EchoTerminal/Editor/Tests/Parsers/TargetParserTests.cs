@@ -8,7 +8,7 @@ public class TargetParserTests
 	[SetUp]
 	public void SetUp()
 	{
-		_parser = new(new[] { "@Player", "@Enemy1", "@Enemy2" });
+		_parser = new(new LiteralTargetProvider("@Player", "@Enemy1", "@Enemy2"));
 	}
 
 	private TargetParser _parser;

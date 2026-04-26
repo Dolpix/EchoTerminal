@@ -27,9 +27,11 @@ public class Terminal
 		_maxEntries = maxEntries;
 		Registry = new();
 		Registry.Scan();
+		var targetProvider = new SceneTargetProvider(Registry);
 		Suggestors = new();
-		Suggestors.Scan(Registry);
+		Suggestors.Scan(Registry, targetProvider);
 		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
+		ParserRegistry.Register<TargetParser>(() => new TargetParser(targetProvider));
 		Tokenizer = new(ParserRegistry.CreateAllParsers());
 		CommandParser = new(Registry, Tokenizer);
 		Suggestors.InitComplexSuggesters(Registry, CommandParser);

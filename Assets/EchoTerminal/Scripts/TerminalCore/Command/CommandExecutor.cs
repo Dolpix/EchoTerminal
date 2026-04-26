@@ -19,7 +19,7 @@ public class CommandExecutor
 
 	public void Execute(string input)
 	{
-		var result = _commandParser.Parse(input);
+		CommandParseResult result = _commandParser.Parse(input);
 
 		if (!result.IsMatch)
 		{
@@ -32,8 +32,25 @@ public class CommandExecutor
 			return;
 		}
 
-		var entry = result.Entry.Value;
-		var args = result.ArgTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
+		CommandEntry entry = result.Entry.Value;
+		object[] allArgs = result.ArgTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
+
+		Target? target = null;
+		object[] args = allArgs;
+
+		if (entry.HasTarget)
+		{
+			if (allArgs.Length > 0 && allArgs[0] is Target t)
+			{
+				target = t;
+				args = allArgs[1..];
+			}
+			else
+			{
+				Debug.LogError($"Command '{entry.Method.Name}' has [TerminalTarget] but no target was parsed. Aborting.");
+				return;
+			}
+		}
 
 		if (entry.IsStatic)
 		{
@@ -41,14 +58,25 @@ public class CommandExecutor
 			return;
 		}
 
-		var instances = _registry.GetInstances(entry.MonoType);
-		if (instances.Length == 0)
+		Component[] instances = _registry.GetInstances(entry.MonoType);
+
+		Component[] filtered = instances;
+		if (target.HasValue && target.Value.Value != "@all")
 		{
-			Debug.LogError($"No active instance of '{entry.MonoType.Name}' found in the scene.");
+			string targetName = target.Value.Value[1..];
+			filtered = instances.Where(c => c.gameObject.name == targetName).ToArray();
+		}
+
+		if (filtered.Length == 0)
+		{
+			string msg = target.HasValue
+				? $"No active instance of '{entry.MonoType.Name}' found matching target '{target.Value.Value}'."
+				: $"No active instance of '{entry.MonoType.Name}' found in the scene.";
+			Debug.LogError(msg);
 			return;
 		}
 
-		foreach (var instance in instances)
+		foreach (Component instance in filtered)
 		{
 			entry.Method.Invoke(instance, args);
 		}
