@@ -197,6 +197,7 @@ public class TerminalSuggestions : IEchoComponent
 			case KeyCode.Return or KeyCode.KeypadEnter or KeyCode.Tab when
 				_selectedIndex >= 0:
 				AcceptSuggestion(_suggestions[_selectedIndex]);
+				evt.StopImmediatePropagation();
 				evt.StopPropagation();
 				break;
 		}
