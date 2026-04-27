@@ -62,6 +62,12 @@ public class TargetParser : ITokenParser
 			return TokenState.Partial;
 		}
 
+		string trimmed = raw.TrimEnd();
+		if (known.Contains(trimmed))
+		{
+			return TokenState.Completed;
+		}
+
 		return TokenState.Failed;
 	}
 

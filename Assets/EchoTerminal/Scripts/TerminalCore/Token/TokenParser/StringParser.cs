@@ -23,9 +23,10 @@ public class StringParser : ITokenParser
 
 		if (raw[0] == '"')
 		{
-			if (raw.Length >= 2 && raw[^1] == '"')
+			int closingQuote = raw.IndexOf('"', 1);
+			if (closingQuote >= 1)
 			{
-				return TokenState.Completed;
+				return closingQuote == raw.Length - 1 ? TokenState.Completed : TokenState.Failed;
 			}
 
 			return TokenState.Partial;

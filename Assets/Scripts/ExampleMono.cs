@@ -97,7 +97,7 @@ public class ExampleMono : MonoBehaviour
 	[TerminalCommand]
 	[TerminalDescription("Log a message as the target")]
 	[TerminalTarget]
-	private void Say(string message)
+	private void Say([Suggest("\"Hello World!\"", "\"Goodbye!\"", "\"Testing...\"")] string message)
 	{
 		Debug.Log($"[{gameObject.name}]: {message}");
 	}
@@ -123,7 +123,7 @@ public class ExampleMono : MonoBehaviour
 	[TerminalCommand]
 	[TerminalDescription("Set the target's look direction")]
 	[TerminalTarget]
-	private void Look(Vector2 direction)
+	private void Look([Suggest("(0, 1)", "(0, -1)", "(1, 0)", "(-1, 0)")] Vector2 direction)
 	{
 		Debug.Log($"Looking at ({direction.x}, {direction.y})");
 	}
@@ -145,7 +145,7 @@ public class ExampleMono : MonoBehaviour
 	[TerminalCommand]
 	[TerminalDescription("Set the target's movement speed")]
 	[TerminalTarget]
-	private void Speed(double value)
+	private void Speed([Suggest("1", "5", "10", "25", "50")] double value)
 	{
 		Debug.Log($"Speed set to {value:F4}");
 	}
@@ -153,7 +153,7 @@ public class ExampleMono : MonoBehaviour
 	[TerminalCommand]
 	[TerminalDescription("Apply a list of damage hits to the target")]
 	[TerminalTarget]
-	private void Damage(List<int> amounts)
+	private void Damage([Suggest("10", "25", "50", "100")] List<int> amounts)
 	{
 		var total = 0;
 		foreach (var amount in amounts)
