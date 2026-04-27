@@ -8,7 +8,7 @@ using UnityEngine;
 [SuggestorFor(typeof(Color))]
 public class ColorSuggester : ISuggester
 {
-	private static readonly string[] _namedColors =
+	private static readonly string[] NamedColors =
 	{
 		"red", "green", "blue", "white", "black",
 		"yellow", "cyan", "magenta", "clear", "grey", "gray"
@@ -18,10 +18,10 @@ public class ColorSuggester : ISuggester
 	{
 		if (string.IsNullOrEmpty(partial))
 		{
-			return _namedColors;
+			return NamedColors;
 		}
 
-		return _namedColors
+		return NamedColors
 			   .Where(c => c.StartsWith(partial, StringComparison.OrdinalIgnoreCase) &&
 						   !string.Equals(c, partial, StringComparison.OrdinalIgnoreCase))
 			   .ToList();
