@@ -12,14 +12,9 @@ public class TerminalUnityLog : IEchoComponent
 		Application.logMessageReceived += OnLogMessageReceived;
 	}
 
-	~TerminalUnityLog()
-	{
-		Application.logMessageReceived -= OnLogMessageReceived;
-	}
-
 	private void OnLogMessageReceived(string message, string stackTrace, LogType type)
 	{
-		var (color, kind) = type switch
+		(Color color, LogKind kind) = type switch
 		{
 			LogType.Error     => (new(1f, 0.3f, 0.3f), LogKind.Error),
 			LogType.Exception => (new(1f, 0.3f, 0.3f), LogKind.Error),
@@ -28,7 +23,53 @@ public class TerminalUnityLog : IEchoComponent
 			_                 => (new Color(0.7f, 0.7f, 0.7f), LogKind.Log)
 		};
 
-		_terminal.Log(message, color, kind);
+		string text = type == LogType.Log
+			? message
+			: BuildDetailedMessage(message, stackTrace);
+
+		_terminal.Log(text, color, kind);
+	}
+
+	private static string BuildDetailedMessage(string message, string stackTrace)
+	{
+		string caller = ParseFirstUserFrame(stackTrace);
+		return caller != null ? $"{message}\n  at {caller}" : message;
+	}
+
+	private static string ParseFirstUserFrame(string stackTrace)
+	{
+		if (string.IsNullOrEmpty(stackTrace))
+		{
+			return null;
+		}
+
+		foreach (string rawLine in stackTrace.Split('\n'))
+		{
+			string line = rawLine.Trim();
+			if (string.IsNullOrEmpty(line))
+			{
+				continue;
+			}
+
+			if (line.StartsWith("UnityEngine.") || line.StartsWith("UnityEditor."))
+			{
+				continue;
+			}
+
+			if (!line.Contains('('))
+			{
+				continue;
+			}
+
+			return line;
+		}
+
+		return null;
+	}
+
+	~TerminalUnityLog()
+	{
+		Application.logMessageReceived -= OnLogMessageReceived;
 	}
 }
 }
