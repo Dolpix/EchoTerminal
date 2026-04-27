@@ -12,6 +12,7 @@ public class Terminal
 
 	public IReadOnlyList<TerminalEntry> Entries => _entries;
 	public CommandRegistry Registry { get; }
+	public InjectionContainer Injector { get; }
 	public SuggestorRegistry Suggestors { get; }
 	public Tokenizer Tokenizer { get; }
 	public event Action OnCleared;
@@ -26,6 +27,8 @@ public class Terminal
 	public Terminal(HighlighterSet highlighterSet = null, int maxEntries = 1000)
 	{
 		_maxEntries = maxEntries;
+		Injector = new();
+		Injector.Register<Terminal>(() => this);
 		Registry = new();
 		Registry.Scan();
 		var targetProvider = new SceneTargetProvider(Registry);
@@ -36,7 +39,7 @@ public class Terminal
 		Tokenizer = new(ParserRegistry.CreateAllParsers());
 		CommandParser = new(Registry, Tokenizer);
 		Suggestors.InitComplexSuggesters(Registry, CommandParser);
-		_executor = new(CommandParser, Registry, Tokenizer);
+		_executor = new(CommandParser, Registry, Tokenizer, Injector);
 		HighlighterCore = new(CommandParser, Tokenizer, highlighterSet);
 		BindCommand.Terminal = this;
 	}

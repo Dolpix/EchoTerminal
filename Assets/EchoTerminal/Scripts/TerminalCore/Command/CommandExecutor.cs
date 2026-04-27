@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using EchoTerminal.TerminalCore;
 using UnityEngine;
 
@@ -9,12 +11,14 @@ public class CommandExecutor
 	private readonly CommandParser _commandParser;
 	private readonly CommandRegistry _registry;
 	private readonly Tokenizer _tokenizer;
+	private readonly InjectionContainer _injector;
 
-	public CommandExecutor(CommandParser commandParser, CommandRegistry registry, Tokenizer tokenizer)
+	public CommandExecutor(CommandParser commandParser, CommandRegistry registry, Tokenizer tokenizer, InjectionContainer injector = null)
 	{
 		_registry = registry;
 		_tokenizer = tokenizer;
 		_commandParser = commandParser;
+		_injector = injector;
 	}
 
 	public void Execute(string input)
@@ -33,17 +37,16 @@ public class CommandExecutor
 		}
 
 		CommandEntry entry = result.Entry.Value;
-		object[] allArgs = result.ArgTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
+		object[] parsedArgs = result.ArgTokens.Select(t => _tokenizer.ParseValue(t)).ToArray();
 
 		Target? target = null;
-		object[] args = allArgs;
 
 		if (entry.HasTarget)
 		{
-			if (allArgs.Length > 0 && allArgs[0] is Target t)
+			if (parsedArgs.Length > 0 && parsedArgs[0] is Target t)
 			{
 				target = t;
-				args = allArgs[1..];
+				parsedArgs = parsedArgs[1..];
 			}
 			else
 			{
@@ -51,6 +54,8 @@ public class CommandExecutor
 				return;
 			}
 		}
+
+		object[] args = BuildArgs(entry.Method, parsedArgs);
 
 		if (entry.IsStatic)
 		{
@@ -80,6 +85,34 @@ public class CommandExecutor
 		{
 			entry.Method.Invoke(instance, args);
 		}
+	}
+
+	private object[] BuildArgs(MethodInfo method, object[] parsedArgs)
+	{
+		if (_injector == null)
+		{
+			return parsedArgs;
+		}
+
+		ParameterInfo[] parameters = method.GetParameters();
+		var result = new List<object>();
+		int parsedIndex = 0;
+
+		foreach (ParameterInfo param in parameters)
+		{
+			if (param.GetCustomAttribute<InjectAttribute>() != null &&
+				_injector.TryResolve(param.ParameterType, out object injected))
+			{
+				result.Add(injected);
+			}
+			else
+			{
+				result.Add(parsedIndex < parsedArgs.Length ? parsedArgs[parsedIndex] : null);
+				parsedIndex++;
+			}
+		}
+
+		return result.ToArray();
 	}
 }
 }

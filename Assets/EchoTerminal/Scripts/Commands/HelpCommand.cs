@@ -1,18 +1,23 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using EchoTerminal;
+using EchoTerminal.TerminalCore;
 
 public static class HelpCommand
 {
-	private const string _colCommand = "#79C0FF";
-	private const string _colParams = "#6E8FA8";
-	private const string _colArrow = "#4A6274";
-	private const string _colDesc = "#9EAAB5";
-	private const string _colHeader = "#C9D1D9";
+	private const string _colClassName = "#C9D1D9";
+	private const string _colDescription = "#6E8FA8";
+	private const string _colSeparator = "#4A6274";
+
+	private const char _nbsp = ' ';
+	private const string _indent1 = "    ";
+	private const string _separator = "  →  ";
 
 	[TerminalCommand(description: "Show all registered commands")]
-	private static void Help(Terminal terminal)
+	private static void Help([Inject] Terminal terminal)
 	{
 		var names = terminal.Registry.GetCommandNames();
 
@@ -22,14 +27,11 @@ public static class HelpCommand
 			return;
 		}
 
-		var sorted = new List<string>(names);
-		sorted.Sort();
+		HighlighterSet hs = terminal.HighlighterCore.HighlighterSet;
 
-		var output = new StringBuilder();
-		output.AppendLine($"<color={_colHeader}>Available Commands</color>");
-		output.AppendLine(" ");
+		var byClass = new SortedDictionary<string, List<(string name, CommandEntry entry)>>(StringComparer.OrdinalIgnoreCase);
 
-		foreach (var name in sorted)
+		foreach (var name in names)
 		{
 			if (!terminal.Registry.TryGet(name, out var entries))
 			{
@@ -38,39 +40,126 @@ public static class HelpCommand
 
 			foreach (var entry in entries)
 			{
-				output.AppendLine(BuildLine(name, entry));
+				string className = entry.Method.DeclaringType?.Name ?? "Unknown";
+				if (!byClass.TryGetValue(className, out var list))
+				{
+					list = new();
+					byClass[className] = list;
+				}
+
+				list.Add((name, entry));
+			}
+		}
+
+		var output = new StringBuilder();
+		bool firstGroup = true;
+
+		foreach (var (className, entries) in byClass)
+		{
+			if (!firstGroup)
+			{
+				output.AppendLine(" ");
+			}
+
+			firstGroup = false;
+
+			output.AppendLine($"<color={_colClassName}>{className}</color>");
+
+			var sorted = entries.OrderBy(e => e.entry.Method.MetadataToken).ToList();
+
+			int maxLen = sorted.Max(e => VisibleLength(e.name, e.entry));
+
+			foreach (var (name, entry) in sorted)
+			{
+				output.AppendLine(BuildLine(name, entry, hs, maxLen));
 			}
 		}
 
 		terminal.Log(output.ToString().TrimEnd());
 	}
 
-	private static string BuildLine(string name, CommandEntry entry)
+	private static string BuildLine(string name, CommandEntry entry, HighlighterSet hs, int padToLength)
 	{
 		var sb = new StringBuilder();
-		sb.Append($"  <color={_colCommand}>{name}</color>");
+		sb.Append(_indent1);
+		sb.Append('-');
+		sb.Append(Colorize(name, typeof(CommandName), hs));
 
 		if (entry.HasTarget)
 		{
-			sb.Append($" <color={_colParams}><@target></color>");
+			sb.Append(' ');
+			sb.Append(Colorize("<@target>", typeof(Target), hs));
 		}
 
 		foreach (var param in entry.Method.GetParameters())
 		{
-			if (param.ParameterType == typeof(Terminal))
+			if (param.GetCustomAttribute<InjectAttribute>() != null)
 			{
 				continue;
 			}
 
-			sb.Append($" <color={_colParams}><{param.ParameterType.Name} {param.Name}></color>");
+			sb.Append(' ');
+			sb.Append(Colorize($"<{param.ParameterType.Name} {param.Name}>", param.ParameterType, hs));
 		}
 
 		var desc = entry.Method.GetCustomAttribute<TerminalCommandAttribute>()?.Description;
 		if (!string.IsNullOrEmpty(desc))
 		{
-			sb.Append($"  <color={_colArrow}>→</color>  <color={_colDesc}>{desc}</color>");
+			int visLen = VisibleLength(name, entry);
+			int padding = padToLength - visLen;
+			sb.Append(new string(' ', padding));
+			sb.Append($"<color={_colSeparator}>{_separator}</color>");
+			sb.Append($"<color={_colDescription}>{desc}</color>");
 		}
 
 		return sb.ToString();
+	}
+
+	private static int VisibleLength(string name, CommandEntry entry)
+	{
+		int len = _indent1.Length + 1 + name.Length;
+
+		if (entry.HasTarget)
+		{
+			len += 1 + "<@target>".Length;
+		}
+
+		foreach (var param in entry.Method.GetParameters())
+		{
+			if (param.GetCustomAttribute<InjectAttribute>() != null)
+			{
+				continue;
+			}
+
+			len += 1 + $"<{param.ParameterType.Name} {param.Name}>".Length;
+		}
+
+		return len;
+	}
+
+	private static string Colorize(string text, Type tokenType, HighlighterSet hs)
+	{
+		if (hs == null)
+		{
+			return text;
+		}
+
+		TokenHighlighter highlighter = null;
+		if (tokenType != null)
+		{
+			hs.TryGet(tokenType, out highlighter);
+		}
+		else
+		{
+			highlighter = hs.DefaultHighlighter;
+		}
+
+		if (highlighter == null)
+		{
+			return text;
+		}
+
+		var token = new Token { Raw = text, State = TokenState.Completed, ExpectedType = tokenType };
+		return highlighter.Highlight(text, token);
 	}
 }

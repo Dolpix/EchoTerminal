@@ -13,6 +13,8 @@ public class TerminalHighlighterCore
 	private const string _colorDefaultParameter = "#55FF88";
 	private const string _colorStructural = "#AAAAAA";
 
+	public HighlighterSet HighlighterSet => _highlighterSet;
+
 	private readonly CommandParser _commandParser;
 	private readonly Tokenizer _tokenizer;
 	private readonly HighlighterSet _highlighterSet;

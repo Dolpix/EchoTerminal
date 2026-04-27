@@ -62,7 +62,9 @@ public class CommandParser
 		foreach (CommandEntry entry in entries)
 		{
 			ParameterInfo[] parameters = entry.Method.GetParameters();
-			IEnumerable<Type> paramTypes = parameters.Select(p => p.ParameterType);
+			IEnumerable<Type> paramTypes = parameters
+				.Where(p => p.GetCustomAttribute<InjectAttribute>() == null)
+				.Select(p => p.ParameterType);
 			List<Type> expectedTypes = entry.HasTarget
 				? paramTypes.Prepend(typeof(Target)).ToList()
 				: paramTypes.ToList();
@@ -71,7 +73,8 @@ public class CommandParser
 				? new()
 				: _tokenizer.Tokenize(argInput, expectedTypes);
 
-			int paramCount = entry.HasTarget ? parameters.Length + 1 : parameters.Length;
+			int injectedCount = parameters.Count(p => p.GetCustomAttribute<InjectAttribute>() != null);
+			int paramCount = entry.HasTarget ? parameters.Length - injectedCount + 1 : parameters.Length - injectedCount;
 
 			if (argTokens.Count == paramCount && argTokens.All(t => t.State == TokenState.Completed))
 			{
