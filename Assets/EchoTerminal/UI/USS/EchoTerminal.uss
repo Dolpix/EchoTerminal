@@ -332,6 +332,10 @@
     color: var(--text-bright);
 }
 
+.terminal-suggestion-item:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
 .terminal-copy-toast {
     position: absolute;
     top: 26px;

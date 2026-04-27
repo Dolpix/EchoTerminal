@@ -221,7 +221,11 @@ public class TerminalSuggestions : IEchoComponent
 			TemplateContainer clone = _itemTemplate.CloneTree();
 			var label = clone.Q<Label>("suggestion-label");
 			label.text = GetDisplayText(suggestion, _isComplexSuggestion);
-			label.RegisterCallback<ClickEvent>(_ => AcceptSuggestion(suggestion));
+			label.RegisterCallback<MouseDownEvent>(evt =>
+			{
+				evt.StopPropagation();
+				AcceptSuggestion(suggestion);
+			}, TrickleDown.TrickleDown);
 			_list.Add(clone);
 		}
 
