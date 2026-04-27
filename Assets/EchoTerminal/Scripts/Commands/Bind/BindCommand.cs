@@ -10,7 +10,8 @@ public static class BindCommand
 {
 	public static Terminal Terminal { get; set; }
 
-	[TerminalCommand("BindsAdd", "Add a command to be activated on key press")]
+	[TerminalCommand("BindsAdd")]
+	[TerminalDescription("Add a command to be activated on key press")]
 	private static void BindsAdd(Key key, BoundCommand command)
 	{
 		if (command.Tokens.Count == 0 ||
@@ -42,7 +43,8 @@ public static class BindCommand
 			: $"Bound '{key}' to '{command.Raw}'.");
 	}
 
-	[TerminalCommand("BindsRemove", "Remove a command to be activated on key press")]
+	[TerminalCommand("BindsRemove")]
+	[TerminalDescription("Remove a command to be activated on key press")]
 	private static void BindsRemove(Key key)
 	{
 		if (!BindStore.GetAll().ContainsKey(key))
@@ -55,7 +57,8 @@ public static class BindCommand
 		Debug.Log($"Removed binding for '{key}'.");
 	}
 
-	[TerminalCommand("BindsClear", "Clear all bindings")]
+	[TerminalCommand("BindsClear")]
+	[TerminalDescription("Clear all bindings")]
 	private static void BindsClear()
 	{
 		int count = BindStore.GetAll().Count;
@@ -70,7 +73,8 @@ public static class BindCommand
 		Debug.Log($"Cleared {count} binding{(count == 1 ? "" : "s")}.");
 	}
 
-	[TerminalCommand("BindsLog", "Log all bindings")]
+	[TerminalCommand("BindsLog")]
+	[TerminalDescription("Log all bindings")]
 	private static void BindsLog()
 	{
 		Dictionary<Key, string> all = BindStore.GetAll();

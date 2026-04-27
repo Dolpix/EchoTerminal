@@ -24,7 +24,8 @@ public class ExampleMono : MonoBehaviour
 
 	private Coroutine _spamCoroutine;
 
-	[TerminalCommand("SpamLogs", "Toggle random log spam on or off")]
+	[TerminalCommand("SpamLogs")]
+	[TerminalDescription("Toggle random log spam on or off")]
 	private void SpamLogs(bool enabled)
 	{
 		if (enabled && _spamCoroutine == null)
@@ -68,6 +69,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Teleport the target to the given coordinates")]
 	[TerminalTarget]
 	private void Teleport(float x, float y, float z)
 	{
@@ -76,6 +78,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Teleport the target to the given position")]
 	[TerminalTarget]
 	private void Teleport(Vector3 position)
 	{
@@ -84,6 +87,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set the target's health to the given value")]
 	[TerminalTarget]
 	private void SetHealth(int value)
 	{
@@ -91,6 +95,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Log a message as the target")]
 	[TerminalTarget]
 	private void Say(string message)
 	{
@@ -98,6 +103,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Enable or disable the target GameObject")]
 	[TerminalTarget]
 	private void Toggle(bool enabled)
 	{
@@ -106,6 +112,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Move the target by a world-space offset")]
 	[TerminalTarget]
 	private void Move(Vector3 offset)
 	{
@@ -114,6 +121,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set the target's look direction")]
 	[TerminalTarget]
 	private void Look(Vector2 direction)
 	{
@@ -121,6 +129,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set the target's mesh renderer color")]
 	[TerminalTarget]
 	private void Paint(Color color)
 	{
@@ -134,6 +143,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set the target's movement speed")]
 	[TerminalTarget]
 	private void Speed(double value)
 	{
@@ -141,6 +151,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Apply a list of damage hits to the target")]
 	[TerminalTarget]
 	private void Damage(List<int> amounts)
 	{
@@ -154,6 +165,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set a list of world-space waypoints for the target")]
 	[TerminalTarget]
 	private void Waypoints(List<Vector3> points)
 	{
@@ -168,6 +180,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set a list of 2D path points for the target")]
 	[TerminalTarget]
 	private void Path(List<Vector2> points)
 	{
@@ -182,6 +195,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Apply a list of scale values to the target")]
 	[TerminalTarget]
 	private void Scales(List<float> values)
 	{
@@ -196,6 +210,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Set a list of boolean flags on the target")]
 	[TerminalTarget]
 	private void Flags(List<bool> flags)
 	{
@@ -210,6 +225,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Apply a list of colors as a palette to the target")]
 	[TerminalTarget]
 	private void Palette(List<Color> colors)
 	{
@@ -224,6 +240,7 @@ public class ExampleMono : MonoBehaviour
 	}
 
 	[TerminalCommand]
+	[TerminalDescription("Assign a list of string tags to the target")]
 	[TerminalTarget]
 	private void Tags(List<string> tags)
 	{

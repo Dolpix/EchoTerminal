@@ -12,11 +12,11 @@ public static class HelpCommand
 	private const string _colDescription = "#6E8FA8";
 	private const string _colSeparator = "#4A6274";
 
-	private const char _nbsp = ' ';
 	private const string _indent1 = "    ";
 	private const string _separator = "  →  ";
 
-	[TerminalCommand(description: "Show all registered commands")]
+	[TerminalCommand]
+	[TerminalDescription("Show all registered commands")]
 	private static void Help([Inject] Terminal terminal)
 	{
 		var names = terminal.Registry.GetCommandNames();
@@ -102,7 +102,7 @@ public static class HelpCommand
 			sb.Append(Colorize($"<{param.ParameterType.Name} {param.Name}>", param.ParameterType, hs));
 		}
 
-		var desc = entry.Method.GetCustomAttribute<TerminalCommandAttribute>()?.Description;
+		var desc = entry.Method.GetCustomAttribute<TerminalDescriptionAttribute>()?.Description;
 		if (!string.IsNullOrEmpty(desc))
 		{
 			int visLen = VisibleLength(name, entry);

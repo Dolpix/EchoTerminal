@@ -7,12 +7,9 @@ public sealed class TerminalCommandAttribute : Attribute
 {
 	public string Name { get; }
 
-	public TerminalCommandAttribute(string name = null, string description = null)
+	public TerminalCommandAttribute(string name = null)
 	{
 		Name = name;
-		Description = description;
 	}
-
-	public string Description { get; }
 }
 }
