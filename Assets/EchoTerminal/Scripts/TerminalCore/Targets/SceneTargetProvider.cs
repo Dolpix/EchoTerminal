@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,13 +28,25 @@ public class SceneTargetProvider : ITargetProvider
 
 		foreach (Type monoType in _registry.GetMonoTypes())
 		{
+			bool stale = false;
 			foreach (Component instance in _registry.GetInstances(monoType))
 			{
+				if (instance == null)
+				{
+					stale = true;
+					continue;
+				}
+
 				string name = instance.gameObject.name;
 				if (seen.Add(name))
 				{
 					targets.Add("@" + name);
 				}
+			}
+
+			if (stale)
+			{
+				_registry.InvalidateInstanceCache(monoType);
 			}
 		}
 

@@ -1,6 +1,7 @@
-public class Vec3Parser : ITokenParser
+public class Vec3Parser : ITokenParser, IHintLabeler
 {
 	public System.Type Type => typeof(UnityEngine.Vector3);
+	public string HintLabel => "(x, y, z)";
 
 	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{

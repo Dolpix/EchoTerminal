@@ -359,9 +359,8 @@
     font-size: 12px;
     color: var(--text-muted);
     padding: 4px 8px;
-    -unity-font-style: italic;
-    border-top-width: 1px;
-    border-top-color: var(--border-default);
+    background-color: var(--bg-base);
+    -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
 }
 
 .filter-hide-log .terminal-entry--log         { display: none; }

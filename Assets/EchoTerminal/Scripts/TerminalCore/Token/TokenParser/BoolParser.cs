@@ -1,8 +1,9 @@
 using System;
 
-public class BoolParser : ITokenParser
+public class BoolParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(bool);
+	public string HintLabel => "true | false";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

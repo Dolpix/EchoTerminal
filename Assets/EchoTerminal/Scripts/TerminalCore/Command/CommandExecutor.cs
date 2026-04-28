@@ -64,12 +64,18 @@ public class CommandExecutor
 		}
 
 		Component[] instances = _registry.GetInstances(entry.MonoType);
+		bool stale = instances.Any(c => c == null);
+		if (stale)
+		{
+			_registry.InvalidateInstanceCache(entry.MonoType);
+			instances = _registry.GetInstances(entry.MonoType);
+		}
 
 		Component[] filtered = instances;
 		if (target.HasValue && target.Value.Value != "@all")
 		{
 			string targetName = target.Value.Value[1..];
-			filtered = instances.Where(c => c.gameObject.name == targetName).ToArray();
+			filtered = instances.Where(c => c != null && c.gameObject.name == targetName).ToArray();
 		}
 
 		if (filtered.Length == 0)

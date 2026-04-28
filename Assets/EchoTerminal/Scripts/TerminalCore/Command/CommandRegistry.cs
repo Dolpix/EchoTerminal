@@ -44,6 +44,11 @@ public class CommandRegistry
 		return found;
 	}
 
+	public void InvalidateInstanceCache(Type monoType)
+	{
+		_instanceCache.Remove(monoType);
+	}
+
 	public void Scan()
 	{
 		if (_scanned)

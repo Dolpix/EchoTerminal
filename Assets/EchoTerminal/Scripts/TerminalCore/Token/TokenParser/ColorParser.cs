@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class ColorParser : ITokenParser
+public class ColorParser : ITokenParser, IHintLabeler
 {
 	private static readonly string[] NamedColors =
 	{
@@ -11,6 +11,7 @@ public class ColorParser : ITokenParser
 	};
 
 	public Type Type => typeof(Color);
+	public string HintLabel => "(r, g, b) | #RRGGBB | name";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
