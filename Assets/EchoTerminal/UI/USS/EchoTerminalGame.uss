@@ -14,6 +14,11 @@
     flex-direction: column;
 }
 
+.game-window--dragging {
+    border-width: 2px;
+    border-color: #2ac0d4;
+}
+
 .game-title-bar {
     flex-direction: row;
     align-items: center;

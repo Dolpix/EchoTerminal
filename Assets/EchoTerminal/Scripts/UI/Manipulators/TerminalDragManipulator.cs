@@ -46,6 +46,7 @@ public class TerminalDragManipulator : PointerManipulator
 		_dragging = true;
 		target.CapturePointer(evt.pointerId);
 		_windowElement.BringToFront();
+		_windowElement.AddToClassList("game-window--dragging");
 		evt.StopPropagation();
 	}
 
@@ -116,6 +117,7 @@ public class TerminalDragManipulator : PointerManipulator
 
 		_dragging = false;
 		target.ReleasePointer(evt.pointerId);
+		_windowElement.RemoveFromClassList("game-window--dragging");
 	}
 }
 }
