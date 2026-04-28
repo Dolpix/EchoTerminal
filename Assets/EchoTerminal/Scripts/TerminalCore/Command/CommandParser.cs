@@ -57,6 +57,7 @@ public class CommandParser
 
 		List<Token> bestArgTokens = null;
 		int bestCompletedCount = -1;
+		int bestPartialCount = -1;
 		var bestParamCount = 0;
 
 		foreach (CommandEntry entry in entries)
@@ -82,12 +83,17 @@ public class CommandParser
 			}
 
 			int completedCount = argTokens.Count(t => t.State == TokenState.Completed);
-			if (completedCount <= bestCompletedCount)
+			int partialCount = argTokens.Count(t => t.State == TokenState.Partial);
+
+			bool better = completedCount > bestCompletedCount ||
+			              (completedCount == bestCompletedCount && partialCount > bestPartialCount);
+			if (!better)
 			{
 				continue;
 			}
 
 			bestCompletedCount = completedCount;
+			bestPartialCount = partialCount;
 			bestArgTokens = argTokens;
 			bestParamCount = paramCount;
 		}
