@@ -2,9 +2,10 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class RectParser : ITokenParser
+public class RectParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Rect);
+	public string HintLabel => "(x, y, width, height)";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

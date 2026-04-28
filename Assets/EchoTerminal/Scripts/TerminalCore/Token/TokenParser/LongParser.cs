@@ -1,8 +1,9 @@
 using System;
 
-public class LongParser : ITokenParser
+public class LongParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(long);
+	public string HintLabel => "0";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

@@ -1,8 +1,9 @@
 using System;
 
-public class CharParser : ITokenParser
+public class CharParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(char);
+	public string HintLabel => "'a'";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

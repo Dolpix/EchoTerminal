@@ -2,9 +2,10 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class QuaternionParser : ITokenParser
+public class QuaternionParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Quaternion);
+	public string HintLabel => "(x, y, z, w)";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

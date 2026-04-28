@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 
-public class EnumParser : ITokenParser
+public class EnumParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Enum);
+	public string HintLabel => "value";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

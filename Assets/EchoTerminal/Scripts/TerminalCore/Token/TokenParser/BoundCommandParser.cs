@@ -21,9 +21,10 @@ public readonly struct BoundCommand
 	}
 }
 
-public class BoundCommandParser : ITokenParser, IRecursiveParser
+public class BoundCommandParser : ITokenParser, IRecursiveParser, IHintLabeler
 {
 	public Type Type => typeof(BoundCommand);
+	public string HintLabel => ">command arg<";
 	private readonly List<ITokenParser> _parsers;
 	private Func<string, bool> _commandValidator;
 	private Func<string, CommandParseResult> _commandParser;

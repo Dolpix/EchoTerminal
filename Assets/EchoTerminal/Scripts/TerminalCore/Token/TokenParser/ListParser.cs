@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using EchoTerminal.TerminalCore;
 
-public class ListParser : ITokenParser, IRecursiveParser
+public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 {
 	public Type Type => typeof(IList);
+	public string HintLabel => "[a, b, c]";
 	private readonly List<ITokenParser> _parsers;
 	private Tokenizer _tokenizer;
 

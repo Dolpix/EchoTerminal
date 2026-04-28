@@ -2,9 +2,10 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-public class Vec3IntParser : ITokenParser
+public class Vec3IntParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Vector3Int);
+	public string HintLabel => "(x, y, z)";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{

@@ -1,6 +1,7 @@
-public class IntParser : ITokenParser
+public class IntParser : ITokenParser, IHintLabeler
 {
 	public System.Type Type => typeof(int);
+	public string HintLabel => "0";
 
 	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
 	{
