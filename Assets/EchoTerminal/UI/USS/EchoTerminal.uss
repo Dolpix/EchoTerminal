@@ -259,6 +259,14 @@
     border-width: 1px;
     border-color: var(--border-default);
     -unity-font-definition: url('../../Fonts/JetBrainsMono-SemiBold.ttf');
+    opacity: 0;
+    translate: 0 6px;
+    transition: opacity 100ms ease-out, translate 100ms ease-out;
+}
+
+.terminal-suggestion-popup--visible {
+    opacity: 1;
+    translate: 0 0;
 }
 
 .terminal-suggestion-list {
@@ -325,6 +333,7 @@
     font-size: 12px;
     color: var(--text-primary);
     padding: 2px 8px;
+    transition: background-color 80ms ease-out;
 }
 
 .terminal-suggestion-item--selected {
@@ -348,6 +357,14 @@
     font-size: 11px;
     padding: 4px 10px;
     -unity-text-align: middle-center;
+    opacity: 0;
+    translate: 0 -6px;
+    transition: opacity 120ms ease-out, translate 120ms ease-out;
+}
+
+.terminal-copy-toast--visible {
+    opacity: 1;
+    translate: 0 0;
 }
 
 #copy-button:active {

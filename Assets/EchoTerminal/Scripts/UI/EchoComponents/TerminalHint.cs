@@ -86,6 +86,7 @@ namespace EchoTerminal.Components
             if (!suggestionsVisible && _popup != null)
             {
                 _popup.style.display = DisplayStyle.None;
+                _popup.RemoveFromClassList("terminal-suggestion-popup--visible");
             }
         }
 
@@ -119,6 +120,7 @@ namespace EchoTerminal.Components
             _hintLabel.text = BuildRichText(rows);
             _hintList.style.display = DisplayStyle.Flex;
             _popup.style.display = DisplayStyle.Flex;
+            _popup.schedule.Execute(() => _popup.AddToClassList("terminal-suggestion-popup--visible"));
         }
     }
 }

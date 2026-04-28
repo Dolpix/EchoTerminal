@@ -62,13 +62,23 @@ public class TerminalDragManipulator : PointerManipulator
 		var newTop = _startPosition.y + delta.y;
 
 		var parent = _windowElement.parent;
+		bool snapped = false;
 		if (parent != null && parent.layout.width > 0f && parent.layout.height > 0f)
 		{
+			var preLeft = newLeft;
+			var preTop = newTop;
 			ApplyConstraints(ref newLeft, ref newTop, parent.layout.width, parent.layout.height);
+			snapped = !Mathf.Approximately(newLeft, preLeft) || !Mathf.Approximately(newTop, preTop);
 		}
 
 		_windowElement.style.left = newLeft;
 		_windowElement.style.top = newTop;
+
+		if (snapped)
+		{
+			_windowElement.AddToClassList("game-window--snapped");
+			_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--snapped")).StartingIn(400);
+		}
 	}
 
 	private void ApplyConstraints(ref float left, ref float top, float screenW, float screenH)
@@ -118,6 +128,8 @@ public class TerminalDragManipulator : PointerManipulator
 		_dragging = false;
 		target.ReleasePointer(evt.pointerId);
 		_windowElement.RemoveFromClassList("game-window--dragging");
+		_windowElement.AddToClassList("game-window--settling");
+		_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--settling")).StartingIn(150);
 	}
 }
 }

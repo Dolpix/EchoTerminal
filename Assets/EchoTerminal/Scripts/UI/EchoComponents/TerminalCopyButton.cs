@@ -23,7 +23,6 @@ public class TerminalCopyButton : IEchoComponent
 		_copyToast = new("Copied to clipboard");
 		_copyToast.AddToClassList("terminal-copy-toast");
 		_copyToast.pickingMode = PickingMode.Ignore;
-		_copyToast.style.display = DisplayStyle.None;
 		var toastParent = root?.Q<VisualElement>("terminal-content") ?? root;
 		toastParent?.Add(_copyToast);
 
@@ -77,8 +76,8 @@ public class TerminalCopyButton : IEchoComponent
 
 		GUIUtility.systemCopyBuffer = sb.ToString().TrimEnd();
 
-		_copyToast.style.display = DisplayStyle.Flex;
-		_copyToast.schedule.Execute(() => _copyToast.style.display = DisplayStyle.None).StartingIn(1500);
+		_copyToast.AddToClassList("terminal-copy-toast--visible");
+		_copyToast.schedule.Execute(() => _copyToast.RemoveFromClassList("terminal-copy-toast--visible")).StartingIn(1500);
 	}
 }
 }

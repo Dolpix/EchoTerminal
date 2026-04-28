@@ -147,6 +147,7 @@ public class TerminalSuggestions : IEchoComponent
 		if (_popup != null)
 		{
 			_popup.style.display = DisplayStyle.None;
+			_popup.RemoveFromClassList("terminal-suggestion-popup--visible");
 		}
 
 		if (_ghostLabel != null)
@@ -230,6 +231,7 @@ public class TerminalSuggestions : IEchoComponent
 		}
 
 		_popup.style.display = DisplayStyle.Flex;
+		_popup.schedule.Execute(() => _popup.AddToClassList("terminal-suggestion-popup--visible"));
 		RefreshSelection();
 	}
 
