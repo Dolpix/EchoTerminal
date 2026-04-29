@@ -216,8 +216,7 @@ This project is free. The source is open. I would like to make more tools like t
 
 If it saved you time or helped you ship, consider supporting it:
 
-- [Ko-fi](https://ko-fi.com/YOUR_LINK)
-- [GitHub Sponsors](https://github.com/sponsors/YOUR_LINK)
+- [GitHub Sponsors](https://github.com/sponsors/Dolpix)
 
 Engineers and artists should own their tools. Take this one.
 
