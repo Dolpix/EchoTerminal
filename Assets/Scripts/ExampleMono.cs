@@ -68,7 +68,8 @@ public class ExampleMono : MonoBehaviour
 		}
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Teleport the target to the given coordinates")]
 	[TerminalTarget]
 	private void Teleport(float x, float y, float z)
@@ -77,7 +78,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"[{gameObject.name}] New position: {transform.position}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Teleport the target to the given position")]
 	[TerminalTarget]
 	private void Teleport(Vector3 position)
@@ -86,7 +88,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log("New position: " + transform.position);
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Set the target's health to the given value")]
 	[TerminalTarget]
 	private void SetHealth(int value)
@@ -94,7 +97,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Health set to {value}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Log a message as the target")]
 	[TerminalTarget]
 	private void Say([Suggest("\"Hello World!\"", "\"Goodbye!\"", "\"Testing...\"")] string message)
@@ -102,7 +106,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"[{gameObject.name}]: {message}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Enable or disable the target GameObject")]
 	[TerminalTarget]
 	private void Toggle(bool enabled)
@@ -111,7 +116,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"{gameObject.name} active: {enabled}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Move the target by a world-space offset")]
 	[TerminalTarget]
 	private void Move(Vector3 offset)
@@ -120,7 +126,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Moved to {transform.position}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Set the target's look direction")]
 	[TerminalTarget]
 	private void Look([Suggest("(0, 1)", "(0, -1)", "(1, 0)", "(-1, 0)")] Vector2 direction)
@@ -128,7 +135,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Looking at ({direction.x}, {direction.y})");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Set the target's mesh renderer color")]
 	[TerminalTarget]
 	private void Paint(Color color)
@@ -142,7 +150,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Color set to {color}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("cheat")]
 	[TerminalDescription("Set the target's movement speed")]
 	[TerminalTarget]
 	private void Speed([Suggest("1", "5", "10", "25", "50")] double value)
@@ -150,7 +159,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Speed set to {value:F4}");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Apply a list of damage hits to the target")]
 	[TerminalTarget]
 	private void Damage([Suggest("10", "25", "50", "100")] List<int> amounts)
@@ -164,7 +174,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log($"Dealt {amounts.Count} hits for {total} total damage");
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Set a list of world-space waypoints for the target")]
 	[TerminalTarget]
 	private void Waypoints(List<Vector3> points)
@@ -179,7 +190,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log(sb.ToString());
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Set a list of 2D path points for the target")]
 	[TerminalTarget]
 	private void Path(List<Vector2> points)
@@ -194,7 +206,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log(sb.ToString());
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Apply a list of scale values to the target")]
 	[TerminalTarget]
 	private void Scales(List<float> values)
@@ -209,7 +222,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log(sb.ToString());
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Set a list of boolean flags on the target")]
 	[TerminalTarget]
 	private void Flags(List<bool> flags)
@@ -224,7 +238,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log(sb.ToString());
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Apply a list of colors as a palette to the target")]
 	[TerminalTarget]
 	private void Palette(List<Color> colors)
@@ -239,7 +254,8 @@ public class ExampleMono : MonoBehaviour
 		Debug.Log(sb.ToString());
 	}
 
-	[TerminalCommand]
+	[TerminalCommand(enabled:false)]
+	[TerminalTag("debug")]
 	[TerminalDescription("Assign a list of string tags to the target")]
 	[TerminalTarget]
 	private void Tags(List<string> tags)
@@ -253,5 +269,7 @@ public class ExampleMono : MonoBehaviour
 
 		Debug.Log(sb.ToString());
 	}
+    
+
 }
 }

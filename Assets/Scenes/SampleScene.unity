@@ -364,6 +364,9 @@ GameObject:
   - component: {fileID: 853408918}
   - component: {fileID: 853408917}
   - component: {fileID: 853408919}
+  - component: {fileID: 853408920}
+  - component: {fileID: 853408921}
+  - component: {fileID: 853408922}
   m_Layer: 5
   m_Name: EchoTerminal
   m_TagString: Untagged
@@ -423,6 +426,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: EchoTerminal.Runtime::EchoTerminal.EchoTerminalUI
   _config: {fileID: 11400000, guid: afe41ef184085bf4aa6b3da6c04bf252, type: 2}
   _inputActions: {fileID: -944628639613478452, guid: b5e242211020f724185f89a3946aae15, type: 3}
+--- !u!114 &853408920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853408916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2096fb14eccb6bd41b4a30dc1ae86c66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultNamespace.CommandUnlocker
+  _terminal: {fileID: 853408919}
+  _passphrase: unlock
+  _tags:
+  - cheat
+--- !u!114 &853408921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853408916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e763a8ad6a564489adf0c43dd8c417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultNamespace.KonamiCommandUnlocker
+  _terminal: {fileID: 853408919}
+  _tags:
+  - debug
+--- !u!114 &853408922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853408916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9d5638ad945446db5cc5bde881a21c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultNamespace.CommandCommandUnlocker
+  _terminal: {fileID: 853408919}
 --- !u!1 &1167343299
 GameObject:
   m_ObjectHideFlags: 0

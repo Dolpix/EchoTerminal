@@ -18,7 +18,7 @@ public class GameTerminalUI : MonoBehaviour
 
 	public static bool IsFocused { get; private set; }
 
-	private void Start()
+	private void Awake()
 	{
 		var root = GetComponent<UIDocument>().rootVisualElement;
 

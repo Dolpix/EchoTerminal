@@ -10,12 +10,60 @@ namespace EchoTerminal
 public class CommandRegistry
 {
 	private readonly Dictionary<string, List<CommandEntry>> _commands = new(StringComparer.OrdinalIgnoreCase);
+	private readonly HashSet<string> _disabledCommands = new(StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, HashSet<string>> _tagToCommands = new(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<Type, Component[]> _instanceCache = new();
 	private bool _scanned;
 
 	public IReadOnlyCollection<string> GetCommandNames()
 	{
+		return _commands.Keys.Where(k => !_disabledCommands.Contains(k)).ToList();
+	}
+
+	public IReadOnlyCollection<string> GetAllCommandNames()
+	{
 		return _commands.Keys;
+	}
+
+	public void Enable(string commandName)
+	{
+		_disabledCommands.Remove(commandName);
+	}
+
+	public void Disable(string commandName)
+	{
+		if (_commands.ContainsKey(commandName))
+		{
+			_disabledCommands.Add(commandName);
+		}
+	}
+
+	public bool IsEnabled(string commandName)
+	{
+		return _commands.ContainsKey(commandName) && !_disabledCommands.Contains(commandName);
+	}
+
+	public IReadOnlyCollection<string> GetCommandNamesByTag(string tag)
+	{
+		return _tagToCommands.TryGetValue(tag, out var names)
+			? names
+			: System.Array.Empty<string>();
+	}
+
+	public void EnableByTag(string tag)
+	{
+		foreach (var name in GetCommandNamesByTag(tag))
+		{
+			Enable(name);
+		}
+	}
+
+	public void DisableByTag(string tag)
+	{
+		foreach (var name in GetCommandNamesByTag(tag))
+		{
+			Disable(name);
+		}
 	}
 
 	internal IEnumerable<Type> GetMonoTypes()
@@ -29,6 +77,12 @@ public class CommandRegistry
 
 	public bool TryGet(string name, out List<CommandEntry> entries)
 	{
+		if (_disabledCommands.Contains(name))
+		{
+			entries = null;
+			return false;
+		}
+
 		return _commands.TryGetValue(name, out entries);
 	}
 
@@ -134,6 +188,25 @@ public class CommandRegistry
 			{
 				list = new();
 				_commands[name] = list;
+			}
+
+			if (!attr.Enabled)
+			{
+				_disabledCommands.Add(name);
+			}
+
+			var tagAttr = method.GetCustomAttribute<TerminalTagAttribute>();
+			if (tagAttr != null)
+			{
+				foreach (var tag in tagAttr.Tags)
+				{
+					if (!_tagToCommands.TryGetValue(tag, out var tagSet))
+					{
+						tagSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+						_tagToCommands[tag] = tagSet;
+					}
+					tagSet.Add(name);
+				}
 			}
 
 			bool hasTarget = method.GetCustomAttribute<TerminalTargetAttribute>() != null;
