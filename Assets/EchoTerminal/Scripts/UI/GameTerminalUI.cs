@@ -26,7 +26,8 @@ public class GameTerminalUI : MonoBehaviour
 		{
 			Debug.LogError(
 				"[EchoTerminal] UIDocument has no visual tree. " +
-				"Assign EchoTerminalGame.uxml as Source Asset on the UIDocument component.");
+				"Assign EchoTerminalGame.uxml as Source Asset on the UIDocument component."
+            );
 			return;
 		}
 
@@ -34,7 +35,8 @@ public class GameTerminalUI : MonoBehaviour
 		{
 			Debug.LogError(
 				"[EchoTerminal] TerminalConfig is not assigned. " +
-				"Create one via Create > Echo Terminal > UI Config and assign it.");
+				"Create one via Create > Echo Terminal > UI Config and assign it."
+            );
 			return;
 		}
 

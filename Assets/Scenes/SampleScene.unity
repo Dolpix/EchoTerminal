@@ -366,7 +366,6 @@ GameObject:
   - component: {fileID: 853408919}
   - component: {fileID: 853408920}
   - component: {fileID: 853408921}
-  - component: {fileID: 853408922}
   m_Layer: 5
   m_Name: EchoTerminal
   m_TagString: Untagged
@@ -381,7 +380,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853408916}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
@@ -457,19 +456,6 @@ MonoBehaviour:
   _terminal: {fileID: 853408919}
   _tags:
   - debug
---- !u!114 &853408922
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 853408916}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9d5638ad945446db5cc5bde881a21c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DefaultNamespace.CommandCommandUnlocker
-  _terminal: {fileID: 853408919}
 --- !u!1 &1167343299
 GameObject:
   m_ObjectHideFlags: 0

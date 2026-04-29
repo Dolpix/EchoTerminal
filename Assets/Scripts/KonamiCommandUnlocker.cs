@@ -37,8 +37,6 @@ namespace DefaultNamespace
             if (keyboard[expected].wasPressedThisFrame)
             {
                 _progress++;
-
-                Debug.Log(_progress);
                 if (_progress == _konamiSequence.Length)
                 {
                     _progress = 0;
