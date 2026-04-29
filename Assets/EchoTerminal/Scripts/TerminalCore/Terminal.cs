@@ -34,7 +34,7 @@ public class Terminal
 		var targetProvider = new SceneTargetProvider(Registry);
 		Suggestors = new();
 		Suggestors.Scan(Registry, targetProvider);
-		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(Registry.GetCommandNames()));
+		ParserRegistry.Register<CommandNameParser>(() => new CommandNameParser(() => Registry.GetCommandNames()));
 		ParserRegistry.Register<TargetParser>(() => new TargetParser(targetProvider));
 		Tokenizer = new(ParserRegistry.CreateAllParsers());
 		CommandParser = new(Registry, Tokenizer);

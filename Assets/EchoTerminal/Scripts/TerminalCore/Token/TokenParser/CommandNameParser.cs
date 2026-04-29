@@ -21,18 +21,27 @@ public readonly struct CommandName
 
 public class CommandNameParser : ITokenParser
 {
-	private readonly HashSet<string> _registry;
+	public Type Type => typeof(CommandName);
+	private readonly HashSet<string> _snapshot;
+	private readonly Func<IEnumerable<string>> _live;
+
+	private IEnumerable<string> Source => _live != null ? _live() : _snapshot;
 
 	public CommandNameParser(IEnumerable<string> commandNames)
 	{
-		_registry = new(commandNames);
+		_snapshot = new(commandNames);
 	}
 
-	public Type Type => typeof(CommandName);
+	public CommandNameParser(Func<IEnumerable<string>> commandNames)
+	{
+		_live = commandNames;
+	}
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
-		if (_registry.Contains(raw))
+		IEnumerable<string> source = Source;
+		IEnumerable<string> enumerable = source as string[] ?? source.ToArray();
+		if (enumerable.Contains(raw))
 		{
 			return TokenState.Completed;
 		}
@@ -42,7 +51,7 @@ public class CommandNameParser : ITokenParser
 			return TokenState.Failed;
 		}
 
-		return _registry.Any(name => name.StartsWith(raw, StringComparison.Ordinal))
+		return enumerable.Any(name => name.StartsWith(raw, StringComparison.Ordinal))
 			? TokenState.Partial
 			: TokenState.Failed;
 	}
