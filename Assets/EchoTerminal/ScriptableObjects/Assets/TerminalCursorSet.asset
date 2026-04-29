@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TerminalCursorSet
   m_EditorClassIdentifier: EchoTerminal::EchoTerminal.TerminalCursorSet
   _move: {fileID: 2800000, guid: 1075ee61d7df4994aaef5b1d34acd3d4, type: 3}
-  _resizeEW: {fileID: 2800000, guid: 2078afc591f868745a8ac81d8e2c1655, type: 3}
-  _resizeNS: {fileID: 2800000, guid: ceeb780662a662241bc483b019d47bc8, type: 3}
-  _resizeNWSE: {fileID: 2800000, guid: c6f9d0b6881faa2438f8fa955c60c041, type: 3}
-  _resizeNESW: {fileID: 2800000, guid: 39a9e8a56104c1f4aa42bfb7c448bb5b, type: 3}
+  _resizeEw: {fileID: 2800000, guid: 2078afc591f868745a8ac81d8e2c1655, type: 3}
+  _resizeNs: {fileID: 2800000, guid: ceeb780662a662241bc483b019d47bc8, type: 3}
+  _resizeNwse: {fileID: 2800000, guid: c6f9d0b6881faa2438f8fa955c60c041, type: 3}
+  _resizeNesw: {fileID: 2800000, guid: 39a9e8a56104c1f4aa42bfb7c448bb5b, type: 3}
   _hotspot: {x: 32, y: 32}

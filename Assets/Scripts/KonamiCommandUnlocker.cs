@@ -8,7 +8,7 @@ namespace DefaultNamespace
 {
     public class KonamiCommandUnlocker : MonoBehaviour
     {
-        private static readonly Key[] _konamiSequence =
+        private static readonly Key[] KonamiSequence =
         {
             Key.UpArrow, Key.UpArrow,
             Key.DownArrow, Key.DownArrow,
@@ -32,16 +32,18 @@ namespace DefaultNamespace
                 return;
             }
 
-            Key expected = _konamiSequence[_progress];
+            Key expected = KonamiSequence[_progress];
 
             if (keyboard[expected].wasPressedThisFrame)
             {
                 _progress++;
-                if (_progress == _konamiSequence.Length)
+                if (_progress != KonamiSequence.Length)
                 {
-                    _progress = 0;
-                    UnlockAll();
+                    return;
                 }
+
+                _progress = 0;
+                UnlockAll();
             }
             else
             {
