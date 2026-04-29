@@ -42,6 +42,12 @@ public class GameTerminalUI : MonoBehaviour
 
 		_view = new(root, _config);
 
+		var gameWindow = root.Q<VisualElement>("game-window");
+		if (gameWindow != null)
+		{
+			gameWindow.style.display = DisplayStyle.Flex;
+		}
+
 		var executor = gameObject.AddComponent<BindExecutor>();
 		executor.Init(this);
 
