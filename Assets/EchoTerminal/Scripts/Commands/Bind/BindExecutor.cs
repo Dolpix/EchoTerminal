@@ -21,14 +21,14 @@ public class BindExecutor : MonoBehaviour
 			return;
 		}
 
-		var keyboard = Keyboard.current;
+		Keyboard keyboard = Keyboard.current;
 
 		if (keyboard == null)
 		{
 			return;
 		}
 
-		foreach (var (key, command) in _binds)
+		foreach ((Key key, string command) in _binds)
 		{
 			if (keyboard[key].wasPressedThisFrame)
 			{

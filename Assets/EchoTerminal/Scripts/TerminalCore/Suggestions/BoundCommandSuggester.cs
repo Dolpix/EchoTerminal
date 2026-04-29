@@ -14,44 +14,6 @@ public class BoundCommandSuggester : ISuggester
 	private SuggestorRegistry _suggestors;
 	private CommandParser _commandParser;
 
-	private static string GetLastSpacePartial(string s)
-	{
-		if (string.IsNullOrEmpty(s))
-		{
-			return string.Empty;
-		}
-
-		int idx = s.LastIndexOf(' ');
-		return idx < 0 ? s : s[(idx + 1)..];
-	}
-
-	private static Token? GetActiveToken(CommandParseResult result)
-	{
-		if (result.ArgTokens == null || result.ArgTokens.Count == 0)
-		{
-			return null;
-		}
-
-		Token last = result.ArgTokens[^1];
-		return last.State != TokenState.Completed ? last : null;
-	}
-
-	private static int GetActiveParamIndex(CommandParseResult result)
-	{
-		if (result.ArgTokens == null)
-		{
-			return -1;
-		}
-
-		int last = result.ArgTokens.Count - 1;
-		if (last < 0)
-		{
-			return -1;
-		}
-
-		return result.ArgTokens[last].State != TokenState.Completed ? last : -1;
-	}
-
 	public void Init(CommandRegistry commandRegistry, SuggestorRegistry suggestors, CommandParser commandParser)
 	{
 		_commandRegistry = commandRegistry;
@@ -153,6 +115,44 @@ public class BoundCommandSuggester : ISuggester
 		return paramSuggester.GetSuggestions(suggestionInput, paramExpectedType)
 							 .Select(s => ">" + prefixForWrap + s)
 							 .ToList();
+	}
+
+	private static string GetLastSpacePartial(string s)
+	{
+		if (string.IsNullOrEmpty(s))
+		{
+			return string.Empty;
+		}
+
+		int idx = s.LastIndexOf(' ');
+		return idx < 0 ? s : s[(idx + 1)..];
+	}
+
+	private static Token? GetActiveToken(CommandParseResult result)
+	{
+		if (result.ArgTokens == null || result.ArgTokens.Count == 0)
+		{
+			return null;
+		}
+
+		Token last = result.ArgTokens[^1];
+		return last.State != TokenState.Completed ? last : null;
+	}
+
+	private static int GetActiveParamIndex(CommandParseResult result)
+	{
+		if (result.ArgTokens == null)
+		{
+			return -1;
+		}
+
+		int last = result.ArgTokens.Count - 1;
+		if (last < 0)
+		{
+			return -1;
+		}
+
+		return result.ArgTokens[last].State != TokenState.Completed ? last : -1;
 	}
 }
 }

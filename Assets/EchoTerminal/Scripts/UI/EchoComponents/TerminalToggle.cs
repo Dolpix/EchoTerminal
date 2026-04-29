@@ -32,17 +32,6 @@ public class TerminalToggle : IEchoComponent
 		_toggleAction.Enable();
 	}
 
-	private void OnToggle(InputAction.CallbackContext ctx)
-	{
-		if (_window == null)
-		{
-			return;
-		}
-
-		var isHidden = _window.resolvedStyle.display == DisplayStyle.None;
-		_window.style.display = isHidden ? DisplayStyle.Flex : DisplayStyle.None;
-	}
-
 	~TerminalToggle()
 	{
 		if (_toggleAction == null)
@@ -52,6 +41,17 @@ public class TerminalToggle : IEchoComponent
 
 		_toggleAction.performed -= OnToggle;
 		_toggleAction.Disable();
+	}
+
+	private void OnToggle(InputAction.CallbackContext ctx)
+	{
+		if (_window == null)
+		{
+			return;
+		}
+
+		bool isHidden = _window.resolvedStyle.display == DisplayStyle.None;
+		_window.style.display = isHidden ? DisplayStyle.Flex : DisplayStyle.None;
 	}
 }
 }

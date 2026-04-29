@@ -33,8 +33,8 @@ public class TerminalAutoScroll : IEchoComponent
 
 	private bool IsAtBottom()
 	{
-		var contentHeight = _scrollView.contentContainer.layout.height;
-		var viewHeight = _scrollView.layout.height;
+		float contentHeight = _scrollView.contentContainer.layout.height;
+		float viewHeight = _scrollView.layout.height;
 		return contentHeight - (_scrollView.scrollOffset.y + viewHeight) <= _bottomThreshold;
 	}
 

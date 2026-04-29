@@ -12,6 +12,11 @@ public class TerminalUnityLog : IEchoComponent
 		Application.logMessageReceived += OnLogMessageReceived;
 	}
 
+	~TerminalUnityLog()
+	{
+		Application.logMessageReceived -= OnLogMessageReceived;
+	}
+
 	private void OnLogMessageReceived(string message, string stackTrace, LogType type)
 	{
 		(Color color, LogKind kind) = type switch
@@ -65,11 +70,6 @@ public class TerminalUnityLog : IEchoComponent
 		}
 
 		return null;
-	}
-
-	~TerminalUnityLog()
-	{
-		Application.logMessageReceived -= OnLogMessageReceived;
 	}
 }
 }

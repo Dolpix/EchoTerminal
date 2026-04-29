@@ -1,20 +1,22 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class StringParser : ITokenParser
 {
+	public Type Type => typeof(string);
 	private readonly HashSet<string> _validValues;
 
-	public StringParser() { }
+	public StringParser()
+	{
+	}
 
 	public StringParser(IEnumerable<string> validValues)
 	{
-		_validValues = new HashSet<string>(validValues);
+		_validValues = new(validValues);
 	}
 
-	public System.Type Type => typeof(string);
-
-	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
+	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
 		if (raw.Length == 0)
 		{
@@ -50,7 +52,7 @@ public class StringParser : ITokenParser
 		return TokenState.Failed;
 	}
 
-	public object ParseValue(string raw, System.Type expectedType = null)
+	public object ParseValue(string raw, Type expectedType = null)
 	{
 		if (raw.Length >= 2 && raw[0] == '"' && raw[^1] == '"')
 		{

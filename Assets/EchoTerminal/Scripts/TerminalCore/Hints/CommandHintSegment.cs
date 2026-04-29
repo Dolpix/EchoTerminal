@@ -1,14 +1,14 @@
 namespace EchoTerminal
 {
-    public readonly struct CommandHintSegment
-    {
-        public readonly string Text;
-        public readonly bool IsActive;
+public readonly struct CommandHintSegment
+{
+	public readonly string Text;
+	public readonly bool IsActive;
 
-        public CommandHintSegment(string text, bool isActive)
-        {
-            Text = text;
-            IsActive = isActive;
-        }
-    }
+	public CommandHintSegment(string text, bool isActive)
+	{
+		Text = text;
+		IsActive = isActive;
+	}
+}
 }

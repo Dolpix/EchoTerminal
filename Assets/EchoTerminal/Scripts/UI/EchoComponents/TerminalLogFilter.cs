@@ -85,7 +85,7 @@ public class TerminalLogFilter : IEchoComponent
 
 	private void UpdateButton(LogKind kind)
 	{
-		var (button, label, count) = kind switch
+		(Button button, string label, int count) = kind switch
 		{
 			LogKind.Log     => (_filterLog, "Log", _countLog),
 			LogKind.Warning => (_filterWarning, "Warn", _countWarning),

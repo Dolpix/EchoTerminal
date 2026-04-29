@@ -28,7 +28,7 @@ public class SceneTargetProvider : ITargetProvider
 
 		foreach (Type monoType in _registry.GetMonoTypes())
 		{
-			bool stale = false;
+			var stale = false;
 			foreach (Component instance in _registry.GetInstances(monoType))
 			{
 				if (instance == null)

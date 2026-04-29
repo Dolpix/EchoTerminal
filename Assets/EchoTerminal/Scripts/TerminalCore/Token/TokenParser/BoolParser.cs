@@ -12,7 +12,7 @@ public class BoolParser : ITokenParser, IHintLabeler
 			return TokenState.Failed;
 		}
 
-		var lower = raw.ToLowerInvariant();
+		string lower = raw.ToLowerInvariant();
 
 		if (lower is "true" or "false")
 		{

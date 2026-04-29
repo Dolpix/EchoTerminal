@@ -48,7 +48,7 @@ public class TerminalLogDisplay : IEchoComponent
 		_container?.Clear();
 		_entryCount = 0;
 
-		foreach (var entry in _terminal.Entries)
+		foreach (TerminalEntry entry in _terminal.Entries)
 		{
 			AddEntryElement(entry);
 		}
@@ -61,7 +61,7 @@ public class TerminalLogDisplay : IEchoComponent
 			return;
 		}
 
-		var clone = _entryTemplate.CloneTree();
+		TemplateContainer clone = _entryTemplate.CloneTree();
 		var row = clone.Q<VisualElement>(className: "terminal-entry");
 		row.AddToClassList(_entryCount % 2 == 0 ? "terminal-entry--even" : "terminal-entry--odd");
 		row.AddToClassList($"terminal-entry--{entry.Kind.ToString().ToLower()}");
@@ -73,7 +73,7 @@ public class TerminalLogDisplay : IEchoComponent
 		var message = clone.Q<Label>("message");
 		message.enableRichText = true;
 		message.selection.isSelectable = true;
-		var hex = ColorUtility.ToHtmlStringRGB(entry.Color);
+		string hex = ColorUtility.ToHtmlStringRGB(entry.Color);
 		message.text = $"<color=#{hex}>{entry.Text}</color>";
 
 		_container.Add(row);

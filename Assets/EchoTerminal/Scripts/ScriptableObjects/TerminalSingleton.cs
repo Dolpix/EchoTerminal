@@ -25,13 +25,13 @@ public class TerminalSingleton : ScriptableObject
 				return _instance;
 			}
 
-			var guids = AssetDatabase.FindAssets("t:TerminalSingleton");
+			string[] guids = AssetDatabase.FindAssets("t:TerminalSingleton");
 			if (guids.Length == 0)
 			{
 				return null;
 			}
 
-			var path = AssetDatabase.GUIDToAssetPath(guids[0]);
+			string path = AssetDatabase.GUIDToAssetPath(guids[0]);
 			_instance = AssetDatabase.LoadAssetAtPath<TerminalSingleton>(path);
 			return _instance;
 		}

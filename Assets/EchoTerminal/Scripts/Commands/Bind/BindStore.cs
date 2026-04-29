@@ -18,7 +18,7 @@ public static class BindStore
 			return _cache;
 		}
 
-		var data = Load();
+		BindData data = Load();
 		_cache = new();
 
 		for (var i = 0; i < data.Keys.Count; i++)
@@ -31,8 +31,8 @@ public static class BindStore
 
 	public static void Set(Key key, string command)
 	{
-		var data = Load();
-		var index = data.Keys.FindIndex(k => k == key);
+		BindData data = Load();
+		int index = data.Keys.FindIndex(k => k == key);
 
 		if (index >= 0)
 		{
@@ -51,8 +51,8 @@ public static class BindStore
 
 	public static bool Remove(Key key)
 	{
-		var data = Load();
-		var index = data.Keys.FindIndex(k => k == key);
+		BindData data = Load();
+		int index = data.Keys.FindIndex(k => k == key);
 
 		if (index < 0)
 		{
@@ -77,7 +77,7 @@ public static class BindStore
 
 	private static BindData Load()
 	{
-		var json = PlayerPrefs.GetString(_prefsKey, "");
+		string json = PlayerPrefs.GetString(_prefsKey, "");
 
 		if (string.IsNullOrEmpty(json))
 		{

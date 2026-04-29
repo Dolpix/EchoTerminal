@@ -69,14 +69,14 @@ public class BoundCommandParser : ITokenParser, IRecursiveParser, IHintLabeler
 				return TokenState.Failed;
 			}
 
-            if (parsed.Entry != null)
-            {
-                int matchedParamCount = parsed.Entry.Value.Method.GetParameters().Length;
-                bool hasLongerOverload = parsed.Entries != null &&
-                                         parsed.Entries.Any(e => e.Method.GetParameters().Length > matchedParamCount);
-                return hasLongerOverload ? TokenState.Failed : TokenState.Completed;
-            }
-        }
+			if (parsed.Entry != null)
+			{
+				int matchedParamCount = parsed.Entry.Value.Method.GetParameters().Length;
+				bool hasLongerOverload = parsed.Entries != null &&
+										 parsed.Entries.Any(e => e.Method.GetParameters().Length > matchedParamCount);
+				return hasLongerOverload ? TokenState.Failed : TokenState.Completed;
+			}
+		}
 
 		if (_commandValidator != null)
 		{

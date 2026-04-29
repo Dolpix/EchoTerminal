@@ -23,9 +23,9 @@ public class CommandNameSuggester : ISuggester
 		}
 
 		return _registry.GetCommandNames()
-			.Where(n => n.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
-			.OrderBy(n => n)
-			.ToList();
+						.Where(n => n.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
+						.OrderBy(n => n)
+						.ToList();
 	}
 }
 }

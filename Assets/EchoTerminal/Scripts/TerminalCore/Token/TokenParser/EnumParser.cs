@@ -13,14 +13,14 @@ public class EnumParser : ITokenParser, IHintLabeler
 			return TokenState.Failed;
 		}
 
-		var names = Enum.GetNames(expectedType);
+		string[] names = Enum.GetNames(expectedType);
 
 		if (names.Any(n => string.Equals(n, raw, StringComparison.OrdinalIgnoreCase)))
 		{
 			return TokenState.Completed;
 		}
 
-		var lower = raw.ToLowerInvariant();
+		string lower = raw.ToLowerInvariant();
 		if (names.Any(n => n.Length > raw.Length && n.ToLowerInvariant().StartsWith(lower)))
 		{
 			return TokenState.Partial;

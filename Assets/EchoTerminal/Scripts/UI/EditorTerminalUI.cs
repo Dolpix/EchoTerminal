@@ -34,7 +34,7 @@ public class EditorTerminalUI : EditorWindow
 
 		rootVisualElement.AddToClassList("echo-editor--dark");
 
-		_view = new TerminalView(rootVisualElement, assets.Config);
+		_view = new(rootVisualElement, assets.Config);
 	}
 
 	[MenuItem("Window/Echo Terminal")]

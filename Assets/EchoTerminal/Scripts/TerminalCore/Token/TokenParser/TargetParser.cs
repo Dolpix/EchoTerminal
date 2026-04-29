@@ -25,22 +25,13 @@ public class TargetParser : ITokenParser
 	private IReadOnlyList<string> _lastList;
 	private HashSet<string> _knownSet = new(StringComparer.OrdinalIgnoreCase);
 
-	public TargetParser() : this(new LiteralTargetProvider()) { }
+	public TargetParser() : this(new LiteralTargetProvider())
+	{
+	}
 
 	public TargetParser(ITargetProvider provider)
 	{
 		_provider = provider;
-	}
-
-	private HashSet<string> GetKnownSet()
-	{
-		IReadOnlyList<string> list = _provider.GetTargets();
-		if (!ReferenceEquals(list, _lastList))
-		{
-			_lastList = list;
-			_knownSet = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
-		}
-		return _knownSet;
 	}
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
@@ -68,5 +59,17 @@ public class TargetParser : ITokenParser
 	public object ParseValue(string raw, Type expectedType = null)
 	{
 		return new Target(raw);
+	}
+
+	private HashSet<string> GetKnownSet()
+	{
+		IReadOnlyList<string> list = _provider.GetTargets();
+		if (!ReferenceEquals(list, _lastList))
+		{
+			_lastList = list;
+			_knownSet = new(list, StringComparer.OrdinalIgnoreCase);
+		}
+
+		return _knownSet;
 	}
 }

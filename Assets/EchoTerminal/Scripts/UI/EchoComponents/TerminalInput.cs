@@ -33,7 +33,7 @@ public class TerminalInput : IEchoComponent
 			return;
 		}
 
-		var text = _inputField.value;
+		string text = _inputField.value;
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return;

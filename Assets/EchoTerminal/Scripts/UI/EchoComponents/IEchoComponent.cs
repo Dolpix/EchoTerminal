@@ -1,4 +1,6 @@
 namespace EchoTerminal
 {
-public interface IEchoComponent { }
+public interface IEchoComponent
+{
+}
 }

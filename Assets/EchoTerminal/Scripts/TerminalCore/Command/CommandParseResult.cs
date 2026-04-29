@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace EchoTerminal
 {
@@ -55,19 +56,19 @@ public readonly struct CommandParseResult
 			return $"Invalid arguments for '{CommandToken.Raw}'. Expected: {BuildSignatureHint(Entries[0])}";
 		}
 
-		var signatures = string.Join(" | ", Entries.Select(BuildSignatureHint));
+		string signatures = string.Join(" | ", Entries.Select(BuildSignatureHint));
 		return $"Invalid arguments for '{CommandToken.Raw}'. Expected one of: {signatures}";
 	}
 
 	private static string BuildSignatureHint(CommandEntry entry)
 	{
-		var parameters = entry.Method.GetParameters();
+		ParameterInfo[] parameters = entry.Method.GetParameters();
 		if (parameters.Length == 0)
 		{
 			return "(no arguments)";
 		}
 
-		var paramList = string.Join(", ", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
+		string paramList = string.Join(", ", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
 		return $"({paramList})";
 	}
 }

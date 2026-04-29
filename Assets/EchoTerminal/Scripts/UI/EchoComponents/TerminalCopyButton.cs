@@ -23,7 +23,7 @@ public class TerminalCopyButton : IEchoComponent
 		_copyToast = new("Copied to clipboard");
 		_copyToast.AddToClassList("terminal-copy-toast");
 		_copyToast.pickingMode = PickingMode.Ignore;
-		var toastParent = root?.Q<VisualElement>("terminal-content") ?? root;
+		VisualElement toastParent = root?.Q<VisualElement>("terminal-content") ?? root;
 		toastParent?.Add(_copyToast);
 
 		_copyButton?.RegisterCallback<ClickEvent>(OnCopyClicked);
@@ -36,15 +36,15 @@ public class TerminalCopyButton : IEchoComponent
 
 	private void OnCopyClicked(ClickEvent evt)
 	{
-		var hideLog = _logContainer?.ClassListContains("filter-hide-log") ?? false;
-		var hideWarning = _logContainer?.ClassListContains("filter-hide-warning") ?? false;
-		var hideError = _logContainer?.ClassListContains("filter-hide-error") ?? false;
-		var hideCommand = _logContainer?.ClassListContains("filter-hide-command") ?? false;
-		var showTimestamp = _logContainer?.ClassListContains("timestamps-visible") ?? false;
+		bool hideLog = _logContainer?.ClassListContains("filter-hide-log") ?? false;
+		bool hideWarning = _logContainer?.ClassListContains("filter-hide-warning") ?? false;
+		bool hideError = _logContainer?.ClassListContains("filter-hide-error") ?? false;
+		bool hideCommand = _logContainer?.ClassListContains("filter-hide-command") ?? false;
+		bool showTimestamp = _logContainer?.ClassListContains("timestamps-visible") ?? false;
 
 		var sb = new StringBuilder();
 
-		foreach (var entry in _terminal.Entries)
+		foreach (TerminalEntry entry in _terminal.Entries)
 		{
 			if (hideLog && entry.Kind == LogKind.Log)
 			{
@@ -77,7 +77,7 @@ public class TerminalCopyButton : IEchoComponent
 		GUIUtility.systemCopyBuffer = sb.ToString().TrimEnd();
 
 		_copyToast.AddToClassList("terminal-copy-toast--visible");
-		_copyToast.schedule.Execute(() => _copyToast.RemoveFromClassList("terminal-copy-toast--visible")).StartingIn(1500);
+		_copyToast.schedule.Execute(() => _copyToast.RemoveFromClassList("terminal-copy-toast--visible")) .StartingIn(1500);
 	}
 }
 }

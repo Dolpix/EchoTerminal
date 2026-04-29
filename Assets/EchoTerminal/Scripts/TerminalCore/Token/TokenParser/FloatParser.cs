@@ -1,19 +1,16 @@
+using System;
+
 public class FloatParser : ITokenParser, IHintLabeler
 {
-	public System.Type Type => typeof(float);
+	public Type Type => typeof(float);
 	public string HintLabel => "0.0";
 
-	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
+	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
-		if (float.TryParse(raw, out _))
-		{
-			return TokenState.Completed;
-		}
-
-		return TokenState.Failed;
+		return float.TryParse(raw, out _) ? TokenState.Completed : TokenState.Failed;
 	}
 
-	public object ParseValue(string raw, System.Type expectedType = null)
+	public object ParseValue(string raw, Type expectedType = null)
 	{
 		return float.Parse(raw);
 	}

@@ -1,9 +1,11 @@
+using System;
+
 public class IntParser : ITokenParser, IHintLabeler
 {
-	public System.Type Type => typeof(int);
+	public Type Type => typeof(int);
 	public string HintLabel => "0";
 
-	public TokenState ParseTokenState(string raw, System.Type expectedType = null)
+	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
 		if (int.TryParse(raw, out _))
 		{
@@ -13,7 +15,7 @@ public class IntParser : ITokenParser, IHintLabeler
 		return TokenState.Failed;
 	}
 
-	public object ParseValue(string raw, System.Type expectedType = null)
+	public object ParseValue(string raw, Type expectedType = null)
 	{
 		return int.Parse(raw);
 	}

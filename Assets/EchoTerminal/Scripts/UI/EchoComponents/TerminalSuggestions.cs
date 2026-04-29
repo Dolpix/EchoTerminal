@@ -49,6 +49,13 @@ public class TerminalSuggestions : IEchoComponent
 		_inputField.RegisterCallback<FocusOutEvent>(OnFocusOut);
 	}
 
+	~TerminalSuggestions()
+	{
+		_inputField?.UnregisterValueChangedCallback(OnInputChanged);
+		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+		_inputField?.UnregisterCallback<FocusOutEvent>(OnFocusOut);
+	}
+
 	private void AcceptSuggestion(string suggestion)
 	{
 		string current = _inputField.value;
@@ -223,10 +230,11 @@ public class TerminalSuggestions : IEchoComponent
 			var label = clone.Q<Label>("suggestion-label");
 			label.text = GetDisplayText(suggestion, _isComplexSuggestion);
 			label.RegisterCallback<MouseDownEvent>(evt =>
-			{
-				evt.StopPropagation();
-				AcceptSuggestion(suggestion);
-			}, TrickleDown.TrickleDown);
+				{
+					evt.StopPropagation();
+					AcceptSuggestion(suggestion);
+				},
+				TrickleDown.TrickleDown);
 			_list.Add(clone);
 		}
 
@@ -284,8 +292,8 @@ public class TerminalSuggestions : IEchoComponent
 			}
 
 			bool inTargetContext = allHaveTarget &&
-			                      result.ArgTokens?.Count > 0 &&
-			                      result.ArgTokens[0].ExpectedType == typeof(Target);
+								   result.ArgTokens?.Count > 0 &&
+								   result.ArgTokens[0].ExpectedType == typeof(Target);
 
 			CommandEntry lookupEntry = inTargetContext
 				? result.Entries.FirstOrDefault(e => e.HasTarget)
@@ -362,13 +370,6 @@ public class TerminalSuggestions : IEchoComponent
 
 		string suffix = suggestion[activePartial.Length..];
 		_ghostLabel.text = $"<color=#00000000>{current}</color><color={_ghostColor}>{suffix}</color>";
-	}
-
-	~TerminalSuggestions()
-	{
-		_inputField?.UnregisterValueChangedCallback(OnInputChanged);
-		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
-		_inputField?.UnregisterCallback<FocusOutEvent>(OnFocusOut);
 	}
 }
 }

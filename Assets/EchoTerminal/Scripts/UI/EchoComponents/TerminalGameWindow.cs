@@ -5,7 +5,10 @@ namespace EchoTerminal.Components
 {
 public class TerminalGameWindow : IEchoComponent
 {
-	public TerminalGameWindow(VisualElement root, TerminalCursorSet cursorSet = null, TerminalDragConstraints dragConstraints = default)
+	public TerminalGameWindow(
+		VisualElement root,
+		TerminalCursorSet cursorSet = null,
+		TerminalDragConstraints dragConstraints = default)
 	{
 		var window = root.Q<VisualElement>("game-window");
 
@@ -31,42 +34,49 @@ public class TerminalGameWindow : IEchoComponent
 
 		if (cursorSet?.Move != null)
 		{
-			closeBtn?.AddManipulator(new TerminalHoverCursorManipulator(null, Vector2.zero, cursorSet.Move, cursorSet.Hotspot));
+			closeBtn?.AddManipulator(
+				new TerminalHoverCursorManipulator(
+					null,
+					Vector2.zero,
+					cursorSet.Move,
+					cursorSet.Hotspot
+				)
+			);
 		}
 
 		WireResize(
 			window,
 			"resize-right",
 			ResizeDirection.Right,
-			cursorSet?.ResizeEW,
+			cursorSet?.ResizeEw,
 			cursorSet
 		);
 		WireResize(
 			window,
 			"resize-bottom",
 			ResizeDirection.Bottom,
-			cursorSet?.ResizeNS,
+			cursorSet?.ResizeNs,
 			cursorSet
 		);
 		WireResize(
 			window,
 			"resize-left",
 			ResizeDirection.Left,
-			cursorSet?.ResizeEW,
+			cursorSet?.ResizeEw,
 			cursorSet
 		);
 		WireResize(
 			window,
 			"resize-corner-br",
 			ResizeDirection.Right | ResizeDirection.Bottom,
-			cursorSet?.ResizeNWSE,
+			cursorSet?.ResizeNwse,
 			cursorSet
 		);
 		WireResize(
 			window,
 			"resize-corner-bl",
 			ResizeDirection.Left | ResizeDirection.Bottom,
-			cursorSet?.ResizeNESW,
+			cursorSet?.ResizeNesw,
 			cursorSet
 		);
 	}

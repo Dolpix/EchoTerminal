@@ -17,8 +17,8 @@ public class BoolSuggester : ISuggester
 		}
 
 		return _values
-			.Where(v => v.StartsWith(partial, StringComparison.OrdinalIgnoreCase) &&
-			            !string.Equals(v, partial, StringComparison.OrdinalIgnoreCase))
-			.ToList();
+			   .Where(v => v.StartsWith(partial, StringComparison.OrdinalIgnoreCase) &&
+						   !string.Equals(v, partial, StringComparison.OrdinalIgnoreCase))
+			   .ToList();
 	}
 }

@@ -22,8 +22,8 @@ public class EnumSuggester : ISuggester
 		}
 
 		return names
-			.Where(n => n.StartsWith(partial, StringComparison.OrdinalIgnoreCase) &&
-			            !string.Equals(n, partial, StringComparison.OrdinalIgnoreCase))
-			.ToList();
+			   .Where(n => n.StartsWith(partial, StringComparison.OrdinalIgnoreCase) &&
+						   !string.Equals(n, partial, StringComparison.OrdinalIgnoreCase))
+			   .ToList();
 	}
 }

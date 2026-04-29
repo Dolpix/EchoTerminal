@@ -19,7 +19,7 @@ public static class HelpCommand
 	[TerminalDescription("Show all registered commands")]
 	private static void Help([Inject] Terminal terminal)
 	{
-		var names = terminal.Registry.GetCommandNames();
+		IReadOnlyCollection<string> names = terminal.Registry.GetCommandNames();
 
 		if (names.Count == 0)
 		{
@@ -31,17 +31,17 @@ public static class HelpCommand
 
 		var byClass = new SortedDictionary<string, List<(string name, CommandEntry entry)>>(StringComparer.OrdinalIgnoreCase);
 
-		foreach (var name in names)
+		foreach (string name in names)
 		{
-			if (!terminal.Registry.TryGet(name, out var entries))
+			if (!terminal.Registry.TryGet(name, out List<CommandEntry> entries))
 			{
 				continue;
 			}
 
-			foreach (var entry in entries)
+			foreach (CommandEntry entry in entries)
 			{
 				string className = entry.Method.DeclaringType?.Name ?? "Unknown";
-				if (!byClass.TryGetValue(className, out var list))
+				if (!byClass.TryGetValue(className, out List<(string name, CommandEntry entry)> list))
 				{
 					list = new();
 					byClass[className] = list;
@@ -52,9 +52,9 @@ public static class HelpCommand
 		}
 
 		var output = new StringBuilder();
-		bool firstGroup = true;
+		var firstGroup = true;
 
-		foreach (var (className, entries) in byClass)
+		foreach ((string className, List<(string name, CommandEntry entry)> entries) in byClass)
 		{
 			if (!firstGroup)
 			{
@@ -65,11 +65,11 @@ public static class HelpCommand
 
 			output.AppendLine($"<color={_colClassName}>{className}</color>");
 
-			var sorted = entries.OrderBy(e => e.entry.Method.MetadataToken).ToList();
+			List<(string name, CommandEntry entry)> sorted = entries.OrderBy(e => e.entry.Method.MetadataToken).ToList();
 
 			int maxLen = sorted.Max(e => VisibleLength(e.name, e.entry));
 
-			foreach (var (name, entry) in sorted)
+			foreach ((string name, CommandEntry entry) in sorted)
 			{
 				output.AppendLine(BuildLine(name, entry, hs, maxLen));
 			}
@@ -91,7 +91,7 @@ public static class HelpCommand
 			sb.Append(Colorize("<@target>", typeof(Target), hs));
 		}
 
-		foreach (var param in entry.Method.GetParameters())
+		foreach (ParameterInfo param in entry.Method.GetParameters())
 		{
 			if (param.GetCustomAttribute<InjectAttribute>() != null)
 			{
@@ -102,15 +102,17 @@ public static class HelpCommand
 			sb.Append(Colorize($"<{param.ParameterType.Name} {param.Name}>", param.ParameterType, hs));
 		}
 
-		var desc = entry.Method.GetCustomAttribute<TerminalDescriptionAttribute>()?.Description;
-		if (!string.IsNullOrEmpty(desc))
+		string desc = entry.Method.GetCustomAttribute<TerminalDescriptionAttribute>()?.Description;
+		if (string.IsNullOrEmpty(desc))
 		{
-			int visLen = VisibleLength(name, entry);
-			int padding = padToLength - visLen;
-			sb.Append(new string(' ', padding));
-			sb.Append($"<color={_colSeparator}>{_separator}</color>");
-			sb.Append($"<color={_colDescription}>{desc}</color>");
+			return sb.ToString();
 		}
+
+		int visLen = VisibleLength(name, entry);
+		int padding = padToLength - visLen;
+		sb.Append(new string(' ', padding));
+		sb.Append($"<color={_colSeparator}>{_separator}</color>");
+		sb.Append($"<color={_colDescription}>{desc}</color>");
 
 		return sb.ToString();
 	}
@@ -124,7 +126,7 @@ public static class HelpCommand
 			len += 1 + "<@target>".Length;
 		}
 
-		foreach (var param in entry.Method.GetParameters())
+		foreach (ParameterInfo param in entry.Method.GetParameters())
 		{
 			if (param.GetCustomAttribute<InjectAttribute>() != null)
 			{
@@ -144,7 +146,7 @@ public static class HelpCommand
 			return text;
 		}
 
-		TokenHighlighter highlighter = null;
+		TokenHighlighter highlighter;
 		if (tokenType != null)
 		{
 			hs.TryGet(tokenType, out highlighter);

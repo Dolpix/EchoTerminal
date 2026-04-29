@@ -32,14 +32,14 @@ public class TerminalView
 		}
 	}
 
-	public void AddComponent(IEchoComponent component)
-	{
-		_components.Add(component);
-	}
-
 	~TerminalView()
 	{
 		_components.Clear();
+	}
+
+	public void AddComponent(IEchoComponent component)
+	{
+		_components.Add(component);
 	}
 }
 }

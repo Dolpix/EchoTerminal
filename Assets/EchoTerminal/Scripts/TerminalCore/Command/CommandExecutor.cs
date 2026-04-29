@@ -13,7 +13,11 @@ public class CommandExecutor
 	private readonly Tokenizer _tokenizer;
 	private readonly InjectionContainer _injector;
 
-	public CommandExecutor(CommandParser commandParser, CommandRegistry registry, Tokenizer tokenizer, InjectionContainer injector = null)
+	public CommandExecutor(
+		CommandParser commandParser,
+		CommandRegistry registry,
+		Tokenizer tokenizer,
+		InjectionContainer injector = null)
 	{
 		_registry = registry;
 		_tokenizer = tokenizer;
@@ -50,7 +54,9 @@ public class CommandExecutor
 			}
 			else
 			{
-				Debug.LogError($"Command '{entry.Method.Name}' has [TerminalTarget] but no target was parsed. Aborting.");
+				Debug.LogError(
+					$"Command '{entry.Method.Name}' has [TerminalTarget] but no target was parsed. Aborting."
+				);
 				return;
 			}
 		}
@@ -102,7 +108,7 @@ public class CommandExecutor
 
 		ParameterInfo[] parameters = method.GetParameters();
 		var result = new List<object>();
-		int parsedIndex = 0;
+		var parsedIndex = 0;
 
 		foreach (ParameterInfo param in parameters)
 		{

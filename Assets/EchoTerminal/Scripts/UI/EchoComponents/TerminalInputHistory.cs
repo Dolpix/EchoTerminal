@@ -26,6 +26,12 @@ public class TerminalInputHistory : IEchoComponent
 		_inputField.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
 	}
 
+	~TerminalInputHistory()
+	{
+		_terminal.OnCommandSubmitted -= OnCommandSubmitted;
+		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+	}
+
 	private void OnCommandSubmitted(string command)
 	{
 		if (_history.Count == 0 || _history[^1] != command)
@@ -103,12 +109,6 @@ public class TerminalInputHistory : IEchoComponent
 			int len = _inputField.value.Length;
 			_inputField.SelectRange(len, len);
 		});
-	}
-
-	~TerminalInputHistory()
-	{
-		_terminal.OnCommandSubmitted -= OnCommandSubmitted;
-		_inputField?.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
 	}
 }
 }

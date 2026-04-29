@@ -1,4 +1,4 @@
 public interface IHintLabeler
 {
-    string HintLabel { get; }
+	string HintLabel { get; }
 }

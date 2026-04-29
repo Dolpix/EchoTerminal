@@ -29,7 +29,8 @@ public class TargetSuggester : ISuggester
 			return targets;
 		}
 
-		return targets.Where(t => t.TrimStart('@').StartsWith(normalizedPartial, StringComparison.OrdinalIgnoreCase)).ToList();
+		return targets.Where(t => t.TrimStart('@').StartsWith(normalizedPartial, StringComparison.OrdinalIgnoreCase))
+					  .ToList();
 	}
 }
 }

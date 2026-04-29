@@ -17,20 +17,6 @@ public class TerminalDragManipulator : PointerManipulator
 		_constraints = constraints;
 	}
 
-	protected override void RegisterCallbacksOnTarget()
-	{
-		target.RegisterCallback<PointerDownEvent>(OnPointerDown);
-		target.RegisterCallback<PointerMoveEvent>(OnPointerMove);
-		target.RegisterCallback<PointerUpEvent>(OnPointerUp);
-	}
-
-	protected override void UnregisterCallbacksFromTarget()
-	{
-		target.UnregisterCallback<PointerDownEvent>(OnPointerDown);
-		target.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
-		target.UnregisterCallback<PointerUpEvent>(OnPointerUp);
-	}
-
 	private void OnPointerDown(PointerDownEvent evt)
 	{
 		if (evt.button != 0)
@@ -57,16 +43,16 @@ public class TerminalDragManipulator : PointerManipulator
 			return;
 		}
 
-		var delta = (Vector2)evt.position - _startPointer;
-		var newLeft = _startPosition.x + delta.x;
-		var newTop = _startPosition.y + delta.y;
+		Vector2 delta = (Vector2)evt.position - _startPointer;
+		float newLeft = _startPosition.x + delta.x;
+		float newTop = _startPosition.y + delta.y;
 
-		var parent = _windowElement.parent;
-		bool snapped = false;
-		if (parent != null && parent.layout.width > 0f && parent.layout.height > 0f)
+		VisualElement parent = _windowElement.parent;
+		var snapped = false;
+		if (parent is { layout: { width: > 0f, height: > 0f } })
 		{
-			var preLeft = newLeft;
-			var preTop = newTop;
+			float preLeft = newLeft;
+			float preTop = newTop;
 			ApplyConstraints(ref newLeft, ref newTop, parent.layout.width, parent.layout.height);
 			snapped = !Mathf.Approximately(newLeft, preLeft) || !Mathf.Approximately(newTop, preTop);
 		}
@@ -74,17 +60,19 @@ public class TerminalDragManipulator : PointerManipulator
 		_windowElement.style.left = newLeft;
 		_windowElement.style.top = newTop;
 
-		if (snapped)
+		if (!snapped)
 		{
-			_windowElement.AddToClassList("game-window--snapped");
-			_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--snapped")).StartingIn(400);
+			return;
 		}
+
+		_windowElement.AddToClassList("game-window--snapped");
+		_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--snapped")) .StartingIn(400);
 	}
 
 	private void ApplyConstraints(ref float left, ref float top, float screenW, float screenH)
 	{
-		var winW = _windowElement.resolvedStyle.width;
-		var winH = _windowElement.resolvedStyle.height;
+		float winW = _windowElement.resolvedStyle.width;
+		float winH = _windowElement.resolvedStyle.height;
 
 		if (left > 0f && left < _constraints.Left.SnapDistance)
 		{
@@ -96,13 +84,13 @@ public class TerminalDragManipulator : PointerManipulator
 			top = 0f;
 		}
 
-		var rightGap = screenW - (left + winW);
+		float rightGap = screenW - (left + winW);
 		if (rightGap > 0f && rightGap < _constraints.Right.SnapDistance)
 		{
 			left = screenW - winW;
 		}
 
-		var bottomGap = screenH - (top + winH);
+		float bottomGap = screenH - (top + winH);
 		if (bottomGap > 0f && bottomGap < _constraints.Bottom.SnapDistance)
 		{
 			top = screenH - winH;
@@ -129,7 +117,21 @@ public class TerminalDragManipulator : PointerManipulator
 		target.ReleasePointer(evt.pointerId);
 		_windowElement.RemoveFromClassList("game-window--dragging");
 		_windowElement.AddToClassList("game-window--settling");
-		_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--settling")).StartingIn(150);
+		_windowElement.schedule.Execute(() => _windowElement.RemoveFromClassList("game-window--settling")) .StartingIn(150);
+	}
+
+	protected override void RegisterCallbacksOnTarget()
+	{
+		target.RegisterCallback<PointerDownEvent>(OnPointerDown);
+		target.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+		target.RegisterCallback<PointerUpEvent>(OnPointerUp);
+	}
+
+	protected override void UnregisterCallbacksFromTarget()
+	{
+		target.UnregisterCallback<PointerDownEvent>(OnPointerDown);
+		target.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
+		target.UnregisterCallback<PointerUpEvent>(OnPointerUp);
 	}
 }
 }

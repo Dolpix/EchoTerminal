@@ -33,7 +33,7 @@ public static class ParserRegistry
 	public static Dictionary<Type, ITokenParser> CreateAll()
 	{
 		var result = new Dictionary<Type, ITokenParser>();
-		foreach (var parser in CreateAllParsers())
+		foreach (ITokenParser parser in CreateAllParsers())
 		{
 			result[parser.Type] = parser;
 		}
@@ -45,31 +45,31 @@ public static class ParserRegistry
 	{
 		var unordered = new List<ITokenParser>();
 
-		var types = AppDomain.CurrentDomain.GetAssemblies()
-			.SelectMany(a =>
-			{
-				try
-				{
-					return a.GetTypes();
-				}
-				catch
-				{
-					return Array.Empty<Type>();
-				}
-			})
-			.Where(t =>
-				typeof(ITokenParser).IsAssignableFrom(t) &&
-				!t.IsInterface &&
-				!t.IsAbstract &&
-				!t.IsGenericTypeDefinition &&
-				IsTerminalCoreParser(t)
-			);
+		IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
+										   .SelectMany(a =>
+										   {
+											   try
+											   {
+												   return a.GetTypes();
+											   }
+											   catch
+											   {
+												   return Array.Empty<Type>();
+											   }
+										   })
+										   .Where(t =>
+											   typeof(ITokenParser).IsAssignableFrom(t) &&
+											   !t.IsInterface &&
+											   !t.IsAbstract &&
+											   !t.IsGenericTypeDefinition &&
+											   IsTerminalCoreParser(t)
+										   );
 
-		foreach (var type in types)
+		foreach (Type type in types)
 		{
 			ITokenParser parser = null;
 
-			if (_withArgs.TryGetValue(type, out var factory))
+			if (_withArgs.TryGetValue(type, out Func<ITokenParser> factory))
 			{
 				parser = factory();
 			}
@@ -84,13 +84,13 @@ public static class ParserRegistry
 			}
 		}
 
-		var elementParsers = unordered.ToList();
+		List<ITokenParser> elementParsers = unordered.ToList();
 		var listParser = new ListParser(elementParsers);
 		elementParsers.Add(listParser);
 		unordered.Add(listParser);
-		var result = unordered.Where(p => !_tailOrder.Contains(p.Type)).ToList();
+		List<ITokenParser> result = unordered.Where(p => !_tailOrder.Contains(p.Type)).ToList();
 
-		foreach (var valueType in _tailOrder)
+		foreach (Type valueType in _tailOrder)
 		{
 			result.AddRange(unordered.Where(p => p.Type == valueType));
 		}

@@ -22,16 +22,16 @@ public class TerminalHighlighter : IEchoComponent
 		_inputField.RegisterValueChangedCallback(OnInputChanged);
 	}
 
+	~TerminalHighlighter()
+	{
+		_inputField?.UnregisterValueChangedCallback(OnInputChanged);
+	}
+
 	private void OnInputChanged(ChangeEvent<string> evt)
 	{
 		_highlightLabel.text = string.IsNullOrEmpty(evt.newValue)
 			? string.Empty
 			: _core.BuildHighlightedText(evt.newValue);
-	}
-
-	~TerminalHighlighter()
-	{
-		_inputField?.UnregisterValueChangedCallback(OnInputChanged);
 	}
 }
 }

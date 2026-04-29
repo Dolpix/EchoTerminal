@@ -64,8 +64,8 @@ public class CommandParser
 		{
 			ParameterInfo[] parameters = entry.Method.GetParameters();
 			IEnumerable<Type> paramTypes = parameters
-				.Where(p => p.GetCustomAttribute<InjectAttribute>() == null)
-				.Select(p => p.ParameterType);
+										   .Where(p => p.GetCustomAttribute<InjectAttribute>() == null)
+										   .Select(p => p.ParameterType);
 			List<Type> expectedTypes = entry.HasTarget
 				? paramTypes.Prepend(typeof(Target)).ToList()
 				: paramTypes.ToList();
@@ -86,7 +86,7 @@ public class CommandParser
 			int partialCount = argTokens.Count(t => t.State == TokenState.Partial);
 
 			bool better = completedCount > bestCompletedCount ||
-			              (completedCount == bestCompletedCount && partialCount > bestPartialCount);
+						  (completedCount == bestCompletedCount && partialCount > bestPartialCount);
 			if (!better)
 			{
 				continue;

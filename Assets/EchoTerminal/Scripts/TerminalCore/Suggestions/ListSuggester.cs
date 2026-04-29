@@ -11,39 +11,6 @@ public class ListSuggester : ISuggester
 {
 	private SuggestorRegistry _suggestors;
 
-	private static string GetActiveElementPartial(string inner)
-	{
-		var depth = 0;
-		var inQuote = false;
-		int lastSplit = -1;
-
-		for (var i = 0; i < inner.Length; i++)
-		{
-			char c = inner[i];
-			if (c == '"')
-			{
-				inQuote = !inQuote;
-			}
-			else if (!inQuote)
-			{
-				switch (c)
-				{
-					case '[' or '(':
-						depth++;
-						break;
-					case ']' or ')':
-						depth--;
-						break;
-					case ',' or ' ' when depth == 0:
-						lastSplit = i;
-						break;
-				}
-			}
-		}
-
-		return inner[(lastSplit + 1)..].TrimStart();
-	}
-
 	public void Init(SuggestorRegistry suggestors)
 	{
 		_suggestors = suggestors;
@@ -77,6 +44,39 @@ public class ListSuggester : ISuggester
 		return elementSuggester.GetSuggestions(activeElementPartial, elementType)
 							   .Select(s => "[" + innerPrefix + s)
 							   .ToList();
+	}
+
+	private static string GetActiveElementPartial(string inner)
+	{
+		var depth = 0;
+		var inQuote = false;
+		int lastSplit = -1;
+
+		for (var i = 0; i < inner.Length; i++)
+		{
+			char c = inner[i];
+			if (c == '"')
+			{
+				inQuote = !inQuote;
+			}
+			else if (!inQuote)
+			{
+				switch (c)
+				{
+					case '[' or '(':
+						depth++;
+						break;
+					case ']' or ')':
+						depth--;
+						break;
+					case ',' or ' ' when depth == 0:
+						lastSplit = i;
+						break;
+				}
+			}
+		}
+
+		return inner[(lastSplit + 1)..].TrimStart();
 	}
 }
 }

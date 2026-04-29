@@ -28,7 +28,7 @@ public class Terminal
 	{
 		_maxEntries = maxEntries;
 		Injector = new();
-		Injector.Register<Terminal>(() => this);
+		Injector.Register(() => this);
 		Registry = new();
 		Registry.Scan();
 		var targetProvider = new SceneTargetProvider(Registry);

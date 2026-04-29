@@ -45,14 +45,14 @@ public class CommandRegistry
 
 	public IReadOnlyCollection<string> GetCommandNamesByTag(string tag)
 	{
-		return _tagToCommands.TryGetValue(tag, out var names)
+		return _tagToCommands.TryGetValue(tag, out HashSet<string> names)
 			? names
-			: System.Array.Empty<string>();
+			: Array.Empty<string>();
 	}
 
 	public void EnableByTag(string tag)
 	{
-		foreach (var name in GetCommandNamesByTag(tag))
+		foreach (string name in GetCommandNamesByTag(tag))
 		{
 			Enable(name);
 		}
@@ -60,19 +60,10 @@ public class CommandRegistry
 
 	public void DisableByTag(string tag)
 	{
-		foreach (var name in GetCommandNamesByTag(tag))
+		foreach (string name in GetCommandNamesByTag(tag))
 		{
 			Disable(name);
 		}
-	}
-
-	internal IEnumerable<Type> GetMonoTypes()
-	{
-		return _commands.Values
-			.SelectMany(entries => entries)
-			.Where(e => e.MonoType != null)
-			.Select(e => e.MonoType)
-			.Distinct();
 	}
 
 	public bool TryGet(string name, out List<CommandEntry> entries)
@@ -198,13 +189,14 @@ public class CommandRegistry
 			var tagAttr = method.GetCustomAttribute<TerminalTagAttribute>();
 			if (tagAttr != null)
 			{
-				foreach (var tag in tagAttr.Tags)
+				foreach (string tag in tagAttr.Tags)
 				{
-					if (!_tagToCommands.TryGetValue(tag, out var tagSet))
+					if (!_tagToCommands.TryGetValue(tag, out HashSet<string> tagSet))
 					{
-						tagSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+						tagSet = new(StringComparer.OrdinalIgnoreCase);
 						_tagToCommands[tag] = tagSet;
 					}
+
 					tagSet.Add(name);
 				}
 			}
@@ -212,11 +204,23 @@ public class CommandRegistry
 			bool hasTarget = method.GetCustomAttribute<TerminalTargetAttribute>() != null;
 			if (hasTarget && monoType == null)
 			{
-				Debug.LogWarning($"[TerminalTarget] on static method '{type.Name}.{method.Name}' has no effect — target filtering requires an instance command. Attribute ignored.");
+				Debug.LogWarning(
+					$"[TerminalTarget] on static method '{type.Name}.{method.Name}' has no effect — target filtering requires an instance command. Attribute ignored."
+				);
 				hasTarget = false;
 			}
+
 			list.Add(new(method, monoType, hasTarget));
 		}
+	}
+
+	internal IEnumerable<Type> GetMonoTypes()
+	{
+		return _commands.Values
+						.SelectMany(entries => entries)
+						.Where(e => e.MonoType != null)
+						.Select(e => e.MonoType)
+						.Distinct();
 	}
 }
 }

@@ -31,20 +31,6 @@ public class TerminalResizeManipulator : PointerManipulator
 		_direction = direction;
 	}
 
-	protected override void RegisterCallbacksOnTarget()
-	{
-		target.RegisterCallback<PointerDownEvent>(OnPointerDown);
-		target.RegisterCallback<PointerMoveEvent>(OnPointerMove);
-		target.RegisterCallback<PointerUpEvent>(OnPointerUp);
-	}
-
-	protected override void UnregisterCallbacksFromTarget()
-	{
-		target.UnregisterCallback<PointerDownEvent>(OnPointerDown);
-		target.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
-		target.UnregisterCallback<PointerUpEvent>(OnPointerUp);
-	}
-
 	private void OnPointerDown(PointerDownEvent evt)
 	{
 		if (evt.button != 0)
@@ -68,7 +54,7 @@ public class TerminalResizeManipulator : PointerManipulator
 			return;
 		}
 
-		var delta = (Vector2)evt.position - _startPointer;
+		Vector2 delta = (Vector2)evt.position - _startPointer;
 
 		if (_direction.HasFlag(ResizeDirection.Right))
 		{
@@ -85,8 +71,8 @@ public class TerminalResizeManipulator : PointerManipulator
 			return;
 		}
 
-		var newWidth = Mathf.Max(_minWidth, _startWidth - delta.x);
-		var actualDelta = _startWidth - newWidth;
+		float newWidth = Mathf.Max(_minWidth, _startWidth - delta.x);
+		float actualDelta = _startWidth - newWidth;
 		_windowElement.style.width = newWidth;
 		_windowElement.style.left = _startLeft + actualDelta;
 	}
@@ -100,6 +86,20 @@ public class TerminalResizeManipulator : PointerManipulator
 
 		_resizing = false;
 		target.ReleasePointer(evt.pointerId);
+	}
+
+	protected override void RegisterCallbacksOnTarget()
+	{
+		target.RegisterCallback<PointerDownEvent>(OnPointerDown);
+		target.RegisterCallback<PointerMoveEvent>(OnPointerMove);
+		target.RegisterCallback<PointerUpEvent>(OnPointerUp);
+	}
+
+	protected override void UnregisterCallbacksFromTarget()
+	{
+		target.UnregisterCallback<PointerDownEvent>(OnPointerDown);
+		target.UnregisterCallback<PointerMoveEvent>(OnPointerMove);
+		target.UnregisterCallback<PointerUpEvent>(OnPointerUp);
 	}
 }
 }
