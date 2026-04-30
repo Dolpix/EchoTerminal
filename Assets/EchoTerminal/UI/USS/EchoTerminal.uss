@@ -367,9 +367,23 @@
     translate: 0 0;
 }
 
+#copy-button {
+    align-items: center;
+    justify-content: center;
+    padding: 2px 6px;
+}
+
 #copy-button:active {
     background-color: var(--accent-copy);
     color: var(--accent-copy-text);
+}
+
+.terminal-copy-icon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    background-image: url('../Icons/copy.svg');
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .terminal-hint-label {

@@ -13,7 +13,9 @@
                 <ui:VisualElement class="terminal-search-icon"/>
                 <ui:TextField name="search-field" class="terminal-search-field"/>
             </ui:VisualElement>
-            <ui:Button name="copy-button" text="⎘" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding-bottom: 0; padding-top: 0; height: 100%;"/>
+            <ui:Button name="copy-button" text="" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding-bottom: 0; padding-top: 0; height: 100%;">
+                <ui:VisualElement picking-mode="Ignore" class="terminal-copy-icon"/>
+            </ui:Button>
             <ui:VisualElement class="terminal-toolbar-separator"/>
             <ui:Button name="clear-button" text="Clear" class="terminal-toolbar-button" style="margin-left: 0; margin-right: 0; padding-bottom: 0; padding-top: 0; height: 100%;"/>
             <ui:VisualElement class="terminal-toolbar-separator"/>
