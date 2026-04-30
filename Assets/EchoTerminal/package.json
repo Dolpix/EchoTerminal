@@ -1,0 +1,21 @@
+{
+  "name": "com.dolpix.echo-terminal",
+  "version": "1.0.0",
+  "displayName": "Echo Terminal",
+  "description": "A runtime and editor developer console for Unity 6. Add commands with a single attribute. Every layer is yours to replace.",
+  "unity": "6000.0",
+  "license": "Apache-2.0",
+  "keywords": [
+    "terminal",
+    "console",
+    "debug",
+    "developer-tools"
+  ],
+  "author": {
+    "name": "Dolpix",
+    "url": "https://github.com/Dolpix"
+  },
+  "dependencies": {
+    "com.unity.inputsystem": "1.18.0"
+  }
+}
