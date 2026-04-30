@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EchoTerminal.Scripts.TerminalCore.Command;
 
-namespace EchoTerminal.TerminalCore
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
 {
 public readonly struct BoundCommand
 {

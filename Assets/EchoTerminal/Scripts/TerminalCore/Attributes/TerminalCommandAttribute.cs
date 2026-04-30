@@ -1,6 +1,6 @@
 using System;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Attributes
 {
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class TerminalCommandAttribute : Attribute

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using EchoTerminal.Scripts.TerminalCore;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalInputHistory : IEchoComponent
 {

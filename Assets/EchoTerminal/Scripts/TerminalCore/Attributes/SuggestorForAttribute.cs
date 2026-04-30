@@ -1,6 +1,6 @@
 using System;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Attributes
 {
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public sealed class SuggestorForAttribute : Attribute

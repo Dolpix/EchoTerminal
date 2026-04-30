@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Structs
 {
 [Serializable]
 public struct TerminalEdgeConstraints

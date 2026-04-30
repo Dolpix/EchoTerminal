@@ -2,9 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Targets;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
 {
 public class SuggestorRegistry
 {

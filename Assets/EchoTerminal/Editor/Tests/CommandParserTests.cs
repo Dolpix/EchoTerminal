@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using NUnit.Framework;
 using UnityEngine;
 

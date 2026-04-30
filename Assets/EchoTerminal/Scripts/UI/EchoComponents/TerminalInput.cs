@@ -1,7 +1,9 @@
+using EchoTerminal.Scripts.ScriptableObjects;
+using EchoTerminal.Scripts.TerminalCore;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalInput : IEchoComponent
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using EchoTerminal.Scripts.TerminalCore.Command;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Targets
 {
 public class SceneTargetProvider : ITargetProvider
 {

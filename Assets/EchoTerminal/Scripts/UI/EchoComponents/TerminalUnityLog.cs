@@ -1,6 +1,8 @@
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Enum;
 using UnityEngine;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalUnityLog : IEchoComponent
 {

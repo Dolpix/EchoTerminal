@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.Manipulators
 {
 [Flags]
 public enum ResizeDirection

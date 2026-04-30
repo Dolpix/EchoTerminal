@@ -1,4 +1,6 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using NUnit.Framework;
 using UnityEngine.InputSystem;
 

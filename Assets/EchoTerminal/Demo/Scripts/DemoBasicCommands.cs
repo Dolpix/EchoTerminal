@@ -1,6 +1,8 @@
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 using UnityEngine;
 
-namespace EchoTerminal.Demos
+namespace EchoTerminal.Demo.Scripts
 {
 // -- STATIC COMMANDS
 // A plain static class is all you need. No MonoBehaviour, no scene setup.

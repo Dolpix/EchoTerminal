@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using EchoTerminal.Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.Commands.Bind
 {
 public class BindExecutor : MonoBehaviour
 {

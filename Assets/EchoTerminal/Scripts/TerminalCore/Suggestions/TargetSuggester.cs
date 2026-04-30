@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Targets;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
 {
 [SuggestorFor(typeof(Target))]
 public class TargetSuggester : ISuggester

@@ -1,6 +1,7 @@
+using EchoTerminal.Scripts.TerminalCore.Token;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects.Highlighting.Highlighters
 {
 [CreateAssetMenu(fileName = "FlatColorHighlighter", menuName = "Echo Terminal/Highlighters/Flat Color")]
 public class FlatColorHighlighter : TokenHighlighter

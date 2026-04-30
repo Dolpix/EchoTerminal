@@ -1,7 +1,9 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Structs;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalSearch : IEchoComponent
 {

@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class Vec3Parser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Vector3);
@@ -86,4 +88,5 @@ public class Vec3Parser : ITokenParser, IHintLabeler
 
 		return true;
 	}
+}
 }

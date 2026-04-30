@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Text;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Hints;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalHint : IEchoComponent
 {

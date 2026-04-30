@@ -1,9 +1,12 @@
-using EchoTerminal.Components;
+using EchoTerminal.Scripts.Commands.Bind;
+using EchoTerminal.Scripts.ScriptableObjects;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.UI.EchoComponents;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.UI
 {
 [RequireComponent(typeof(UIDocument))]
 public class GameTerminalUI : MonoBehaviour

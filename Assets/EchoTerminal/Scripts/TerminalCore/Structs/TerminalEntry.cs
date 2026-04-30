@@ -1,7 +1,8 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore.Enum;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Structs
 {
 public readonly struct TerminalEntry
 {

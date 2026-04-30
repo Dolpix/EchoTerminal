@@ -1,7 +1,9 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.UI;
 using UnityEngine;
 
-namespace EchoTerminal.Demos
+namespace EchoTerminal.Demo.Scripts
 {
 // -- PASSPHRASE UNLOCKER
 // Attach this to any GameObject and wire up the terminal reference.

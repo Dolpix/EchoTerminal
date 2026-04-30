@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
 {
 [SuggestorFor(typeof(BoundCommand))]
 public class BoundCommandSuggester : ISuggester
@@ -55,7 +59,7 @@ public class BoundCommandSuggester : ISuggester
 			return Array.Empty<string>();
 		}
 
-		Token? innerActiveToken = GetActiveToken(innerResult);
+		Token.Token? innerActiveToken = GetActiveToken(innerResult);
 		int paramIndex = innerActiveToken == null
 			? innerResult.ArgTokens?.Count ?? 0
 			: GetActiveParamIndex(innerResult);
@@ -128,14 +132,14 @@ public class BoundCommandSuggester : ISuggester
 		return idx < 0 ? s : s[(idx + 1)..];
 	}
 
-	private static Token? GetActiveToken(CommandParseResult result)
+	private static Token.Token? GetActiveToken(CommandParseResult result)
 	{
 		if (result.ArgTokens == null || result.ArgTokens.Count == 0)
 		{
 			return null;
 		}
 
-		Token last = result.ArgTokens[^1];
+		Token.Token last = result.ArgTokens[^1];
 		return last.State != TokenState.Completed ? last : null;
 	}
 

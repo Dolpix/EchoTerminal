@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
+{
 [SuggestorFor(typeof(Color))]
 public class ColorSuggester : ISuggester
 {
@@ -26,4 +27,5 @@ public class ColorSuggester : ISuggester
 						   !string.Equals(c, partial, StringComparison.OrdinalIgnoreCase))
 			   .ToList();
 	}
+}
 }

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
-using EchoTerminal;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Targets;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using NUnit.Framework;
 using UnityEngine;
 
+namespace EchoTerminal.Editor.Tests
+{
 [TestFixture]
 public class TokenizerTests
 {
@@ -111,4 +114,5 @@ public class TokenizerTests
 	{
 		Assert.AreEqual(expected, _tokenizer.Tokenize(input)[index].State);
 	}
+}
 }

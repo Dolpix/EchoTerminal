@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
-using EchoTerminal.Components;
+using EchoTerminal.Scripts.ScriptableObjects;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Editor
+namespace EchoTerminal.Scripts.UI
 {
 public class EditorTerminalUI : EditorWindow
 {

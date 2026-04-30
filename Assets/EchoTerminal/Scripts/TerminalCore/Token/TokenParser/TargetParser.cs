@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal;
+using EchoTerminal.Scripts.TerminalCore.Targets;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public readonly struct Target
 {
 	public readonly string Value;
@@ -72,4 +74,5 @@ public class TargetParser : ITokenParser
 
 		return _knownSet;
 	}
+}
 }

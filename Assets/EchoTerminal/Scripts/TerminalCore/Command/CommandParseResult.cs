@@ -1,22 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using EchoTerminal.Scripts.TerminalCore.Structs;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Command
 {
 public readonly struct CommandParseResult
 {
 	public readonly bool IsMatch;
-	public readonly Token CommandToken;
+	public readonly Token.Token CommandToken;
 	public readonly CommandEntry? Entry;
-	public readonly List<Token> ArgTokens;
+	public readonly List<Token.Token> ArgTokens;
 	public readonly List<CommandEntry> Entries;
 
 	private CommandParseResult(
-		Token commandToken,
+		Token.Token commandToken,
 		List<CommandEntry> entries,
 		CommandEntry? entry,
-		List<Token> argTokens)
+		List<Token.Token> argTokens)
 	{
 		IsMatch = entry.HasValue;
 		CommandToken = commandToken;
@@ -25,21 +26,21 @@ public readonly struct CommandParseResult
 		Entries = entries;
 	}
 
-	public static CommandParseResult UnknownCommand(Token commandToken)
+	public static CommandParseResult UnknownCommand(Token.Token commandToken)
 	{
 		return new(commandToken, null, null, null);
 	}
 
-	public static CommandParseResult NoMatch(Token commandToken, List<CommandEntry> entries, List<Token> argTokens)
+	public static CommandParseResult NoMatch(Token.Token commandToken, List<CommandEntry> entries, List<Token.Token> argTokens)
 	{
 		return new(commandToken, entries, null, argTokens);
 	}
 
 	public static CommandParseResult Match(
-		Token commandToken,
+		Token.Token commandToken,
 		List<CommandEntry> entries,
 		CommandEntry entry,
-		List<Token> argTokens)
+		List<Token.Token> argTokens)
 	{
 		return new(commandToken, entries, entry, argTokens);
 	}

@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 {
 	public Type Type => typeof(IList);
@@ -345,4 +346,5 @@ public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 
 		return depth == 0;
 	}
+}
 }

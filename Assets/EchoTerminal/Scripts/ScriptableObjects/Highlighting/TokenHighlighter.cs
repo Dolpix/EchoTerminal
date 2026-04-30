@@ -1,6 +1,7 @@
+using EchoTerminal.Scripts.TerminalCore.Token;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects.Highlighting
 {
 public abstract class TokenHighlighter : ScriptableObject
 {

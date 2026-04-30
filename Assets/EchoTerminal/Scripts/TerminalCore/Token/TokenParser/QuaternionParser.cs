@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class QuaternionParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Quaternion);
@@ -77,4 +79,5 @@ public class QuaternionParser : ITokenParser, IHintLabeler
 
 		return float.TryParse(s, out _) || s.All(c => c == '-' || c == '+' || c == '.' || char.IsDigit(c));
 	}
+}
 }

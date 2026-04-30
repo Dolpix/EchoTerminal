@@ -1,10 +1,11 @@
 using System.Linq;
-using EchoTerminal;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-namespace DefaultNamespace
+namespace EchoTerminal.Demo.Scripts
 {
     public class KonamiCommandUnlocker : MonoBehaviour
     {

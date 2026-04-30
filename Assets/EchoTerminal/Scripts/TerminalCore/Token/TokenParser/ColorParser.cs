@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class ColorParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Color);
@@ -146,4 +148,5 @@ public class ColorParser : ITokenParser, IHintLabeler
 		float a = parts.Length == 4 ? float.Parse(parts[3].Trim()) : 1f;
 		return new(r, g, b, a);
 	}
+}
 }

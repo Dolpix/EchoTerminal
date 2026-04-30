@@ -1,7 +1,10 @@
+using EchoTerminal.Scripts.ScriptableObjects;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.UI.Manipulators;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalGameWindow : IEchoComponent
 {

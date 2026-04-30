@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalHighlighterCore
 {

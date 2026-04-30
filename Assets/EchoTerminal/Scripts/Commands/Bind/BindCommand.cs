@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using System.Text;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.Commands.Bind
 {
 public static class BindCommand
 {

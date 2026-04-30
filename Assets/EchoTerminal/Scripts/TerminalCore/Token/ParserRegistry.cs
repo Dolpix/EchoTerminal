@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token
+{
 public static class ParserRegistry
 {
 	private static readonly Dictionary<Type, Func<ITokenParser>> _withArgs = new();
@@ -106,4 +108,5 @@ public static class ParserRegistry
 	{
 		return string.IsNullOrEmpty(t.Namespace) || t.Namespace == "EchoTerminal.TerminalCore";
 	}
+}
 }

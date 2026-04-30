@@ -1,7 +1,8 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 using UnityEngine;
 
-namespace EchoTerminal.Demos
+namespace EchoTerminal.Demo.Scripts
 {
 // -- GATED COMMANDS
 // These commands exist in the registry from startup but are invisible and

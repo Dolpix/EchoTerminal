@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class Vec2Parser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(Vector2);
@@ -75,4 +77,5 @@ public class Vec2Parser : ITokenParser, IHintLabeler
 
 		return float.TryParse(s, out _) || s.All(c => c == '-' || c == '+' || c == '.' || char.IsDigit(c));
 	}
+}
 }

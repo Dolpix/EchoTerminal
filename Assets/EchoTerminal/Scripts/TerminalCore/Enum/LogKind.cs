@@ -1,4 +1,4 @@
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Enum
 {
 public enum LogKind
 {

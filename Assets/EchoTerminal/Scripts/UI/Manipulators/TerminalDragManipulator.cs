@@ -1,7 +1,8 @@
+using EchoTerminal.Scripts.TerminalCore.Structs;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.Manipulators
 {
 public class TerminalDragManipulator : PointerManipulator
 {

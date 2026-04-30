@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class EnumParser : ITokenParser, IHintLabeler
 {
-	public Type Type => typeof(Enum);
+	public Type Type => typeof(System.Enum);
 	public string HintLabel => "value";
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
@@ -13,7 +15,7 @@ public class EnumParser : ITokenParser, IHintLabeler
 			return TokenState.Failed;
 		}
 
-		string[] names = Enum.GetNames(expectedType);
+		string[] names = System.Enum.GetNames(expectedType);
 
 		if (names.Any(n => string.Equals(n, raw, StringComparison.OrdinalIgnoreCase)))
 		{
@@ -31,6 +33,7 @@ public class EnumParser : ITokenParser, IHintLabeler
 
 	public object ParseValue(string raw, Type expectedType = null)
 	{
-		return expectedType is not { IsEnum: true } ? null : Enum.Parse(expectedType, raw, true);
+		return expectedType is not { IsEnum: true } ? null : System.Enum.Parse(expectedType, raw, true);
 	}
+}
 }

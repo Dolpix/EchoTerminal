@@ -1,3 +1,4 @@
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
 using UnityEditor;
 using UnityEngine;
 

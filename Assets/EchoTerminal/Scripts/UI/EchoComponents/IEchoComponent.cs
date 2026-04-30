@@ -1,4 +1,4 @@
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public interface IEchoComponent
 {

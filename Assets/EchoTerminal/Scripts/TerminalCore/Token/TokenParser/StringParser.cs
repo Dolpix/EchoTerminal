@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class StringParser : ITokenParser
 {
 	public Type Type => typeof(string);
@@ -61,4 +63,5 @@ public class StringParser : ITokenParser
 
 		return raw;
 	}
+}
 }

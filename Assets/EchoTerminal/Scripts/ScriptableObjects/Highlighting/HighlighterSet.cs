@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects.Highlighting
 {
 [CreateAssetMenu(fileName = "HighlighterSet", menuName = "Echo Terminal/Highlighter Set")]
 public class HighlighterSet : ScriptableObject

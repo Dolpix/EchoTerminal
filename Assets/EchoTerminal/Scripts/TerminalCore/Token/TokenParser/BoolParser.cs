@@ -1,5 +1,7 @@
 using System;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class BoolParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(bool);
@@ -32,4 +34,5 @@ public class BoolParser : ITokenParser, IHintLabeler
 	{
 		return bool.Parse(raw);
 	}
+}
 }

@@ -1,6 +1,7 @@
+using EchoTerminal.Scripts.TerminalCore;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalHighlighter : IEchoComponent
 {

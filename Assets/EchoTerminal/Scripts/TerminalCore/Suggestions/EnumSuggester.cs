@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 
-[SuggestorFor(typeof(Enum))]
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
+{
+[SuggestorFor(typeof(System.Enum))]
 public class EnumSuggester : ISuggester
 {
 	public IReadOnlyList<string> GetSuggestions(string partial, Type expectedType = null)
@@ -14,7 +15,7 @@ public class EnumSuggester : ISuggester
 			return Array.Empty<string>();
 		}
 
-		string[] names = Enum.GetNames(expectedType);
+		string[] names = System.Enum.GetNames(expectedType);
 
 		if (string.IsNullOrEmpty(partial))
 		{
@@ -26,4 +27,5 @@ public class EnumSuggester : ISuggester
 						   !string.Equals(n, partial, StringComparison.OrdinalIgnoreCase))
 			   .ToList();
 	}
+}
 }

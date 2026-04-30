@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using EchoTerminal;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
+namespace EchoTerminal.Scripts.Commands
+{
 public static class HelpCommand
 {
 	private const string _colClassName = "#C9D1D9";
@@ -164,4 +170,5 @@ public static class HelpCommand
 		var token = new Token { Raw = text, State = TokenState.Completed, ExpectedType = tokenType };
 		return highlighter.Highlight(text, token);
 	}
+}
 }

@@ -1,7 +1,9 @@
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
+using EchoTerminal.Scripts.TerminalCore.Structs;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects
 {
 [CreateAssetMenu(fileName = "TerminalConfig", menuName = "Echo Terminal/UI Config")]
 public class TerminalConfig : ScriptableObject

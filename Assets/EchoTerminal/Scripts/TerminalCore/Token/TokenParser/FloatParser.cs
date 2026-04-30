@@ -1,5 +1,7 @@
 using System;
 
+namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
+{
 public class FloatParser : ITokenParser, IHintLabeler
 {
 	public Type Type => typeof(float);
@@ -14,4 +16,5 @@ public class FloatParser : ITokenParser, IHintLabeler
 	{
 		return float.Parse(raw);
 	}
+}
 }

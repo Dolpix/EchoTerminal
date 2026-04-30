@@ -1,7 +1,8 @@
 using System.Linq;
+using EchoTerminal.Scripts.TerminalCore.Token;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects.Highlighting.Highlighters
 {
 [CreateAssetMenu(fileName = "ColorTypeHighlighter", menuName = "Echo Terminal/Highlighters/Color Type")]
 public class ColorTypeHighlighter : TokenHighlighter

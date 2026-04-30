@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Structs;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Command
 {
 public class CommandRegistry
 {

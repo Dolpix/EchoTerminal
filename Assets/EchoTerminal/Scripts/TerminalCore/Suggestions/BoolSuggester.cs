@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
+{
 [SuggestorFor(typeof(bool))]
 public class BoolSuggester : ISuggester
 {
@@ -21,4 +22,5 @@ public class BoolSuggester : ISuggester
 						   !string.Equals(v, partial, StringComparison.OrdinalIgnoreCase))
 			   .ToList();
 	}
+}
 }

@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Token;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Hints
 {
 public static class CommandHintBuilder
 {
@@ -78,7 +81,7 @@ public static class CommandHintBuilder
 		var completedArgs = 0;
 		if (result.ArgTokens != null)
 		{
-			foreach (Token token in result.ArgTokens)
+			foreach (Token.Token token in result.ArgTokens)
 			{
 				if (token.State == TokenState.Completed)
 				{

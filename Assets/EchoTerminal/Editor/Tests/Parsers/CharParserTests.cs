@@ -1,3 +1,5 @@
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using NUnit.Framework;
 
 namespace EchoTerminal.Editor.Tests.Parsers

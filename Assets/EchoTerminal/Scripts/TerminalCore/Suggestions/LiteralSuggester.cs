@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
 {
 public class LiteralSuggester : ISuggester
 {

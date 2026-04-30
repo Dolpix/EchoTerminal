@@ -1,10 +1,18 @@
 using System;
 using System.Collections.Generic;
-using EchoTerminal.Components;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.Commands.Bind;
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
+using EchoTerminal.Scripts.TerminalCore.Command;
+using EchoTerminal.Scripts.TerminalCore.Enum;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Suggestions;
+using EchoTerminal.Scripts.TerminalCore.Targets;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
+using EchoTerminal.Scripts.UI.EchoComponents;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore
 {
 public class Terminal
 {

@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Suggestions
 {
 [SuggestorFor(typeof(IList))]
 public class ListSuggester : ISuggester

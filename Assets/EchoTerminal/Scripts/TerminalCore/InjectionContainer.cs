@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore
 {
 public class InjectionContainer
 {

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting;
+using EchoTerminal.Scripts.ScriptableObjects.Highlighting.Highlighters;
+using EchoTerminal.Scripts.TerminalCore.Token;
 using UnityEditor;
 using UnityEngine;
 

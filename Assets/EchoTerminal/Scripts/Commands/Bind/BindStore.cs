@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.Commands.Bind
 {
 public static class BindStore
 {

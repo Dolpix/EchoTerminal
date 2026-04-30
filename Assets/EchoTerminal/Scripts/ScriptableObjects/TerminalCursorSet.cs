@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.ScriptableObjects
 {
 [CreateAssetMenu(fileName = "TerminalCursorSet", menuName = "Echo Terminal/Cursor Set")]
 public class TerminalCursorSet : ScriptableObject

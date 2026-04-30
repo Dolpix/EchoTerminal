@@ -1,9 +1,10 @@
 #if UNITY_EDITOR
-using EchoTerminal;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+namespace EchoTerminal.Scripts.ScriptableObjects
+{
 [CreateAssetMenu(fileName = "TerminalSingleton", menuName = "Echo Terminal/Assets")]
 public class TerminalSingleton : ScriptableObject
 {
@@ -36,5 +37,6 @@ public class TerminalSingleton : ScriptableObject
 			return _instance;
 		}
 	}
+}
 }
 #endif

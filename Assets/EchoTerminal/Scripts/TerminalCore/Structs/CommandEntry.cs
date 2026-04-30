@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Structs
 {
 public readonly struct CommandEntry
 {

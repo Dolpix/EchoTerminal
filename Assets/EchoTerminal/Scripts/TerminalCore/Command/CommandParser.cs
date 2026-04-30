@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Command
 {
 public class CommandParser
 {
@@ -45,7 +48,7 @@ public class CommandParser
 			commandState = TokenState.Failed;
 		}
 
-		var commandToken = new Token { Raw = commandRaw, State = commandState, ExpectedType = typeof(CommandName) };
+		var commandToken = new Token.Token { Raw = commandRaw, State = commandState, ExpectedType = typeof(CommandName) };
 
 		if (commandToken.State != TokenState.Completed ||
 			!_registry.TryGet(commandToken.Raw, out List<CommandEntry> entries))
@@ -55,7 +58,7 @@ public class CommandParser
 
 		string argInput = spaceIdx >= 0 ? trimmed[(spaceIdx + 1)..] : string.Empty;
 
-		List<Token> bestArgTokens = null;
+		List<Token.Token> bestArgTokens = null;
 		int bestCompletedCount = -1;
 		int bestPartialCount = -1;
 		var bestParamCount = 0;
@@ -70,7 +73,7 @@ public class CommandParser
 				? paramTypes.Prepend(typeof(Target)).ToList()
 				: paramTypes.ToList();
 
-			List<Token> argTokens = string.IsNullOrWhiteSpace(argInput)
+			List<Token.Token> argTokens = string.IsNullOrWhiteSpace(argInput)
 				? new()
 				: _tokenizer.Tokenize(argInput, expectedTypes);
 
@@ -106,7 +109,7 @@ public class CommandParser
 		{
 			for (int i = bestParamCount; i < bestArgTokens.Count; i++)
 			{
-				Token token = bestArgTokens[i];
+				Token.Token token = bestArgTokens[i];
 				token.State = TokenState.Failed;
 				bestArgTokens[i] = token;
 			}

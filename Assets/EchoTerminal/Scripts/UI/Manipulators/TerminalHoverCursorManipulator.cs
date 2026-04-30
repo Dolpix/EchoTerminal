@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI.Manipulators
 {
 public class TerminalHoverCursorManipulator : PointerManipulator
 {

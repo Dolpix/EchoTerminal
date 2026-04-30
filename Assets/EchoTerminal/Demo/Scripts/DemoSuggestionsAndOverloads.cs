@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
 using UnityEngine;
 
-namespace EchoTerminal.Demos
+namespace EchoTerminal.Demo.Scripts
 {
 public static class DemoSuggestionsAndOverloads
 {

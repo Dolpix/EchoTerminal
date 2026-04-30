@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using EchoTerminal.Scripts.ScriptableObjects;
+using EchoTerminal.Scripts.TerminalCore;
+using EchoTerminal.Scripts.UI.EchoComponents;
 using UnityEngine.UIElements;
 
-namespace EchoTerminal.Components
+namespace EchoTerminal.Scripts.UI
 {
 public class TerminalView
 {

@@ -1,7 +1,7 @@
 using System;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Suggestions;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Attributes
 {
 [AttributeUsage(AttributeTargets.Parameter)]
 public sealed class SuggestAttribute : Attribute

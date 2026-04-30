@@ -1,7 +1,8 @@
 using System;
+using EchoTerminal.Scripts.TerminalCore.Token;
 using NUnit.Framework;
-using Parser = EchoTerminal.TerminalCore.CommandNameParser;
-using CmdName = EchoTerminal.TerminalCore.CommandName;
+using Parser = EchoTerminal.Scripts.TerminalCore.Token.TokenParser.CommandNameParser;
+using CmdName = EchoTerminal.Scripts.TerminalCore.Token.TokenParser.CommandName;
 
 namespace EchoTerminal.Editor.Tests.Parsers
 {

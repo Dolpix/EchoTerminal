@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Targets
 {
 public interface ITargetProvider
 {

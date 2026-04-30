@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EchoTerminal.TerminalCore;
+using EchoTerminal.Scripts.TerminalCore.Attributes;
+using EchoTerminal.Scripts.TerminalCore.Structs;
+using EchoTerminal.Scripts.TerminalCore.Token;
+using EchoTerminal.Scripts.TerminalCore.Token.TokenParser;
 using UnityEngine;
 
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Command
 {
 public class CommandExecutor
 {

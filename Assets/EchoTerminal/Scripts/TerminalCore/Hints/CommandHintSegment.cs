@@ -1,4 +1,4 @@
-namespace EchoTerminal
+namespace EchoTerminal.Scripts.TerminalCore.Hints
 {
 public readonly struct CommandHintSegment
 {
