@@ -68,9 +68,10 @@ NOTE: You dont need to include the Demo folder!
 
 ### Add the terminal to a scene
 
-1. Add the EchoTerminal Prefab into the scene
+1. Add the EchoTerminal Prefab into the scene.
 2. Press Play.
-3. Press ~ to open the terminal
+3. Press ~ to open the terminal.
+4. Type "Help" into the terminal input field. 
 
 For editor tooling, use `EditorTerminalUI` in an `EditorWindow` instead.
 
