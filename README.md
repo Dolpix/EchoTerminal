@@ -26,16 +26,15 @@ A developer console for Unity 6 -- runtime and editor!
 - [Contributing](#contributing)
 - [Support Me](#support-me)
 
-### Developer note
+### Developer message
 
-The modular command tool we unity devs deserve. No bloat. No price tag. Just a clean, customizable way to trigger logic in-editor or at runtime. Built to be modular; grab it, break it, and make it your own!
+I kept seeing paid dev consoles and thinking - why isn’t there a free one that’s actually well built? So I took some time and made this. No price tag, no bloat, just a clean lib you can read, own, and actually understand.
 
-Free forever. Share it with your dev friends :)
+Every layer is yours. Keep the default UI, swap out just the parts you don’t like, or gut the whole thing and wire the backend into something completely your own. The tokenizer, the parser, the suggesters, the highlighting - all of it is open. That’s what open source is supposed to mean. Your tools should belong to you, not a license agreement.
 
-I've seen these tools around and I'm surprised there wasn't a free alternative. So I spent some time and built this lib! It’s a clean, modular way to trigger logic in Unity-at runtime or in the editor-without the usual price tag or bloat. I kept it slim and well-structured so you can actually see what’s going on under the hood. The UI is totally flexible, so you can tweak it until it fits your project, or just gut the whole thing and use the backend logic. Im hoping this makes your game dev journy easier, so grab it, rip it up, and spread the word. Also, if you find it usefull, And you can aford it. Buying me a coffee would be sick! Open to any questions, issues, or recomendations you have!
-Add commands with a single attribute. Keep the default UI, or replace every part of it. The tokenizer, the suggestion engine, the highlighting, the layout - all of it is open and swappable. Open source is the freedom for the artists and engineers to truly own your tools.
+Grab it, break it, make something awesome with it, and share it with your dev friends. Open to any questions, issues, or ideas you’ve got!
 
-Source is here (Seriously)! No price (Donations help). Go build something (Awsome)!
+If it saves you some time and you can spare it, [buying me a coffee](https://github.com/sponsors/Dolpix) would be sick :)
 
 
 
