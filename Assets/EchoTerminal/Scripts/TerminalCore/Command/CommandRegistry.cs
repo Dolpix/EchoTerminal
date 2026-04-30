@@ -70,13 +70,13 @@ public class CommandRegistry
 
 	public bool TryGet(string name, out List<CommandEntry> entries)
 	{
-		if (_disabledCommands.Contains(name))
+		if (!_disabledCommands.Contains(name))
 		{
-			entries = null;
-			return false;
+			return _commands.TryGetValue(name, out entries);
 		}
 
-		return _commands.TryGetValue(name, out entries);
+		entries = null;
+		return false;
 	}
 
 	public Component[] GetInstances(Type monoType)

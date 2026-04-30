@@ -59,10 +59,7 @@ public class TerminalSearch : IEchoComponent
 	private void OnCleared()
 	{
 		_query = "";
-		if (_searchField != null)
-		{
-			_searchField.SetValueWithoutNotify("");
-		}
+		_searchField?.SetValueWithoutNotify("");
 	}
 
 	private void ApplyFilter()

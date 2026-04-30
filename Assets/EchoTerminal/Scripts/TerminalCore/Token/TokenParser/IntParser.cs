@@ -9,12 +9,7 @@ public class IntParser : ITokenParser, IHintLabeler
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
-		if (int.TryParse(raw, out _))
-		{
-			return TokenState.Completed;
-		}
-
-		return TokenState.Failed;
+		return int.TryParse(raw, out _) ? TokenState.Completed : TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

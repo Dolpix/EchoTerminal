@@ -84,17 +84,9 @@ public class ColorParser : ITokenParser, IHintLabeler
 		}
 
 		string[] parts = raw[1..^1].Split(',');
-		if (parts.Length is not (3 or 4))
+		if (parts.Length is not (3 or 4) || parts.Any(part => !float.TryParse(part.Trim(), out _)))
 		{
 			return TokenState.Failed;
-		}
-
-		foreach (string part in parts)
-		{
-			if (!float.TryParse(part.Trim(), out _))
-			{
-				return TokenState.Failed;
-			}
 		}
 
 		return TokenState.Completed;
@@ -121,12 +113,9 @@ public class ColorParser : ITokenParser, IHintLabeler
 			return TokenState.Completed;
 		}
 
-		if (NamedColors.Any(n => n.Length > lower.Length && n.StartsWith(lower)))
-		{
-			return TokenState.Partial;
-		}
-
-		return TokenState.Failed;
+		return NamedColors.Any(n => n.Length > lower.Length && n.StartsWith(lower))
+			? TokenState.Partial
+			: TokenState.Failed;
 	}
 
 	private static bool IsValidFloatComponent(string s)

@@ -23,12 +23,9 @@ public class EnumParser : ITokenParser, IHintLabeler
 		}
 
 		string lower = raw.ToLowerInvariant();
-		if (names.Any(n => n.Length > raw.Length && n.ToLowerInvariant().StartsWith(lower)))
-		{
-			return TokenState.Partial;
-		}
-
-		return TokenState.Failed;
+		return names.Any(n => n.Length > raw.Length && n.ToLowerInvariant().StartsWith(lower))
+			? TokenState.Partial
+			: TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

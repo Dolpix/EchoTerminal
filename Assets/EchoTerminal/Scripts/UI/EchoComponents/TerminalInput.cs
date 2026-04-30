@@ -1,4 +1,3 @@
-using EchoTerminal.Scripts.ScriptableObjects;
 using EchoTerminal.Scripts.TerminalCore;
 using UnityEngine;
 using UnityEngine.UIElements;

@@ -10,7 +10,7 @@ namespace EchoTerminal.Scripts.UI.EchoComponents
 {
 public class TerminalCopyButton : IEchoComponent
 {
-	private static readonly Regex RichTextTags = new(@"<[^>]+>", RegexOptions.Compiled);
+	private static readonly Regex RichTextTags = new("<[^>]+>", RegexOptions.Compiled);
 
 	private readonly Button _copyButton;
 	private readonly Label _copyToast;

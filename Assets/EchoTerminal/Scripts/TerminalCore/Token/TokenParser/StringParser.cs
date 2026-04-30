@@ -7,16 +7,6 @@ namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
 public class StringParser : ITokenParser
 {
 	public Type Type => typeof(string);
-	private readonly HashSet<string> _validValues;
-
-	public StringParser()
-	{
-	}
-
-	public StringParser(IEnumerable<string> validValues)
-	{
-		_validValues = new(validValues);
-	}
 
 	public TokenState ParseTokenState(string raw, Type expectedType = null)
 	{
@@ -25,33 +15,18 @@ public class StringParser : ITokenParser
 			return TokenState.Failed;
 		}
 
-		if (raw[0] == '"')
+		if (raw[0] != '"')
 		{
-			int closingQuote = raw.IndexOf('"', 1);
-			if (closingQuote >= 1)
-			{
-				return closingQuote == raw.Length - 1 ? TokenState.Completed : TokenState.Failed;
-			}
-
-			return TokenState.Partial;
+			return !char.IsLetter(raw[0]) ? TokenState.Failed : TokenState.Completed;
 		}
 
-		if (!char.IsLetter(raw[0]))
+		int closingQuote = raw.IndexOf('"', 1);
+		if (closingQuote >= 1)
 		{
-			return TokenState.Failed;
+			return closingQuote == raw.Length - 1 ? TokenState.Completed : TokenState.Failed;
 		}
 
-		if (_validValues == null || _validValues.Contains(raw))
-		{
-			return TokenState.Completed;
-		}
-
-		if (_validValues.Any(v => v.StartsWith(raw)))
-		{
-			return TokenState.Partial;
-		}
-
-		return TokenState.Failed;
+		return TokenState.Partial;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)

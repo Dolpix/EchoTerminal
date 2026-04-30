@@ -76,10 +76,5 @@ public class GameTerminalUI : MonoBehaviour
 		IsFocused = false;
 		_view = null;
 	}
-
-	public void FocusInput()
-	{
-		_inputField?.Focus();
-	}
 }
 }

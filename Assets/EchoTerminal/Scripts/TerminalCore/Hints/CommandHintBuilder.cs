@@ -79,18 +79,20 @@ public static class CommandHintBuilder
 		}
 
 		var completedArgs = 0;
-		if (result.ArgTokens != null)
+		if (result.ArgTokens == null)
 		{
-			foreach (Token.Token token in result.ArgTokens)
+			return 1;
+		}
+
+		foreach (Token.Token token in result.ArgTokens)
+		{
+			if (token.State == TokenState.Completed)
 			{
-				if (token.State == TokenState.Completed)
-				{
-					completedArgs++;
-				}
-				else
-				{
-					break;
-				}
+				completedArgs++;
+			}
+			else
+			{
+				break;
 			}
 		}
 

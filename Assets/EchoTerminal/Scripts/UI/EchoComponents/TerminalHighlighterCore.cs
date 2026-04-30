@@ -82,7 +82,7 @@ public class TerminalHighlighterCore
 		List<(int start, int length, string richText)> spans)
 	{
 		TokenHighlighter highlighter = null;
-		if (token.State == TokenState.Completed && token.ExpectedType != null)
+		if (token is { State: TokenState.Completed, ExpectedType: not null })
 		{
 			HighlighterSet?.TryGet(token.ExpectedType, out highlighter);
 		}

@@ -43,17 +43,9 @@ public class QuaternionParser : ITokenParser, IHintLabeler
 		}
 
 		string[] parts = raw[1..^1].Split(',');
-		if (parts.Length != 4)
+		if (parts.Length != 4 || parts.Any(part => !float.TryParse(part.Trim(), out _)))
 		{
 			return TokenState.Failed;
-		}
-
-		foreach (string part in parts)
-		{
-			if (!float.TryParse(part.Trim(), out _))
-			{
-				return TokenState.Failed;
-			}
 		}
 
 		return TokenState.Completed;

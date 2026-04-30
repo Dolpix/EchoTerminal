@@ -85,12 +85,14 @@ public class TerminalHint : IEchoComponent
 
 		_hintList.style.display = DisplayStyle.None;
 
-		bool suggestionsVisible = _suggestionList != null && _suggestionList.childCount > 0;
-		if (!suggestionsVisible && _popup != null)
+		bool suggestionsVisible = _suggestionList is { childCount: > 0 };
+		if (suggestionsVisible || _popup == null)
 		{
-			_popup.style.display = DisplayStyle.None;
-			_popup.RemoveFromClassList("terminal-suggestion-popup--visible");
+			return;
 		}
+
+		_popup.style.display = DisplayStyle.None;
+		_popup.RemoveFromClassList("terminal-suggestion-popup--visible");
 	}
 
 	private void OnFocusOut(FocusOutEvent evt)

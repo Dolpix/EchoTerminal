@@ -43,17 +43,9 @@ public class Vec3IntParser : ITokenParser, IHintLabeler
 		}
 
 		string[] parts = raw[1..^1].Split(',');
-		if (parts.Length != 3)
+		if (parts.Length != 3 || parts.Any(part => !int.TryParse(part.Trim(), out _)))
 		{
 			return TokenState.Failed;
-		}
-
-		foreach (string part in parts)
-		{
-			if (!int.TryParse(part.Trim(), out _))
-			{
-				return TokenState.Failed;
-			}
 		}
 
 		return TokenState.Completed;

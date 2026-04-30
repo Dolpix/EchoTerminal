@@ -172,18 +172,14 @@ public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 					if (elemStart > pos)
 					{
 						result.Add(new()
-							{ Raw = inner[pos..elemStart], State = bracketState, ExpectedType = expectedType });
+						{
+							Raw = inner[pos..elemStart],
+							State = bracketState,
+							ExpectedType = expectedType
+						});
 					}
 
-					TokenState elemState;
-					if (ep != null)
-					{
-						elemState = ep.ParseTokenState(elemRaw, elementType);
-					}
-					else
-					{
-						elemState = elementTokens[i].State;
-					}
+					TokenState elemState = ep?.ParseTokenState(elemRaw, elementType) ?? elementTokens[i].State;
 
 					result.Add(new() { Raw = elemRaw, State = elemState, ExpectedType = elementType });
 					pos = elemStart + elemRaw.Length;
@@ -232,18 +228,18 @@ public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 			}
 			else if (!inQuote)
 			{
-				if (c is '[' or '(')
+				switch (c)
 				{
-					depth++;
-				}
-				else if (c is ']' or ')')
-				{
-					depth--;
-				}
-				else if (c == ',' && depth == 0)
-				{
-					segments.Add(partialInner[(lastComma + 1)..i].Trim());
-					lastComma = i;
+					case '[' or '(':
+						depth++;
+						break;
+					case ']' or ')':
+						depth--;
+						break;
+					case ',' when depth == 0:
+						segments.Add(partialInner[(lastComma + 1)..i].Trim());
+						lastComma = i;
+						break;
 				}
 			}
 		}

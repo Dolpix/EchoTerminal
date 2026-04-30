@@ -1,3 +1,4 @@
+using System;
 using EchoTerminal.Scripts.TerminalCore;
 using EchoTerminal.Scripts.TerminalCore.Enum;
 using EchoTerminal.Scripts.TerminalCore.Structs;
@@ -68,6 +69,8 @@ public class TerminalLogFilter : IEchoComponent
 			case LogKind.Command:
 				_showCommand = !_showCommand;
 				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
 		}
 
 		_logContainer?.EnableInClassList($"filter-hide-{kind.ToString().ToLower()}", !IsVisible(kind));
@@ -130,6 +133,8 @@ public class TerminalLogFilter : IEchoComponent
 			case LogKind.Command:
 				_countCommand++;
 				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 
 		UpdateButton(entry.Kind);

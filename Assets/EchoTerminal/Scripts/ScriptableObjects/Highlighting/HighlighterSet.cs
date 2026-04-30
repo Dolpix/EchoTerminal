@@ -55,9 +55,9 @@ public class HighlighterSet : ScriptableObject
 			}
 		}
 
-		foreach (Type iface in tokenType.GetInterfaces())
+		foreach (Type face in tokenType.GetInterfaces())
 		{
-			if (_lookup.TryGetValue(iface, out highlighter))
+			if (_lookup.TryGetValue(face, out highlighter))
 			{
 				return true;
 			}

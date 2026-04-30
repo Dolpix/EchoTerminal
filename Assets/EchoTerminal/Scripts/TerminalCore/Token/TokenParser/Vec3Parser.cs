@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace EchoTerminal.Scripts.TerminalCore.Token.TokenParser
@@ -31,26 +32,13 @@ public class Vec3Parser : ITokenParser, IHintLabeler
 				commaIndex = inner.IndexOf(',');
 			}
 
-			if (!IsValidFloatComponent(inner.Trim()))
-			{
-				return TokenState.Failed;
-			}
-
-			return TokenState.Partial;
+			return !IsValidFloatComponent(inner.Trim()) ? TokenState.Failed : TokenState.Partial;
 		}
 
 		string[] parts = raw[1..^1].Split(',');
-		if (parts.Length != 3)
+		if (parts.Length != 3 || parts.Any(part => !float.TryParse(part.Trim(), out _)))
 		{
 			return TokenState.Failed;
-		}
-
-		foreach (string part in parts)
-		{
-			if (!float.TryParse(part.Trim(), out _))
-			{
-				return TokenState.Failed;
-			}
 		}
 
 		return TokenState.Completed;
@@ -73,20 +61,7 @@ public class Vec3Parser : ITokenParser, IHintLabeler
 			return true;
 		}
 
-		if (float.TryParse(s, out _))
-		{
-			return true;
-		}
-
-		foreach (char c in s)
-		{
-			if (c != '-' && c != '+' && c != '.' && !char.IsDigit(c))
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return float.TryParse(s, out _) || s.All(c => c == '-' || c == '+' || c == '.' || char.IsDigit(c));
 	}
 }
 }

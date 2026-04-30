@@ -32,40 +32,30 @@ public static class ParserRegistry
 		WithArgs[typeof(T)] = factory;
 	}
 
-	public static Dictionary<Type, ITokenParser> CreateAll()
-	{
-		var result = new Dictionary<Type, ITokenParser>();
-		foreach (ITokenParser parser in CreateAllParsers())
-		{
-			result[parser.Type] = parser;
-		}
-
-		return result;
-	}
-
 	public static List<ITokenParser> CreateAllParsers()
 	{
 		var unordered = new List<ITokenParser>();
 
-		IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies()
-										   .SelectMany(a =>
-										   {
-											   try
-											   {
-												   return a.GetTypes();
-											   }
-											   catch
-											   {
-												   return Array.Empty<Type>();
-											   }
-										   })
-										   .Where(t =>
-											   typeof(ITokenParser).IsAssignableFrom(t) &&
-											   !t.IsInterface &&
-											   !t.IsAbstract &&
-											   !t.IsGenericTypeDefinition &&
-											   IsTerminalCoreParser(t)
-										   );
+		IEnumerable<Type> types =
+			AppDomain.CurrentDomain.GetAssemblies()
+					 .SelectMany(a =>
+					 {
+						 try
+						 {
+							 return a.GetTypes();
+						 }
+						 catch
+						 {
+							 return Array.Empty<Type>();
+						 }
+					 })
+					 .Where(t =>
+						 typeof(ITokenParser).IsAssignableFrom(t) &&
+						 !t.IsInterface &&
+						 !t.IsAbstract &&
+						 !t.IsGenericTypeDefinition &&
+						 IsTerminalCoreParser(t)
+					 );
 
 		foreach (Type type in types)
 		{

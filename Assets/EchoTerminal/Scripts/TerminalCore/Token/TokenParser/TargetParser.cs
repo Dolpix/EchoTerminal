@@ -27,10 +27,6 @@ public class TargetParser : ITokenParser
 	private IReadOnlyList<string> _lastList;
 	private HashSet<string> _knownSet = new(StringComparer.OrdinalIgnoreCase);
 
-	public TargetParser() : this(new LiteralTargetProvider())
-	{
-	}
-
 	public TargetParser(ITargetProvider provider)
 	{
 		_provider = provider;
@@ -50,12 +46,9 @@ public class TargetParser : ITokenParser
 			return TokenState.Completed;
 		}
 
-		if (known.Any(t => t.StartsWith(raw, StringComparison.OrdinalIgnoreCase)))
-		{
-			return TokenState.Partial;
-		}
-
-		return TokenState.Failed;
+		return known.Any(t => t.StartsWith(raw, StringComparison.OrdinalIgnoreCase))
+			? TokenState.Partial
+			: TokenState.Failed;
 	}
 
 	public object ParseValue(string raw, Type expectedType = null)
@@ -66,11 +59,13 @@ public class TargetParser : ITokenParser
 	private HashSet<string> GetKnownSet()
 	{
 		IReadOnlyList<string> list = _provider.GetTargets();
-		if (!ReferenceEquals(list, _lastList))
+		if (ReferenceEquals(list, _lastList))
 		{
-			_lastList = list;
-			_knownSet = new(list, StringComparer.OrdinalIgnoreCase);
+			return _knownSet;
 		}
+
+		_lastList = list;
+		_knownSet = new(list, StringComparer.OrdinalIgnoreCase);
 
 		return _knownSet;
 	}

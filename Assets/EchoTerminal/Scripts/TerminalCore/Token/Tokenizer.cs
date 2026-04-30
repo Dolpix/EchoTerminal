@@ -178,20 +178,14 @@ public class Tokenizer
 			return new() { Raw = raw, State = TokenState.Failed, ExpectedType = expectedType };
 		}
 
-		foreach (ITokenParser p in _parsers)
+		foreach (ITokenParser p in _parsers.Where(p => p.ParseTokenState(raw) == TokenState.Completed))
 		{
-			if (p.ParseTokenState(raw) == TokenState.Completed)
-			{
-				return new() { Raw = raw, State = TokenState.Completed, ExpectedType = p.Type };
-			}
+			return new() { Raw = raw, State = TokenState.Completed, ExpectedType = p.Type };
 		}
 
-		foreach (ITokenParser p in _parsers)
+		foreach (ITokenParser p in _parsers.Where(p => p.ParseTokenState(raw) == TokenState.Partial))
 		{
-			if (p.ParseTokenState(raw) == TokenState.Partial)
-			{
-				return new() { Raw = raw, State = TokenState.Partial, ExpectedType = p.Type };
-			}
+			return new() { Raw = raw, State = TokenState.Partial, ExpectedType = p.Type };
 		}
 
 		return new() { Raw = raw, State = TokenState.Failed, ExpectedType = null };
@@ -207,23 +201,12 @@ public class Tokenizer
 			}
 		}
 
-		foreach (ITokenParser p in _parsers)
+		if (_parsers.Any(p => p.ParseTokenState(raw) == TokenState.Completed))
 		{
-			if (p.ParseTokenState(raw) == TokenState.Completed)
-			{
-				return null;
-			}
+			return null;
 		}
 
-		foreach (ITokenParser p in _parsers)
-		{
-			if (p.ParseTokenState(raw) == TokenState.Partial)
-			{
-				return p;
-			}
-		}
-
-		return null;
+		return _parsers.FirstOrDefault(p => p.ParseTokenState(raw) == TokenState.Partial);
 	}
 }
 }
