@@ -6,9 +6,27 @@
 
 A developer console for Unity 6 -- runtime and editor!
 
----
+## Contents
 
-Developer note:
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Add the terminal to a scene](#add-the-terminal-to-a-scene)
+  - [Your first command](#your-first-command)
+- [Architecture](#architecture)
+- [Customizing](#customizing)
+  - [Custom type parser](#custom-type-parser)
+  - [Custom autocomplete](#custom-autocomplete)
+  - [Target GameObjects by name](#target-gameobjects-by-name)
+  - [Custom UI component](#custom-ui-component)
+  - [Custom highlighting theme](#custom-highlighting-theme)
+  - [Group and toggle commands](#group-and-toggle-commands)
+  - [Changing inputs](#changing-inputs)
+- [Contributing](#contributing)
+- [Support Me](#support-me)
+
+### Developer note
 
 The modular command tool we unity devs deserve. No bloat. No price tag. Just a clean, customizable way to trigger logic in-editor or at runtime. Built to be modular; grab it, break it, and make it your own!
 
@@ -19,7 +37,7 @@ Add commands with a single attribute. Keep the default UI, or replace every part
 
 Source is here (Seriously)! No price (Donations help). Go build something (Awsome)!
 
----
+
 
 ## Features
 
@@ -32,7 +50,7 @@ Source is here (Seriously)! No price (Donations help). Go build something (Awsom
 - Runs in Play mode and in the editor from the same package
 - Every layer is replaceable: add your own parsers, suggesters, UI components, and highlight themes
 
----
+
 
 ## Getting Started
 
@@ -72,7 +90,7 @@ public class PlayerCommands : MonoBehaviour
 
 `Terminal` scans all assemblies at startup. Type `heal 50` in the console and this method fires on every active instance in the scene. No registration step needed.
 
----
+
 
 ## Architecture
 
@@ -200,7 +218,7 @@ terminal.Registry.DisableByTag("debug");
 
 you can go to the input asset under the inputs folder and change the key binds for what opens the terminal. 
 
----
+
 
 ## Contributing
 
@@ -208,7 +226,7 @@ Bug reports and feature requests go in [Issues](https://github.com/Dolpix/EchoTe
 
 Pull requests are welcome. One problem per PR. If something in the code or the docs is confusing, open an issue.
 
----
+
 
 ## SUPPORT ME!!!
 
@@ -220,6 +238,6 @@ If it saved you time or helped you ship, consider supporting it:
 
 Engineers and artists should own their tools. Take this one.
 
----
+
 
 Apache 2.0 - use it, fork it, ship it.
