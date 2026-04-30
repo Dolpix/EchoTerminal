@@ -15,7 +15,7 @@ public static class BuildInfoCommand
 
 	[TerminalCommand]
 	[TerminalDescription("Show project build information")]
-	private static void BuildInfo([Inject] Terminal terminal)
+	private static void LogBuildInfo([Inject] Terminal terminal)
 	{
 		var sb = new StringBuilder();
 
@@ -23,7 +23,6 @@ public static class BuildInfoCommand
 		Row(sb, "Name", Application.productName);
 		Row(sb, "Version", Application.version);
 		Row(sb, "Company", Application.companyName);
-		Row(sb, "Package", "com.dolpix.echo-terminal");
 
 		sb.AppendLine(" ");
 		Header(sb, "Build");
