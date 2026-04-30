@@ -69,7 +69,7 @@ public class TerminalHighlighterCore
 				continue;
 			}
 
-			ExpandToken(token, input, tokenStart, spans);
+			ExpandToken(token, tokenStart, spans);
 			searchFrom = tokenStart + token.Raw.Length;
 		}
 
@@ -78,7 +78,6 @@ public class TerminalHighlighterCore
 
 	private void ExpandToken(
 		Token token,
-		string input,
 		int offset,
 		List<(int start, int length, string richText)> spans)
 	{
@@ -110,7 +109,7 @@ public class TerminalHighlighterCore
 						continue;
 					}
 
-					ExpandToken(sub, input, offset + subStart, spans);
+					ExpandToken(sub, offset + subStart, spans);
 					subOffset = offset + subStart + sub.Raw.Length;
 				}
 

@@ -106,8 +106,6 @@ public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 		}
 
 		List<Token> tokens = GetTokenizer().Tokenize(Normalize(inner));
-		Type elementType = GetElementType(expectedType);
-
 		if (expectedType == null && tokens.Count > 0)
 		{
 			Type firstType = tokens[0].ExpectedType;
@@ -118,7 +116,7 @@ public class ListParser : ITokenParser, IRecursiveParser, IHintLabeler
 		}
 
 		IList list = CreateEmptyList(expectedType);
-		elementType = GetElementType(expectedType);
+		Type elementType = GetElementType(expectedType);
 
 		foreach (Token token in tokens)
 		{

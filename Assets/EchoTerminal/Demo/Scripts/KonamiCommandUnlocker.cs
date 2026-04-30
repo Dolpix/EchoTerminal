@@ -48,7 +48,7 @@ namespace EchoTerminal.Demo.Scripts
             }
             else
             {
-                foreach (KeyControl key in keyboard.allKeys.Where(key => key.wasPressedThisFrame))
+                foreach (KeyControl unused in keyboard.allKeys.Where(key => key.wasPressedThisFrame))
                 {
                     _progress = 0;
                     break;

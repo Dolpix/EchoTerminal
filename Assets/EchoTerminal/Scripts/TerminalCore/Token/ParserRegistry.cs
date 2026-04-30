@@ -8,9 +8,9 @@ namespace EchoTerminal.Scripts.TerminalCore.Token
 {
 public static class ParserRegistry
 {
-	private static readonly Dictionary<Type, Func<ITokenParser>> _withArgs = new();
+	private static readonly Dictionary<Type, Func<ITokenParser>> WithArgs = new();
 
-	private static readonly Type[] _tailOrder =
+	private static readonly Type[] TailOrder =
 	{
 		typeof(Vector3),
 		typeof(Vector2),
@@ -29,7 +29,7 @@ public static class ParserRegistry
 
 	public static void Register<T>(Func<ITokenParser> factory) where T : ITokenParser
 	{
-		_withArgs[typeof(T)] = factory;
+		WithArgs[typeof(T)] = factory;
 	}
 
 	public static Dictionary<Type, ITokenParser> CreateAll()
@@ -71,7 +71,7 @@ public static class ParserRegistry
 		{
 			ITokenParser parser = null;
 
-			if (_withArgs.TryGetValue(type, out Func<ITokenParser> factory))
+			if (WithArgs.TryGetValue(type, out Func<ITokenParser> factory))
 			{
 				parser = factory();
 			}
@@ -90,9 +90,9 @@ public static class ParserRegistry
 		var listParser = new ListParser(elementParsers);
 		elementParsers.Add(listParser);
 		unordered.Add(listParser);
-		List<ITokenParser> result = unordered.Where(p => !_tailOrder.Contains(p.Type)).ToList();
+		List<ITokenParser> result = unordered.Where(p => !TailOrder.Contains(p.Type)).ToList();
 
-		foreach (Type valueType in _tailOrder)
+		foreach (Type valueType in TailOrder)
 		{
 			result.AddRange(unordered.Where(p => p.Type == valueType));
 		}

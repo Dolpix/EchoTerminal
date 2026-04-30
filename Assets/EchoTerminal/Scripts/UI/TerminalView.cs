@@ -19,7 +19,7 @@ public class TerminalView
 		_components.Add(new TerminalLogDisplay(Terminal, root, config));
 		_components.Add(new TerminalAutoScroll(Terminal, root));
 		_components.Add(new TerminalSuggestions(Terminal, root, config));
-		_components.Add(new TerminalInput(Terminal, root, config));
+		_components.Add(new TerminalInput(Terminal, root));
 		_components.Add(new TerminalInputHistory(Terminal, root));
 		_components.Add(new TerminalHighlighter(Terminal, root));
 		_components.Add(new TerminalHint(Terminal, root));
@@ -29,7 +29,12 @@ public class TerminalView
 		_components.Add(new TerminalSearch(Terminal, root));
 		_components.Add(new TerminalUnityLog(Terminal));
 
-		if (root.Q<VisualElement>("game-window") != null)
+		if (root.Q<VisualElement>("game-window") == null)
+		{
+			return;
+		}
+
+		if (config != null)
 		{
 			_components.Add(new TerminalGameWindow(root, config.CursorSet, config.DragConstraints));
 		}

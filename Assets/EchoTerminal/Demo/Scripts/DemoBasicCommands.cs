@@ -85,9 +85,9 @@ public class DemoInstanceCommands : MonoBehaviour
 	// Every DemoInstanceCommands in the scene will receive this call.
 	[TerminalCommand]
 	[TerminalDescription("Toggle invincibility on this object")]
-	private void SetInvincible(bool enabled)
+	private void SetInvincible(bool invincibleEnabled)
 	{
-		_invincible = enabled;
+		_invincible = invincibleEnabled;
 		Debug.Log($"[{gameObject.name}] Invincible: {_invincible}");
 	}
 

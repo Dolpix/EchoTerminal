@@ -33,9 +33,9 @@ public class DemoCheatCommands : MonoBehaviour
 	[TerminalTag("cheat")]
 	[TerminalDescription("Toggle no-clip movement")]
 	[TerminalTarget]
-	private void Noclip(bool enabled)
+	private void Noclip(bool noClipEnabled)
 	{
-		_noclip = enabled;
+		_noclip = noClipEnabled;
 		Debug.Log($"[{gameObject.name}] Noclip: {_noclip}");
 	}
 

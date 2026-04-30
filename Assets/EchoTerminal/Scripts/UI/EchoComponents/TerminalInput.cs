@@ -10,17 +10,11 @@ public class TerminalInput : IEchoComponent
 	private readonly TextField _inputField;
 	private readonly Terminal _terminal;
 
-	public TerminalInput(Terminal terminal, VisualElement root, TerminalConfig config)
+	public TerminalInput(Terminal terminal, VisualElement root)
 	{
 		_terminal = terminal;
 		_inputField = root?.Q<TextField>("input-field");
-
-		if (_inputField == null)
-		{
-			return;
-		}
-
-		_inputField.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+		_inputField?.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
 	}
 
 	~TerminalInput()

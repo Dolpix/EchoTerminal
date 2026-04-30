@@ -115,7 +115,7 @@ public class CommandParser
 			}
 		}
 
-		return CommandParseResult.NoMatch(commandToken, entries, bestArgTokens ?? new());
+		return CommandParseResult.NoMatch(commandToken, entries, bestArgTokens);
 	}
 }
 }

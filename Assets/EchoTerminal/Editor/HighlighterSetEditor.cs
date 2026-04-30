@@ -34,6 +34,11 @@ public class HighlighterSetEditor : UnityEditor.Editor
 
 		string setPath = AssetDatabase.GetAssetPath(set);
 		string setDir = Path.GetDirectoryName(setPath);
+		if (setDir == null)
+		{
+			return;
+		}
+
 		string highlightersDir = Path.Combine(setDir, "Highlighters");
 
 		if (!AssetDatabase.IsValidFolder(highlightersDir))

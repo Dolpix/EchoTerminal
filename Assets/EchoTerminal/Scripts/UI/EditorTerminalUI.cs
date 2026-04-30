@@ -8,13 +8,6 @@ namespace EchoTerminal.Scripts.UI
 {
 public class EditorTerminalUI : EditorWindow
 {
-	private TerminalView _view;
-
-	private void OnDestroy()
-	{
-		_view = null;
-	}
-
 	private void CreateGUI()
 	{
 		var assets = TerminalSingleton.Instance;
@@ -34,15 +27,14 @@ public class EditorTerminalUI : EditorWindow
 
 		rootVisualElement.AddToClassList("echo-editor--dark");
 
-		_view = new(rootVisualElement, assets.Config);
+		TerminalView _ = new(rootVisualElement, assets.Config);
 	}
 
 	[MenuItem("Window/Echo Terminal")]
-	public static EditorTerminalUI Open()
+	public static void Open()
 	{
 		var window = GetWindow<EditorTerminalUI>("Echo Terminal");
 		window.minSize = new(300, 150);
-		return window;
 	}
 }
 }
