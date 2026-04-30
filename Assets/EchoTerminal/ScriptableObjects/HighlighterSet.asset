@@ -22,8 +22,8 @@ MonoBehaviour:
       PublicKeyToken=b77a5c561934e089
     TypeDisplayName: Enum
     Highlighter: {fileID: 11400000, guid: f0feb9e244b0ad841a3cb3ed4a3bdc3b, type: 2}
-  - TypeAssemblyQualifiedName: EchoTerminal.TerminalCore.CommandName, EchoTerminal,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - TypeAssemblyQualifiedName: EchoTerminal.Scripts.TerminalCore.Token.TokenParser.CommandName,
+      EchoTerminal, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     TypeDisplayName: CommandName
     Highlighter: {fileID: 11400000, guid: 2528850832bec4849a75139e7e8d3ffd, type: 2}
   - TypeAssemblyQualifiedName: System.Collections.IList, mscorlib, Version=4.0.0.0,
@@ -82,11 +82,11 @@ MonoBehaviour:
       PublicKeyToken=b77a5c561934e089
     TypeDisplayName: String
     Highlighter: {fileID: 11400000, guid: e808f22c052d6e948bafd6a88332f28c, type: 2}
-  - TypeAssemblyQualifiedName: EchoTerminal.TerminalCore.BoundCommand, EchoTerminal,
-      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  - TypeAssemblyQualifiedName: EchoTerminal.Scripts.TerminalCore.Token.TokenParser.BoundCommand,
+      EchoTerminal, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     TypeDisplayName: BoundCommand
     Highlighter: {fileID: 11400000, guid: 4c49d44de26523a43935a2d8c0530b79, type: 2}
-  - TypeAssemblyQualifiedName: Target, EchoTerminal, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
+  - TypeAssemblyQualifiedName: EchoTerminal.Scripts.TerminalCore.Token.TokenParser.Target,
+      EchoTerminal, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     TypeDisplayName: Target
     Highlighter: {fileID: 11400000, guid: 1eb2f4e24596f994c9a426dec5137370, type: 2}

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace EchoTerminal.Scripts.ScriptableObjects.Highlighting
@@ -30,12 +32,31 @@ public class HighlighterSet : ScriptableObject
 				continue;
 			}
 
-			var type = Type.GetType(entry.TypeAssemblyQualifiedName);
+			Type type = Type.GetType(entry.TypeAssemblyQualifiedName) ?? ResolveByDisplayName(entry);
 			if (type != null)
 			{
 				_lookup[type] = entry.Highlighter;
 			}
 		}
+	}
+
+	private static Type ResolveByDisplayName(HighlighterEntry entry)
+	{
+		if (string.IsNullOrEmpty(entry.TypeDisplayName))
+		{
+			return null;
+		}
+
+		string[] parts = entry.TypeAssemblyQualifiedName.Split(',');
+		string assemblyName = parts.Length > 1 ? parts[1].Trim() : null;
+		if (assemblyName == null)
+		{
+			return null;
+		}
+
+		Assembly asm = AppDomain.CurrentDomain.GetAssemblies()
+								.FirstOrDefault(a => a.GetName().Name == assemblyName);
+		return asm?.GetTypes().FirstOrDefault(t => t.Name == entry.TypeDisplayName);
 	}
 
 	public bool TryGet(Type tokenType, out TokenHighlighter highlighter)
