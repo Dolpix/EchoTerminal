@@ -53,8 +53,7 @@ public static class ParserRegistry
 						 typeof(ITokenParser).IsAssignableFrom(t) &&
 						 !t.IsInterface &&
 						 !t.IsAbstract &&
-						 !t.IsGenericTypeDefinition &&
-						 IsTerminalCoreParser(t)
+						 !t.IsGenericTypeDefinition
 					 );
 
 		foreach (Type type in types)
@@ -94,9 +93,5 @@ public static class ParserRegistry
 		return result;
 	}
 
-	private static bool IsTerminalCoreParser(Type t)
-	{
-		return string.IsNullOrEmpty(t.Namespace) || t.Namespace == "EchoTerminal.TerminalCore";
-	}
 }
 }
