@@ -1,0 +1,18 @@
+{
+    "name": "EchoTerminal.Editor",
+    "rootNamespace": "EchoTerminal.Editor",
+    "references": [
+        "EchoTerminal"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
