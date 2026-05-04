@@ -1,5 +1,7 @@
 # Echo Terminal
 
+![Echo Terminal](docs/echo_main_render.png)
+
 [![Unity](https://img.shields.io/badge/Unity-6000.x-black?logo=unity&logoColor=white)](https://unity.com)
 [![Language](https://img.shields.io/badge/language-C%23-239120?logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Open Source](https://img.shields.io/badge/open%20source-Apache%202.0-brightgreen)](https://opensource.org/licenses/Apache-2.0)
