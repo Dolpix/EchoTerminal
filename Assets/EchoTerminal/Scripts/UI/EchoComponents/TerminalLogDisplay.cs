@@ -105,7 +105,7 @@ public class TerminalLogDisplay : IEchoComponent
 			var badge = child.Q<Label>("collapse-badge");
 			if (badge != null)
 			{
-				badge.text = $"×{data.Count}";
+				badge.text = $"x{data.Count}";
 				badge.style.display = DisplayStyle.Flex;
 			}
 
