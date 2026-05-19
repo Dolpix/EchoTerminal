@@ -260,7 +260,12 @@ public class TerminalSuggestions : IEchoComponent
 			{
 				items[i].AddToClassList("terminal-suggestion-item--selected");
 				int idx = i;
-				_list.schedule.Execute(() => _list.ScrollTo(items[idx].parent ?? items[idx]));
+				_list.schedule.Execute(() =>
+				{
+					VisualElement target = items[idx].parent ?? items[idx];
+					if (target.panel != null && _list.contentContainer.Contains(target))
+						_list.ScrollTo(target);
+				});
 			}
 			else
 			{
