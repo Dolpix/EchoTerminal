@@ -68,7 +68,14 @@ public class CommandExecutor
 
 		if (entry.IsStatic)
 		{
-			entry.Method.Invoke(null, args);
+			try
+			{
+				entry.Method.Invoke(null, args);
+			}
+			catch (TargetInvocationException ex)
+			{
+				Debug.LogError($"Command '{entry.Method.Name}' threw an exception: {ex.InnerException}");
+			}
 			return;
 		}
 
@@ -98,7 +105,14 @@ public class CommandExecutor
 
 		foreach (Component instance in filtered)
 		{
-			entry.Method.Invoke(instance, args);
+			try
+			{
+				entry.Method.Invoke(instance, args);
+			}
+			catch (TargetInvocationException ex)
+			{
+				Debug.LogError($"Command '{entry.Method.Name}' on '{instance.gameObject.name}' threw an exception: {ex.InnerException}");
+			}
 		}
 	}
 
