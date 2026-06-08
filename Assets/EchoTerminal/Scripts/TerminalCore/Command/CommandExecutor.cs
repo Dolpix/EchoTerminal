@@ -15,7 +15,8 @@ public class CommandExecutor
 	private readonly CommandRegistry _registry;
 	private readonly Tokenizer _tokenizer;
 	private readonly InjectionContainer _injector;
-
+    private HashSet<string> _silencedInputs;
+    
 	public CommandExecutor(
 		CommandParser commandParser,
 		CommandRegistry registry,
@@ -28,13 +29,21 @@ public class CommandExecutor
 		_injector = injector;
 	}
 
-	public void Execute(string input)
+    public void SetSilencedInputs(HashSet<string> silencedInputs)
+    {
+        _silencedInputs = silencedInputs;
+    }
+
+    public void Execute(string input)
 	{
 		CommandParseResult result = _commandParser.Parse(input);
 
 		if (!result.IsMatch)
 		{
-			Debug.LogError(result.GetError());
+            if (_silencedInputs == null || !_silencedInputs.Contains(input.Trim()))
+            {
+                Debug.LogError(result.GetError());
+            }
 			return;
 		}
 
